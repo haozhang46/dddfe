@@ -1,0 +1,13 @@
+{
+  "name": "dddfe",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "create": "pnpm --filter create-dddfe exec create-dddfe",
+    "test": "pnpm --filter create-dddfe test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@11.4.0"
+}

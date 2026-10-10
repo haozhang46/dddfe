@@ -1,17 +1,9 @@
-# Dependencies / build
-demo/node_modules/
-demo/dist/
 **/node_modules/
 **/dist/
-
-# Local / OS
 .DS_Store
 *.local
 .env
 .env.*
-
-# Editor / tooling
 .idea/
 .vscode/
 *.tsbuildinfo
-demo/node_modules/.tmp/
