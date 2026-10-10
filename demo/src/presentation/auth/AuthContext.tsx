@@ -1,7 +1,6 @@
 import {
   createContext,
   useContext,
-  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -28,14 +27,11 @@ export function AuthProvider({
   deps?: AuthDeps
 }) {
   const authDeps = useMemo(() => deps ?? createAuthDeps(), [deps])
-  const [session, setSession] = useState<AuthSession | null>(null)
-  const [status, setStatus] = useState<AuthStatus>('booting')
+  const [session, setSession] = useState<AuthSession | null>(() =>
+    authDeps.loadSession(),
+  )
 
-  useEffect(() => {
-    const loaded = authDeps.loadSession()
-    setSession(loaded)
-    setStatus(loaded ? 'authed' : 'anon')
-  }, [authDeps])
+  const status: AuthStatus = session ? 'authed' : 'anon'
 
   const value = useMemo<AuthContextValue>(
     () => ({
@@ -44,12 +40,10 @@ export function AuthProvider({
       async login(username: string) {
         const next = await authDeps.login(username)
         setSession(next)
-        setStatus('authed')
       },
       logout() {
         authDeps.logout()
         setSession(null)
-        setStatus('anon')
       },
     }),
     [authDeps, session, status],

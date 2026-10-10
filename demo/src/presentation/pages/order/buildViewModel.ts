@@ -1,11 +1,13 @@
-import { canSubmit } from '../domain/order/canSubmit'
-import type { FormDraft } from '../domain/order/FormDraft'
-import { isAmountVisible } from '../domain/order/visibility'
-import type { Option } from '../domain/order/ensureCityValid'
+import {
+  canSubmit,
+  isAmountVisible,
+  type Option,
+  type OrderDraft,
+} from '../../../domain/order'
 import type { Phase } from './orchestrator'
 
 export type FormViewModel = {
-  values: FormDraft
+  values: OrderDraft
   ui: {
     amountVisible: boolean
     cityOptions: Option[]
@@ -14,12 +16,12 @@ export type FormViewModel = {
     dirty: boolean
     lastSavedAt: number | null
   }
-  errors: Partial<Record<keyof FormDraft | 'form', string>>
+  errors: Partial<Record<keyof OrderDraft | 'form', string>>
   canSubmit: boolean
 }
 
 export function buildViewModel(args: {
-  draft: FormDraft
+  draft: OrderDraft
   phase: Phase
   cityOptions: Option[]
   dirty: boolean

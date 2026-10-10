@@ -1,17 +1,26 @@
 import { useEffect, useMemo, useSyncExternalStore } from 'react'
+import { Link, useParams } from 'react-router'
+import { useAuth } from '../../auth/AuthContext'
+import { Can } from '../../components/Can'
 import { buildViewModel } from './buildViewModel'
 import { createDeps } from './createDeps'
 import { createOrchestrator } from './orchestrator'
-import { AddressSection } from './sections/AddressSection'
-import { AmountSection } from './sections/AmountSection'
-import { PaySection } from './sections/PaySection'
-import { QtySection } from './sections/QtySection'
-import { SaveBar } from './sections/SaveBar'
-
-const deps = createDeps()
-const orchestrator = createOrchestrator(deps)
+import { AddressSection } from './components/AddressSection'
+import { AmountSection } from './components/AmountSection'
+import { PaySection } from './components/PaySection'
+import { QtySection } from './components/QtySection'
+import { SaveBar } from './components/SaveBar'
 
 export function OrderFormPage() {
+  const { orderId = 'order-1' } = useParams()
+  const { session, logout } = useAuth()
+
+  const deps = useMemo(() => createDeps(), [])
+  const orchestrator = useMemo(
+    () => createOrchestrator(deps, orderId),
+    [deps, orderId],
+  )
+
   const state = useSyncExternalStore(
     orchestrator.subscribe,
     orchestrator.getState,
@@ -20,7 +29,7 @@ export function OrderFormPage() {
 
   useEffect(() => {
     void orchestrator.hydrate()
-  }, [])
+  }, [orchestrator])
 
   const vm = useMemo(() => {
     if (!state.draft) return null
@@ -42,6 +51,15 @@ export function OrderFormPage() {
     <div className="page">
       <header>
         <h1>订单 Form · DDD Demo</h1>
+        <p className="muted">
+          订单 <code>{orderId}</code> · {session?.displayName}（{session?.roles.join(', ')}）
+          {' · '}
+          <Link to="/admin">Admin</Link>
+          {' · '}
+          <button type="button" onClick={logout}>
+            退出
+          </button>
+        </p>
         <p className="muted">
           所有 onChange → <code>changeField</code> → Domain <code>applyChange</code>
         </p>
@@ -72,11 +90,27 @@ export function OrderFormPage() {
         saving={vm.ui.saving}
         version={vm.values.version}
         lastSavedAt={vm.ui.lastSavedAt}
-        canSubmit={vm.canSubmit}
         onSave={() => void orchestrator.saveNow()}
-        onSubmit={() => {
-          alert(JSON.stringify(vm.values, null, 2))
-        }}
+        submitButton={
+          <Can
+            permission="order:submit"
+            fallback={
+              <button type="button" disabled>
+                无提交权限
+              </button>
+            }
+          >
+            <button
+              type="button"
+              onClick={() => {
+                alert(JSON.stringify(vm.values, null, 2))
+              }}
+              disabled={!vm.canSubmit}
+            >
+              提交
+            </button>
+          </Can>
+        }
       />
 
       <details className="debug">

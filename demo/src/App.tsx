@@ -1,8 +1,8 @@
-import { OrderFormPage } from './presentation/OrderFormPage'
+import { AppRouter } from './presentation/router'
 import './App.css'
 
 function App() {
-  return <OrderFormPage />
+  return <AppRouter />
 }
 
 export default App

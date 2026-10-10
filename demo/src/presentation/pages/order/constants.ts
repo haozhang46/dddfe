@@ -1,4 +1,4 @@
-import type { Option } from '../domain/order/ensureCityValid'
+import type { Option } from '../../../domain/order'
 
 export const PROVINCES: Option[] = [
   { value: '浙江', label: '浙江' },

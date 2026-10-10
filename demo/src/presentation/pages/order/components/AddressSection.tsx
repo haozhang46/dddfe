@@ -1,4 +1,4 @@
-import type { Option } from '../../domain/order/ensureCityValid'
+import type { Option } from '../../../../domain/order'
 import { PROVINCES } from '../constants'
 
 type Props = {

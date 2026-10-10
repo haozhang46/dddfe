@@ -1,4 +1,4 @@
-import type { PayType } from '../../domain/order/FormDraft'
+import type { PayType } from '../../../../domain/order'
 
 type Props = {
   payType: PayType

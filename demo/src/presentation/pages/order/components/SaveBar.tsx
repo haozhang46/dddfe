@@ -1,11 +1,12 @@
+import type { ReactNode } from 'react'
+
 type Props = {
   dirty: boolean
   saving: boolean
   version: number
   lastSavedAt: number | null
-  canSubmit: boolean
   onSave: () => void
-  onSubmit: () => void
+  submitButton: ReactNode
 }
 
 export function SaveBar({
@@ -13,9 +14,8 @@ export function SaveBar({
   saving,
   version,
   lastSavedAt,
-  canSubmit,
   onSave,
-  onSubmit,
+  submitButton,
 }: Props) {
   return (
     <div className="save-bar">
@@ -30,9 +30,7 @@ export function SaveBar({
       <button type="button" onClick={onSave} disabled={saving || !dirty}>
         手动保存
       </button>
-      <button type="button" onClick={onSubmit} disabled={!canSubmit}>
-        提交
-      </button>
+      {submitButton}
     </div>
   )
 }

@@ -1,12 +1,11 @@
-import type { FieldPath, FormDraft } from '../domain/order/FormDraft'
-import type { Option } from '../domain/order/ensureCityValid'
+import type { FieldPath, Option, OrderDraft } from '../../../domain/order'
 import type { Deps } from './createDeps'
 
 export type Phase = 'idle' | 'loading' | 'editing' | 'saving' | 'submitting'
 
 export type OrchestratorState = {
   phase: Phase
-  draft: FormDraft | null
+  draft: OrderDraft | null
   cityOptions: Option[]
   error: string | null
   epoch: number
@@ -16,12 +15,12 @@ export type OrchestratorState = {
 
 type Ev =
   | { type: 'HYDRATE' }
-  | { type: 'LOADED'; draft: FormDraft; cityOptions: Option[]; epoch: number }
+  | { type: 'LOADED'; draft: OrderDraft; cityOptions: Option[]; epoch: number }
   | { type: 'LOAD_FAIL'; error: string; epoch: number }
-  | { type: 'FIELD_OK'; draft: FormDraft; cityOptions?: Option[]; epoch: number }
+  | { type: 'FIELD_OK'; draft: OrderDraft; cityOptions?: Option[]; epoch: number }
   | { type: 'FIELD_FAIL'; error: string; epoch: number }
   | { type: 'SAVE_START'; epoch: number }
-  | { type: 'SAVED'; draft: FormDraft; epoch: number }
+  | { type: 'SAVED'; draft: OrderDraft; epoch: number }
   | { type: 'SAVE_FAIL'; error: string; epoch: number }
 
 const initial: OrchestratorState = {
