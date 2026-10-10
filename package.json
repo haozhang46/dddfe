@@ -6,6 +6,9 @@
     "create": "pnpm --filter create-dddfe exec create-dddfe",
     "test": "pnpm --filter create-dddfe test"
   },
+  "devDependencies": {
+    "create-dddfe": "workspace:*"
+  },
   "engines": {
     "node": ">=20"
   },
