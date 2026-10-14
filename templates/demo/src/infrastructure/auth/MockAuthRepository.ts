@@ -1,6 +1,6 @@
 import type { AuthRepository } from '../../application/ports/AuthRepository'
 import { delay } from '../mock/delay'
-import type { RequestQueue } from '../queue/RequestQueue'
+import { QueuePriority, type RequestQueue } from '../queue/RequestQueue'
 import { authJsonForUsername } from './mockUsers'
 
 export function createMockAuthRepository(queue: RequestQueue): AuthRepository {
@@ -15,7 +15,7 @@ export function createMockAuthRepository(queue: RequestQueue): AuthRepository {
           }
           return authJson
         },
-        { key: `auth:login:${username}`, signal },
+        { key: `auth:login:${username}`, signal, priority: QueuePriority.userWaiting },
       )
     },
   }
