@@ -74,6 +74,7 @@ Rules:
 
 - Implement ports; put latency, abort, and queue keys here.
 - Request coalescing / latest-wins belongs in `RequestQueue` (or equivalent), not Domain.
+- `enqueue` takes `priority` (higher runs first among jobs still waiting; the running job is not preempted; default `0`). Login, order load, and city query use `QueuePriority.userWaiting`; autosave uses `QueuePriority.background`.
 
 ## Presentation
 
