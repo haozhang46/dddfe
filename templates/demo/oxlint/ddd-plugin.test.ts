@@ -1,3 +1,6 @@
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { RuleTester } from 'oxlint/plugins-dev'
 import { describe, it } from 'vitest'
 import plugin from './ddd-plugin.js'
@@ -289,6 +292,152 @@ tester.run('apply-change-name', rules['apply-change-name'], {
       filename: 'src/domain/order/model.ts',
       code: `export function mutateDraft() { return 1 }\n`,
       errors: [{ messageId: 'rename' }],
+    },
+  ],
+})
+
+const datePickerRoot = mkdtempSync(join(tmpdir(), 'ddd-base-'))
+mkdirSync(join(datePickerRoot, 'src/presentation/components/base'), { recursive: true })
+writeFileSync(
+  join(datePickerRoot, 'src/presentation/components/base/DatePicker.tsx'),
+  'export function DatePicker() { return null }\n',
+)
+
+const on = (components: string[]) => ({ options: [{ components }] })
+
+tester.run('base-component', rules['base-component'], {
+  valid: [
+    {
+      name: 'native date input while no base file exists',
+      filename: 'src/presentation/pages/order/index.tsx',
+      code: 'export const x = <input type="date" />\n',
+    },
+    {
+      name: 'radio and number are not DatePicker or Input',
+      filename: 'src/presentation/pages/order/components/PaySection.tsx',
+      ...on(['DatePicker', 'Input']),
+      code: 'export const x = <><input type="radio" /><input type="number" /></>\n',
+    },
+    {
+      name: 'the base DatePicker implements itself with a native input',
+      filename: 'src/presentation/components/base/DatePicker.tsx',
+      ...on(['DatePicker']),
+      code: 'export function DatePicker() { return <input type="date" /> }\n',
+    },
+    {
+      name: 'pages import the base widgets',
+      filename: 'src/presentation/pages/order/index.tsx',
+      ...on(['DatePicker', 'Form']),
+      code: `
+        import { DatePicker } from '../../components/base/DatePicker'
+        import { Form } from '../../components/base/Form'
+        export const x = <Form><DatePicker /></Form>
+      `,
+    },
+    {
+      name: 'a namespace import of the base folder',
+      filename: 'src/presentation/pages/order/index.tsx',
+      ...on(['DatePicker']),
+      code: `
+        import * as Base from '../../components/base'
+        export const x = <Base.DatePicker />
+      `,
+    },
+    {
+      name: 'Text does not claim buttons',
+      filename: 'src/presentation/pages/order/components/SaveBar.tsx',
+      ...on(['Text']),
+      code: 'export const x = <button type="button">保存</button>\n',
+    },
+    {
+      name: 'antd Button is unrelated to DatePicker',
+      filename: 'src/presentation/pages/order/index.tsx',
+      ...on(['DatePicker']),
+      code: `import { Button } from 'antd'\nexport const x = Button\n`,
+    },
+    {
+      name: 'number input stays legal when only DatePicker.tsx is on disk',
+      cwd: datePickerRoot,
+      filename: 'src/presentation/pages/order/components/QtySection.tsx',
+      code: 'export const x = <input type="number" />\n',
+    },
+  ],
+  invalid: [
+    {
+      name: 'date input',
+      filename: 'src/presentation/pages/order/index.tsx',
+      ...on(['DatePicker']),
+      code: 'export const x = <input type="date" />\n',
+      errors: [{ message: /base\/DatePicker/ }],
+    },
+    {
+      name: 'date input with an expression literal',
+      filename: 'src/presentation/pages/order/components/QtySection.tsx',
+      ...on(['DatePicker']),
+      code: 'export const x = <input type={"date"} />\n',
+      errors: [{ message: /<input type="date">/ }],
+    },
+    {
+      name: 'form element',
+      filename: 'src/presentation/pages/login/LoginPage.tsx',
+      ...on(['Form']),
+      code: 'export const x = <form />\n',
+      errors: [{ message: /base\/Form/ }],
+    },
+    {
+      name: 'paragraph and a third-party DatePicker in one file',
+      filename: 'src/presentation/pages/order/index.tsx',
+      ...on(['Text', 'DatePicker']),
+      code: `
+        import { DatePicker } from 'antd'
+        export const x = <p><DatePicker /></p>
+      `,
+      errors: [{ message: /importing `DatePicker` from `antd`/ }, { message: /base\/Text/ }],
+    },
+    {
+      name: 'react-datepicker package',
+      filename: 'src/presentation/pages/order/index.tsx',
+      ...on(['DatePicker']),
+      code: `import Picker from 'react-datepicker'\nexport const x = Picker\n`,
+      errors: [{ message: /react-datepicker/ }],
+    },
+    {
+      name: 'member date picker from another library',
+      filename: 'src/presentation/pages/order/components/AddressSection.tsx',
+      ...on(['DatePicker']),
+      code: `
+        import * as Antd from 'antd'
+        export const x = <Antd.DatePicker />
+      `,
+      errors: [{ message: /<Antd\.DatePicker>/ }],
+    },
+    {
+      name: 'bare DatePicker with no base import',
+      filename: 'src/presentation/pages/order/components/AmountSection.tsx',
+      ...on(['DatePicker']),
+      code: 'export const x = <DatePicker />\n',
+      errors: [{ message: /<DatePicker>/ }],
+    },
+    {
+      name: 'textarea belongs to Input',
+      filename: 'src/presentation/pages/order/components/QtySection.tsx',
+      ...on(['Input']),
+      code: 'export const x = <textarea />\n',
+      errors: [{ message: /base\/Input/ }],
+    },
+    {
+      name: 'select belongs to Select',
+      filename: 'src/presentation/pages/order/components/AddressSection.tsx',
+      ...on(['Select']),
+      code: 'export const x = <select />\n',
+      errors: [{ messageId: 'instead' }],
+    },
+    {
+      name: 'disk discovery turns on DatePicker',
+      cwd: datePickerRoot,
+      filename: 'src/presentation/pages/order/index.tsx',
+      code: 'export const x = <input type="datetime-local" />\n',
+      errors: [{ message: /base\/DatePicker/ }],
     },
   ],
 })

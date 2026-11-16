@@ -2,6 +2,8 @@
  * Layer rules for this template. Each message names the file or function to use instead.
  * See agent.md "Enforced by lint".
  */
+import { existsSync } from 'node:fs'
+import { join } from 'node:path'
 
 const UI_PACKAGES = ['react', 'react-dom', 'react-router', 'react-router-dom']
 const APP_IO_PACKAGES = [
@@ -383,6 +385,222 @@ const applyChangeName = {
   },
 }
 
+const BASE_REL = 'src/presentation/components/base'
+const BASE_EXTENSIONS = ['.tsx', '.ts', '.jsx', '.js']
+
+const BASE_SCENARIOS = {
+  DatePicker: {
+    elements: [{ name: 'input', types: ['date', 'datetime-local', 'month', 'week', 'time'] }],
+    packages: ['react-datepicker', '@mui/x-date-pickers'],
+  },
+  Form: {
+    elements: [{ name: 'form' }],
+    packages: ['formik'],
+  },
+  Text: {
+    elements: ['p', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'].map((name) => ({ name })),
+    packages: [],
+  },
+  Input: {
+    elements: [
+      { name: 'input', types: ['text', 'email', 'password', 'search', 'tel', 'url', ''] },
+      { name: 'textarea' },
+    ],
+    packages: [],
+  },
+  Select: {
+    elements: [{ name: 'select' }],
+    packages: [],
+  },
+  Button: {
+    elements: [{ name: 'button' }],
+    packages: [],
+  },
+}
+
+const discoveredBaseComponents = new Map()
+
+function isBasePath(path) {
+  const normalized = stripExt(path).replaceAll('\\', '/')
+  return (
+    normalized === BASE_REL ||
+    normalized.startsWith(`${BASE_REL}/`) ||
+    normalized.endsWith(`/${BASE_REL}`) ||
+    normalized.includes(`/${BASE_REL}/`)
+  )
+}
+
+function isBaseSpecifier(filename, specifier) {
+  if (specifier.startsWith('.')) return isBasePath(resolveRelative(filename, specifier))
+  return isBasePath(specifier)
+}
+
+function componentFileExists(cwd, name) {
+  const dir = join(cwd, BASE_REL)
+  return BASE_EXTENSIONS.some(
+    (ext) => existsSync(join(dir, `${name}${ext}`)) || existsSync(join(dir, name, `index${ext}`)),
+  )
+}
+
+function discoverBaseComponents(cwd) {
+  if (discoveredBaseComponents.has(cwd)) return discoveredBaseComponents.get(cwd)
+  const found = Object.keys(BASE_SCENARIOS).filter((name) => componentFileExists(cwd, name))
+  discoveredBaseComponents.set(cwd, found)
+  return found
+}
+
+function activeBaseComponents(context) {
+  const option = context.options?.[0]
+  if (option && Array.isArray(option.components)) {
+    return option.components.filter((name) => BASE_SCENARIOS[name])
+  }
+  return discoverBaseComponents(context.cwd || process.cwd())
+}
+
+function jsxTag(name) {
+  if (name?.type === 'JSXIdentifier') return { kind: 'id', name: name.name }
+  if (name?.type === 'JSXMemberExpression' && name.property?.type === 'JSXIdentifier' && name.object?.type === 'JSXIdentifier') {
+    return { kind: 'member', object: name.object.name, name: name.property.name }
+  }
+  return null
+}
+
+function literalAttr(value) {
+  if (!value) return { known: true, value: '' }
+  if (value.type === 'Literal' && typeof value.value === 'string') return { known: true, value: value.value }
+  if (value.type === 'JSXExpressionContainer') {
+    const expr = value.expression
+    if (expr?.type === 'Literal' && typeof expr.value === 'string') return { known: true, value: expr.value }
+    if (expr?.type === 'TemplateLiteral' && expr.expressions?.length === 0) {
+      return { known: true, value: expr.quasis?.[0]?.value?.cooked ?? '' }
+    }
+    return { known: false }
+  }
+  return { known: false }
+}
+
+function elementType(opening) {
+  for (const attr of opening.attributes ?? []) {
+    if (attr.type !== 'JSXAttribute') continue
+    if (attr.name?.type === 'JSXIdentifier' && attr.name.name === 'type') return literalAttr(attr.value)
+  }
+  return { known: true, value: '' }
+}
+
+function componentForElement(active, tag, typeInfo) {
+  for (const name of active) {
+    for (const element of BASE_SCENARIOS[name].elements) {
+      if (element.name !== tag) continue
+      if (!element.types) return name
+      if (!typeInfo.known) continue
+      if (element.types.includes(typeInfo.value)) return name
+    }
+  }
+  return null
+}
+
+function packageComponent(active, specifier) {
+  for (const name of active) {
+    if ((BASE_SCENARIOS[name].packages ?? []).some((pkg) => matchesPackage(specifier, pkg))) return name
+  }
+  return null
+}
+
+function importedExportName(spec) {
+  if (spec.type === 'ImportDefaultSpecifier') return spec.local?.name ?? null
+  if (spec.type === 'ImportSpecifier') return spec.imported?.name ?? spec.local?.name ?? null
+  return null
+}
+
+function describeElement(tag, typeInfo) {
+  if (tag === 'input' && typeInfo.known && typeInfo.value) return `\`<input type="${typeInfo.value}">\``
+  return `\`<${tag}>\``
+}
+
+const baseComponent = {
+  meta: {
+    type: 'problem',
+    schema: [
+      {
+        type: 'object',
+        properties: {
+          components: { type: 'array', items: { type: 'string' } },
+        },
+        additionalProperties: false,
+      },
+    ],
+    messages: {
+      instead: 'Use `{{component}}` from `src/presentation/components/base/{{component}}` instead of {{found}}.',
+    },
+  },
+  create(context) {
+    const filename = filePath(context)
+    if (!srcRel(filename).startsWith('src/')) return {}
+    if (isBasePath(srcRel(filename))) return {}
+    const activeNames = activeBaseComponents(context)
+    if (activeNames.length === 0) return {}
+    const active = new Set(activeNames)
+    const allowedLocals = new Set()
+    const forbiddenLocals = new Set()
+    const allowedNamespaces = new Set()
+
+    function report(node, component, found) {
+      context.report({ node, messageId: 'instead', data: { component, found } })
+    }
+
+    function visitModule(node) {
+      const specifier = sourceValue(node)
+      if (specifier == null) return
+      if (isBaseSpecifier(filename, specifier)) {
+        for (const spec of node.specifiers ?? []) {
+          if (spec.type === 'ImportNamespaceSpecifier') {
+            allowedNamespaces.add(spec.local.name)
+            continue
+          }
+          const exported = importedExportName(spec)
+          if (exported && active.has(exported)) allowedLocals.add(spec.local.name)
+        }
+        return
+      }
+      const fromPackage = packageComponent(active, specifier)
+      if (fromPackage) {
+        for (const spec of node.specifiers ?? []) {
+          if (spec.local?.name === fromPackage) forbiddenLocals.add(spec.local.name)
+        }
+        report(node, fromPackage, `\`${specifier}\``)
+        return
+      }
+      for (const spec of node.specifiers ?? []) {
+        const exported = importedExportName(spec)
+        if (!exported || !active.has(exported)) continue
+        if (spec.local?.name) forbiddenLocals.add(spec.local.name)
+        report(spec, exported, `importing \`${exported}\` from \`${specifier}\``)
+      }
+    }
+
+    return {
+      ...moduleVisitors(visitModule),
+      JSXOpeningElement(node) {
+        const tag = jsxTag(node.name)
+        if (!tag) return
+        if (tag.kind === 'member') {
+          if (!active.has(tag.name) || allowedNamespaces.has(tag.object)) return
+          report(node, tag.name, `\`<${tag.object}.${tag.name}>\``)
+          return
+        }
+        const typeInfo = tag.name === 'input' ? elementType(node) : { known: true, value: '' }
+        const component = componentForElement(active, tag.name, typeInfo)
+        if (component) {
+          report(node, component, describeElement(tag.name, typeInfo))
+          return
+        }
+        if (!active.has(tag.name) || allowedLocals.has(tag.name) || forbiddenLocals.has(tag.name)) return
+        if (tag.name[0] === tag.name[0].toUpperCase()) report(node, tag.name, `\`<${tag.name}>\``)
+      },
+    }
+  },
+}
+
 const plugin = {
   meta: { name: 'ddd' },
   rules: {
@@ -392,6 +610,7 @@ const plugin = {
     'infrastructure-boundary': infrastructureBoundary,
     'section-viewmodel': sectionViewModel,
     'apply-change-name': applyChangeName,
+    'base-component': baseComponent,
   },
 }
 
