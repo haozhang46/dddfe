@@ -10,6 +10,6 @@ if [ ! -f "$demo/node_modules/oxlint/package.json" ]; then
   exit 1
 fi
 
-cd "$demo"
-echo "pre-commit: pnpm lint (templates/demo)"
+cd "$root"
+echo "pre-commit: pnpm lint"
 pnpm lint
