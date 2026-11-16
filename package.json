@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "create": "pnpm --filter create-dddfe exec create-dddfe",
+    "prepare": "git rev-parse --is-inside-work-tree >/dev/null 2>&1 && git config core.hooksPath .githooks || true",
     "test": "pnpm --filter create-dddfe test"
   },
   "devDependencies": {

@@ -1,0 +1,15 @@
+#!/bin/sh
+# Runs the demo oxlint, including templates/demo/oxlint/ddd-plugin.js.
+set -eu
+
+root=$(git rev-parse --show-toplevel)
+demo="$root/templates/demo"
+
+if [ ! -f "$demo/node_modules/oxlint/package.json" ]; then
+  echo "pre-commit: demo dependencies are missing. Run: cd templates/demo && pnpm install" >&2
+  exit 1
+fi
+
+cd "$demo"
+echo "pre-commit: pnpm lint (templates/demo)"
+pnpm lint
