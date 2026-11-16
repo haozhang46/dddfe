@@ -126,6 +126,19 @@ src/presentation/
 - Invent a different mutation entry name per BC (`applyPayChange`, `updateOrder`, …) without a strong reason.
 - Treat the orchestrator as the Domain — it is presentation/application state machinery.
 
+## Enforced by lint
+
+`pnpm lint` runs oxlint plus `oxlint/ddd-plugin.js`. When a check fails, the message names the file or function to use instead. These rules encode the layering above; the prose stays for judgment calls the linter cannot see.
+
+| Mistake | Check |
+|---------|--------|
+| Domain imports React, fetch, storage, a queue, another layer, or any package other than `immer` | `ddd/domain-purity` |
+| Import of `src/domain/<bc>/someFile` from outside that package | `ddd/domain-barrel` |
+| Application imports UI, infrastructure, `fetch`, or storage | `ddd/application-boundary` |
+| Infrastructure imports UI, or an application use case instead of a port | `ddd/infrastructure-boundary` |
+| A page section value-imports domain, a use case, or a repository, or calls `applyChange` | `ddd/section-viewmodel` |
+| A domain function named `applyOrderChange`, `updateOrder`, `mutateDraft`, and similar | `ddd/apply-change-name` |
+
 ## Reference demo behavior (order form)
 
 - Offline: `amount` hidden and `null`; qty changes must not write `amount`.

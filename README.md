@@ -41,7 +41,7 @@ pnpm create dddfe my-app
 ```bash
 pnpm test                          # create-dddfe unit tests
 pnpm --filter create-dddfe build   # compile CLI
-cd templates/demo && pnpm install && pnpm test && pnpm dev
+cd templates/demo && pnpm install && pnpm test && pnpm lint && pnpm dev
 ```
 
 ## Layout
