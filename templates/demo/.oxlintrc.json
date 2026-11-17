@@ -12,6 +12,9 @@
     "ddd/section-viewmodel": "error",
     "ddd/apply-change-name": "error",
     "ddd/base-component": "error",
-    "ddd/bem-classname": "error"
+    "ddd/bem-classname": "error",
+    "ddd/named-hook-callback": "error",
+    "ddd/no-clone-element": "error",
+    "ddd/no-imperative-handle": "error"
   }
 }

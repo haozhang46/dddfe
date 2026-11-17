@@ -13,7 +13,16 @@ Team-specific React rules complementing `vercel-react-best-practices`.
 - Presentation layout already matches §3: page-only UI under `pages/<page>/components/`, shared under `presentation/components/`.
 - Field edits stay on the orchestrator write path (`changeField` → Domain `applyChange`). Do not put business convergence in React `onChange`.
 - Demo order hydrate uses orchestrator `phase` loading; prefer Suspense for true suspending data sources. A single `phase === 'loading'` check on the page entry is acceptable here.
-- Prefer named functions in every `useEffect` / `useMemo` / `useCallback` (and other hook callbacks).
+
+**Enforced by oxlint** (`templates/demo/oxlint/ddd-plugin.js`):
+
+| Skill rule | oxlint id |
+|------------|-----------|
+| §2 Named hook callbacks | `ddd/named-hook-callback` |
+| §9 No `useImperativeHandle` | `ddd/no-imperative-handle` |
+| §11 No `cloneElement` | `ddd/no-clone-element` |
+
+Judgment calls that stay prose-only: component cohesion (§1/§3), ErrorBoundary placement (§7), Suspense vs `phase` loading (§8), state-library choice (§6), virtual list thresholds (§13).
 
 ## 1. Component Design — Before Writing Code
 

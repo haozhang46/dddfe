@@ -70,6 +70,9 @@ Domain → Application → Infrastructure
 | Infrastructure stays off UI / use cases | oxlint `ddd/infrastructure-boundary` | ❌ Infrastructure imports React or a use case |
 | Section uses ViewModel, not Domain/use case | oxlint `ddd/section-viewmodel` | ❌ Section calls `applyChange` directly |
 | JSX className follows BEM | oxlint `ddd/bem-classname` | ❌ `className="saveBar"` / `save_bar` |
+| Named hook callbacks (`useEffect` / `useMemo` / …) | oxlint `ddd/named-hook-callback` | ❌ `useEffect(() => …)` |
+| No `cloneElement` in presentation | oxlint `ddd/no-clone-element` | ❌ `cloneElement(child, props)` |
+| No `useImperativeHandle` in presentation | oxlint `ddd/no-imperative-handle` | ❌ ref + imperative API |
 | CSS nested child uses full BEM name | `pnpm lint:css` / `check-css-bem` | ❌ `.page { &__hint {} }` → use `.page__hint` |
 | Layer boundaries (extra scan) | optional `pnpm run verify:arch` | secondary to oxlint |
 
@@ -206,6 +209,9 @@ The verification script will tell you:
 | `ddd/application-boundary` | Application depends on Ports, not Infrastructure / UI |
 | `ddd/infrastructure-boundary` | Infrastructure must not import UI or use cases |
 | `ddd/section-viewmodel` | Sections talk to ViewModel / orchestrator, not Domain / repos |
+| `ddd/named-hook-callback` | Use named function callbacks in `useEffect` / `useMemo` / `useCallback` / `useLayoutEffect` |
+| `ddd/no-clone-element` | Prefer render prop / registry instead of `cloneElement` |
+| `ddd/no-imperative-handle` | Return API methods from a hook instead of `useImperativeHandle` |
 | TypeScript / tests failed | Fix implementation (don't change tests to match broken code) |
 
 ### Self-Correcting Process

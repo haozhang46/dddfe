@@ -442,6 +442,142 @@ tester.run("base-component", rules["base-component"], {
   ],
 });
 
+tester.run("named-hook-callback", rules["named-hook-callback"], {
+  valid: [
+    {
+      name: "named useEffect",
+      filename: "src/presentation/pages/order/useOrderPage.ts",
+      code: `
+        import { useEffect } from 'react'
+        export function useX(o: { hydrate: () => void }) {
+          useEffect(function hydrateOrder() { void o.hydrate() }, [o])
+        }
+      `,
+    },
+    {
+      name: "named useMemo",
+      filename: "src/presentation/auth/AuthContext.tsx",
+      code: `
+        import { useMemo } from 'react'
+        export function useX(n: number) {
+          return useMemo(function double() { return n * 2 }, [n])
+        }
+      `,
+    },
+    {
+      name: "identifier callback",
+      filename: "src/presentation/pages/order/index.tsx",
+      code: `
+        import { useEffect } from 'react'
+        function sync() {}
+        export function useX() { useEffect(sync, []) }
+      `,
+    },
+    {
+      name: "outside presentation ignored",
+      filename: "src/infrastructure/mock/demo.ts",
+      code: `import { useEffect } from 'react'\nexport function useX() { useEffect(() => {}, []) }\n`,
+    },
+  ],
+  invalid: [
+    {
+      name: "arrow useEffect",
+      filename: "src/presentation/pages/order/index.tsx",
+      code: `import { useEffect } from 'react'\nexport function useX() { useEffect(() => {}, []) }\n`,
+      errors: [{ messageId: "named", data: { hook: "useEffect" } }],
+    },
+    {
+      name: "anonymous function useMemo",
+      filename: "src/presentation/pages/order/useOrderPage.ts",
+      code: `import { useMemo } from 'react'\nexport function useX() { return useMemo(function () { return 1 }, []) }\n`,
+      errors: [{ messageId: "named", data: { hook: "useMemo" } }],
+    },
+    {
+      name: "arrow useCallback",
+      filename: "src/presentation/pages/login/LoginPage.tsx",
+      code: `import { useCallback } from 'react'\nexport function useX() { return useCallback(() => 1, []) }\n`,
+      errors: [{ messageId: "named", data: { hook: "useCallback" } }],
+    },
+  ],
+});
+
+tester.run("no-clone-element", rules["no-clone-element"], {
+  valid: [
+    {
+      name: "render prop ok",
+      filename: "src/presentation/components/FormField.tsx",
+      code: `
+        export function FormField({ render }: { render: () => unknown }) {
+          return render()
+        }
+      `,
+    },
+    {
+      name: "outside presentation ignored",
+      filename: "src/infrastructure/mock/demo.ts",
+      code: `import { cloneElement } from 'react'\nexport const x = cloneElement\n`,
+    },
+  ],
+  invalid: [
+    {
+      name: "cloneElement call",
+      filename: "src/presentation/components/FormField.tsx",
+      code: `
+        import { cloneElement } from 'react'
+        export function wrap(child: Parameters<typeof cloneElement>[0]) {
+          return cloneElement(child, { id: 'x' })
+        }
+      `,
+      errors: [{ messageId: "clone" }],
+    },
+    {
+      name: "React.cloneElement",
+      filename: "src/presentation/pages/order/index.tsx",
+      code: `
+        import React from 'react'
+        export function wrap(child: React.ReactElement) {
+          return React.cloneElement(child, { id: 'x' })
+        }
+      `,
+      errors: [{ messageId: "clone" }],
+    },
+  ],
+});
+
+tester.run("no-imperative-handle", rules["no-imperative-handle"], {
+  valid: [
+    {
+      name: "hook API object ok",
+      filename: "src/presentation/pages/order/useTable.ts",
+      code: `
+        export function useTable() {
+          return { reset() {}, refresh() {} }
+        }
+      `,
+    },
+    {
+      name: "outside presentation ignored",
+      filename: "src/infrastructure/mock/demo.ts",
+      code: `import { useImperativeHandle } from 'react'\nexport const x = useImperativeHandle\n`,
+    },
+  ],
+  invalid: [
+    {
+      name: "useImperativeHandle call",
+      filename: "src/presentation/components/Table.tsx",
+      code: `
+        import { useImperativeHandle, useRef } from 'react'
+        export function Table() {
+          const ref = useRef(null)
+          useImperativeHandle(ref, function api() { return { reset() {} } })
+          return null
+        }
+      `,
+      errors: [{ messageId: "handle" }, { messageId: "handle" }],
+    },
+  ],
+});
+
 tester.run("bem-classname", rules["bem-classname"], {
   valid: [
     {

@@ -147,6 +147,9 @@ src/presentation/
 | A native control or third-party widget that duplicates a file in `components/base/`             | `ddd/base-component`          |
 | JSX `className` not BEM (`block`, `block__el`, `block--mod`, kebab-case)                        | `ddd/bem-classname`           |
 | CSS nesting uses `&__` / `&--` instead of the full child class name                             | `check-css-bem`               |
+| Anonymous / arrow callback in `useEffect` / `useLayoutEffect` / `useMemo` / `useCallback`       | `ddd/named-hook-callback`     |
+| `cloneElement` / `React.cloneElement` in presentation                                           | `ddd/no-clone-element`        |
+| `useImperativeHandle` in presentation (use a hook-returned API object instead)                  | `ddd/no-imperative-handle`    |
 
 ### CSS nesting BEM
 
