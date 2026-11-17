@@ -1,18 +1,38 @@
 {
   "name": "dddfe",
+  "version": "0.0.0",
   "private": true,
-  "type": "module",
+  "description": "DDD frontend scaffolding with AI agent support (Lauren Tan's approach)",
   "scripts": {
+    "test": "pnpm --filter create-dddfe test",
+    "verify": "./scripts/verify.sh",
+    "verify:arch": "tsx scripts/tools/architecture-scanner.ts",
+    "verify:bundle": "tsx scripts/tools/measure-bundle.ts",
     "create": "pnpm --filter create-dddfe exec create-dddfe",
     "lint": "pnpm --dir templates/demo lint",
-    "prepare": "git rev-parse --is-inside-work-tree >/dev/null 2>&1 && git config core.hooksPath .githooks || true",
-    "test": "pnpm --filter create-dddfe test"
+    "prepare": "git rev-parse --is-inside-work-tree >/dev/null 2>&1 && git config core.hooksPath .githooks || true"
   },
+  "keywords": [
+    "ddd",
+    "domain-driven-design",
+    "frontend",
+    "react",
+    "xstate",
+    "ai-agent",
+    "lauren-tan",
+    "verification"
+  ],
+  "author": "",
+  "license": "MIT",
   "devDependencies": {
-    "create-dddfe": "workspace:*"
+    "@playwright/test": "^1.48.2",
+    "ts-morph": "^24.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3"
   },
   "engines": {
-    "node": ">=20"
-  },
-  "packageManager": "pnpm@11.4.0"
+    "node": ">=18.0.0",
+    "pnpm": ">=9.0.0"
+  }
 }
