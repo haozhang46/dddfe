@@ -6,7 +6,8 @@ Spec: `../docs/superpowers/specs/2026-10-09-order-form-ddd-demo-design.md`
 pnpm install --ignore-workspace   # demo has its own lockfile
 pnpm dev                          # UI
 pnpm test                         # unit tests
-pnpm lint                         # oxlint + oxlint/ddd-plugin.js
+pnpm lint                         # oxlint + ddd-plugin + CSS BEM nesting check
+pnpm lint:css                     # CSS: nested children must use full BEM names
 pnpm fmt                          # oxfmt (write)
 pnpm fmt:check                    # oxfmt --check
 ```

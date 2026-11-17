@@ -58,6 +58,7 @@ Domain → Application → Infrastructure
 | Infrastructure stays off UI / use cases | oxlint `ddd/infrastructure-boundary` | ❌ Infrastructure imports React or a use case |
 | Section uses ViewModel, not Domain/use case | oxlint `ddd/section-viewmodel` | ❌ Section calls `applyChange` directly |
 | JSX className follows BEM | oxlint `ddd/bem-classname` | ❌ `className="saveBar"` / `save_bar` |
+| CSS nested child uses full BEM name | `pnpm lint:css` / `check-css-bem` | ❌ `.page { &__hint {} }` → use `.page__hint` |
 | Layer boundaries (extra scan) | optional `pnpm run verify:arch` | secondary to oxlint |
 
 **Primary enforcement:**

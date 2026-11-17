@@ -133,6 +133,8 @@ src/presentation/
 
 `pnpm fmt` / `pnpm fmt:check` runs **oxfmt** (Oxc formatter, not Prettier). Config: `.oxfmtrc.json`. Fix with `pnpm fmt`, never hand-format around the tool.
 
+`pnpm lint` also runs `oxlint/check-css-bem.js` on `src/**/*.css`.
+
 | Mistake                                                                                         | Check                         |
 | ----------------------------------------------------------------------------------------------- | ----------------------------- |
 | Domain imports React, fetch, storage, a queue, another layer, or any package other than `immer` | `ddd/domain-purity`           |
@@ -143,6 +145,27 @@ src/presentation/
 | A domain function named `applyOrderChange`, `updateOrder`, `mutateDraft`, and similar           | `ddd/apply-change-name`       |
 | A native control or third-party widget that duplicates a file in `components/base/`             | `ddd/base-component`          |
 | JSX `className` not BEM (`block`, `block__el`, `block--mod`, kebab-case)                        | `ddd/bem-classname`           |
+| CSS nesting uses `&__` / `&--` instead of the full child class name                             | `check-css-bem`               |
+
+### CSS nesting BEM
+
+When nesting CSS, **write the child class in full**. Do not use `&__` / `&--` shorthand.
+
+```css
+/* ❌ */
+.page {
+  &__hint {
+    color: #666;
+  }
+}
+
+/* ✅ */
+.page {
+  .page__hint {
+    color: #666;
+  }
+}
+```
 
 ## Base components
 
