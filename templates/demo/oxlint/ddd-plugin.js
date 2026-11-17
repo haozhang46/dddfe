@@ -619,6 +619,67 @@ const baseComponent = {
   },
 };
 
+/**
+ * BEM class names: block, block__element, block--modifier,
+ * block__element--modifier. Multi-word parts use single hyphens.
+ * Multiple classes in one attribute are space-separated.
+ */
+const BEM_CLASS =
+  /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:__[a-z][a-z0-9]*(?:-[a-z0-9]+)*)?(?:--[a-z][a-z0-9]*(?:-[a-z0-9]+)*)?$/;
+
+function isBemClassName(name) {
+  return BEM_CLASS.test(name);
+}
+
+function reportBadBemClasses(context, node, value) {
+  if (typeof value !== "string") return;
+  const classes = value.trim().split(/\s+/).filter(Boolean);
+  for (const name of classes) {
+    if (isBemClassName(name)) continue;
+    context.report({
+      node,
+      messageId: "bem",
+      data: { name },
+    });
+  }
+}
+
+const bemClassname = {
+  meta: {
+    type: "problem",
+    docs: {
+      description:
+        "Require JSX className string literals to follow BEM (block__element--modifier).",
+    },
+    messages: {
+      bem: 'className "{{name}}" must follow BEM: block, block__element, block--modifier, or block__element--modifier (kebab-case parts only).',
+    },
+  },
+  create(context) {
+    const filename = filePath(context);
+    if (!srcRel(filename).startsWith("src/presentation/")) return {};
+
+    return {
+      JSXAttribute(node) {
+        if (node.name?.type !== "JSXIdentifier" || node.name.name !== "className") return;
+        const value = node.value;
+        if (!value) return;
+        if (value.type === "Literal" && typeof value.value === "string") {
+          reportBadBemClasses(context, value, value.value);
+          return;
+        }
+        if (
+          value.type === "JSXExpressionContainer" &&
+          value.expression?.type === "Literal" &&
+          typeof value.expression.value === "string"
+        ) {
+          reportBadBemClasses(context, value.expression, value.expression.value);
+        }
+      },
+    };
+  },
+};
+
 const plugin = {
   meta: { name: "ddd" },
   rules: {
@@ -629,6 +690,7 @@ const plugin = {
     "section-viewmodel": sectionViewModel,
     "apply-change-name": applyChangeName,
     "base-component": baseComponent,
+    "bem-classname": bemClassname,
   },
 };
 

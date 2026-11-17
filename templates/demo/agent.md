@@ -142,6 +142,7 @@ src/presentation/
 | A page section value-imports domain, a use case, or a repository, or calls `applyChange`        | `ddd/section-viewmodel`       |
 | A domain function named `applyOrderChange`, `updateOrder`, `mutateDraft`, and similar           | `ddd/apply-change-name`       |
 | A native control or third-party widget that duplicates a file in `components/base/`             | `ddd/base-component`          |
+| JSX `className` not BEM (`block`, `block__el`, `block--mod`, kebab-case)                        | `ddd/bem-classname`           |
 
 ## Base components
 

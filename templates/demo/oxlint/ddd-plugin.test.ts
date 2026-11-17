@@ -441,3 +441,59 @@ tester.run("base-component", rules["base-component"], {
     },
   ],
 });
+
+tester.run("bem-classname", rules["bem-classname"], {
+  valid: [
+    {
+      name: "block",
+      filename: "src/presentation/pages/order/index.tsx",
+      code: 'export const x = <div className="page" />\n',
+    },
+    {
+      name: "multi-word block",
+      filename: "src/presentation/pages/order/components/SaveBar.tsx",
+      code: 'export const x = <div className="save-bar" />\n',
+    },
+    {
+      name: "element and modifier",
+      filename: "src/presentation/pages/order/index.tsx",
+      code: 'export const x = <div className="page__hint page--loading" />\n',
+    },
+    {
+      name: "element with modifier",
+      filename: "src/presentation/pages/login/LoginPage.tsx",
+      code: 'export const x = <p className="form__error--critical" />\n',
+    },
+    {
+      name: "outside presentation is ignored",
+      filename: "src/infrastructure/mock/demo.tsx",
+      code: 'export const x = <div className="Not_BEM" />\n',
+    },
+  ],
+  invalid: [
+    {
+      name: "camelCase",
+      filename: "src/presentation/pages/order/index.tsx",
+      code: 'export const x = <div className="saveBar" />\n',
+      errors: [{ messageId: "bem" }],
+    },
+    {
+      name: "single underscore",
+      filename: "src/presentation/pages/order/index.tsx",
+      code: 'export const x = <div className="save_bar" />\n',
+      errors: [{ messageId: "bem" }],
+    },
+    {
+      name: "PascalCase",
+      filename: "src/presentation/pages/order/index.tsx",
+      code: 'export const x = <div className="SaveBar" />\n',
+      errors: [{ messageId: "bem" }],
+    },
+    {
+      name: "one bad among many",
+      filename: "src/presentation/pages/order/index.tsx",
+      code: 'export const x = <div className="page bad_Name" />\n',
+      errors: [{ messageId: "bem", data: { name: "bad_Name" } }],
+    },
+  ],
+});

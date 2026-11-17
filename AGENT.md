@@ -57,6 +57,7 @@ Domain → Application → Infrastructure
 | Application depends on Ports, not Infrastructure | oxlint `ddd/application-boundary` | ❌ Application imports Infrastructure / UI |
 | Infrastructure stays off UI / use cases | oxlint `ddd/infrastructure-boundary` | ❌ Infrastructure imports React or a use case |
 | Section uses ViewModel, not Domain/use case | oxlint `ddd/section-viewmodel` | ❌ Section calls `applyChange` directly |
+| JSX className follows BEM | oxlint `ddd/bem-classname` | ❌ `className="saveBar"` / `save_bar` |
 | Layer boundaries (extra scan) | optional `pnpm run verify:arch` | secondary to oxlint |
 
 **Primary enforcement:**

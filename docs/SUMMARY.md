@@ -79,6 +79,7 @@ templates/demo/.oxfmtrc.json         # oxfmt 配置
 - `ddd/infrastructure-boundary` — Infrastructure 不能导入 UI / use case
 - `ddd/section-viewmodel` — Section 不直连 Domain / use case
 - `ddd/apply-change-name` / `ddd/base-component` — 命名与 base 组件约定
+- `ddd/bem-classname` — presentation 层 JSX `className` 遵循 BEM
 
 **oxfmt**（`pnpm fmt` / `pnpm fmt:check`）：Oxc 格式化器，不是 Prettier。
 
