@@ -1,7 +1,7 @@
 import type { OrderRepository } from '../../application/ports/OrderRepository'
 import { createOrderDraft, type OrderDraft } from '../../domain/order'
 import { delay } from '../mock/delay'
-import { RequestQueue } from '../queue/RequestQueue'
+import { QueuePriority, type RequestQueue } from '../queue/RequestQueue'
 
 export function createMockOrderRepository(queue: RequestQueue): OrderRepository {
   let store: OrderDraft = createOrderDraft({
@@ -19,7 +19,7 @@ export function createMockOrderRepository(queue: RequestQueue): OrderRepository 
           }
           return { ...store }
         },
-        { key: `order:load:${orderId}`, signal },
+        { key: `order:load:${orderId}`, signal, priority: QueuePriority.userWaiting },
       )
     },
 
@@ -33,7 +33,7 @@ export function createMockOrderRepository(queue: RequestQueue): OrderRepository 
           store = { ...draft, version: expectedVersion + 1 }
           return { ...store }
         },
-        { key: `order:write:${draft.id}`, signal },
+        { key: `order:write:${draft.id}`, signal, priority: QueuePriority.background },
       )
     },
   }
