@@ -37,6 +37,14 @@ Key principle: **Make the easy thing the right thing.**
 
 ## Create a project
 
+Generated apps include the **agent scaffold** from the template:
+
+- `AGENT.md` + `agent.md`
+- `.cursor/skills/` (DDD workflow SOP)
+- `.githooks/` (oxlint + oxfmt on commit)
+- `docs/` (verification / SOP guides)
+- `scripts/verify.sh` + `pnpm lint` / `fmt` / `verify`
+
 **From this repo (copy + rename + install + git init):**
 
 ```bash
@@ -52,6 +60,7 @@ pnpm install
 pnpm --filter create-dddfe build
 pnpm exec create-dddfe ../my-app --template demo
 cd ../my-app && pnpm install && git init
+# prepare sets core.hooksPath=.githooks
 ```
 
 After publish (not done yet), the same entry will support:

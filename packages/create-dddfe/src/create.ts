@@ -1,5 +1,5 @@
 import { existsSync } from 'node:fs'
-import { access, cp, readFile, writeFile } from 'node:fs/promises'
+import { access, chmod, cp, readFile, writeFile } from 'node:fs/promises'
 import { constants } from 'node:fs'
 import { basename, join, resolve } from 'node:path'
 
@@ -82,6 +82,14 @@ export async function createProject(opts: CreateProjectOptions): Promise<string>
   const pkg = JSON.parse(pkgRaw) as Record<string, unknown>
   pkg.name = basename(dest)
   await writeFile(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`, 'utf8')
+
+  // Ensure hooks / verify are executable after copy (cp may drop +x)
+  for (const rel of ['.githooks/pre-commit', 'scripts/verify.sh']) {
+    const file = join(dest, rel)
+    if (existsSync(file)) {
+      await chmod(file, 0o755)
+    }
+  }
 
   return dest
 }
