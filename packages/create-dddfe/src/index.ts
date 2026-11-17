@@ -14,10 +14,12 @@ async function main() {
   })
 
   console.log(`Created ${dest}`)
+  console.log('Includes: AGENT.md, .cursor/skills, .githooks, docs, scripts/verify.sh')
   console.log('Next:')
   console.log(`  cd ${projectName}`)
-  console.log('  pnpm install')
   console.log('  git init')
+  console.log('  pnpm install   # prepare → core.hooksPath=.githooks')
+  console.log('  pnpm verify')
   console.log('Or from this repo: make create NAME=../your-app')
 }
 

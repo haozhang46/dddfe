@@ -1,16 +1,20 @@
-# Order Form DDD Demo
+# Order Form DDD Demo (create-dddfe template)
 
-Spec: `../docs/superpowers/specs/2026-10-09-order-form-ddd-demo-design.md`
+Scaffolded apps include this tree plus **AGENT.md**, `.cursor/skills/`, `.githooks/`, `docs/`, and `scripts/verify.sh`.
 
 ```bash
-pnpm install --ignore-workspace   # demo has its own lockfile
+pnpm install                      # also sets git hooksPath → .githooks (prepare)
 pnpm dev                          # UI
 pnpm test                         # unit tests
 pnpm lint                         # oxlint + ddd-plugin + CSS BEM nesting check
 pnpm lint:css                     # CSS: nested children must use full BEM names
 pnpm fmt                          # oxfmt (write)
 pnpm fmt:check                    # oxfmt --check
+pnpm verify                       # lint → fmt:check → tsc → test → build
 ```
+
+Agent entry: [`AGENT.md`](./AGENT.md) → [`.cursor/skills/ddd-development-workflow.md`](./.cursor/skills/ddd-development-workflow.md)  
+Layer / BEM rules: [`agent.md`](./agent.md)
 
 试玩：
 
