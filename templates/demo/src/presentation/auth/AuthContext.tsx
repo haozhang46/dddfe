@@ -19,18 +19,20 @@ export function AuthProvider({ children, deps }: { children: ReactNode; deps: Au
   const status: AuthStatus = session ? "authed" : "anon";
 
   const value = useMemo<AuthContextValue>(
-    () => ({
-      session,
-      status,
-      async login(username: string) {
-        const next = await deps.login(username);
-        setSession(next);
-      },
-      logout() {
-        deps.logout();
-        setSession(null);
-      },
-    }),
+    function buildAuthValue() {
+      return {
+        session,
+        status,
+        async login(username: string) {
+          const next = await deps.login(username);
+          setSession(next);
+        },
+        logout() {
+          deps.logout();
+          setSession(null);
+        },
+      };
+    },
     [deps, session, status],
   );
 

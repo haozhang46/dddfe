@@ -273,6 +273,8 @@ type OrderEvent =
 
 **Principle**: Follow dependency direction (Domain ← Application ← Infrastructure, Presentation).
 
+**React UI conventions** (named hook callbacks, ErrorBoundary per section, page vs global components): follow [react-fe-skill](./react-fe-skill/SKILL.md) when editing `presentation/`.
+
 ---
 
 ## Step 5: Run Verification

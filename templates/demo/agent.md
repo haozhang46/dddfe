@@ -95,6 +95,7 @@ src/presentation/
 - `buildViewModel` projects Domain draft + orchestrator meta (`phase`, `dirty`, options, errors).
 - Keep React components free of business convergence (no `if (payType === 'offline') setAmount(null)` in `onChange`).
 - Put reusable UI in `presentation/components/`; keep page-specific UI under `pages/<page>/components/`.
+- React UI conventions (named hook callbacks, ErrorBoundary per section, hook vs util, no `forwardRef`/`cloneElement` for custom APIs): see monorepo [`.cursor/skills/react-fe-skill/SKILL.md`](../../.cursor/skills/react-fe-skill/SKILL.md).
 
 ## Auth + permissions
 

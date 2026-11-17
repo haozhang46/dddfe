@@ -21,6 +21,18 @@ It contains the complete 7-step SOP:
 
 **Do NOT skip this.** The skill guides you through every scenario, including error recovery.
 
+### Presentation / React UI
+
+When the change touches React components or hooks under `presentation/` (or template UI):
+
+👉 **[Read React Frontend Conventions](./.cursor/skills/react-fe-skill/SKILL.md)** 👈
+
+- Write a short component breakdown before coding (§1)
+- Named functions inside hooks — no anonymous `useEffect(() => …)` (§2)
+- Keep page-only UI colocated; promote to `presentation/components/` only when shared (§3)
+- Wrap logical page sections in `ErrorBoundary`; prefer Suspense for suspending data (§7–8)
+- Still obey DDD write path: UI → orchestrator → use case → Domain (never Domain rules in `onChange`)
+
 ---
 
 ## Quick Verification
