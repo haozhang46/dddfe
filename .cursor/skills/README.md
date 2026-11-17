@@ -1,23 +1,34 @@
 # Cursor Skills for DDD Frontend Development
 
-> **Purpose**: Guide AI agents through standardized workflows in this DDD codebase.
+> **Purpose**: Point agents at **pstack** as the project SOP, plus repo-local
+> verification skills.
 
 ## Available Skills
 
-### 🔄 [DDD Development Workflow](./ddd-development-workflow.md)
+### 🔄 [pstack-workflow](./pstack-workflow/SKILL.md) — project SOP
 
-**Use when**: Implementing features, fixing bugs, or refactoring code.
+**Use when**: Any feature, bug fix, refactor, or shipping task.
 
 **What it does**:
-- 7-step SOP from requirements → verification → commit
-- TDD workflow (tests before implementation)
-- Self-correcting error resolution
-- Layer analysis (Domain/Application/Infrastructure/Presentation)
+- Declares this repo's SOP = **pstack `/poteto-mode`** (no separate 7-step list)
+- Matches a poteto playbook and runs it
+- Adds dddfe gates: DDD layers, `./scripts/verify.sh`, **verify-dddfe**
 
 **Quick start**:
-```bash
-# Agent receives task → Opens this skill → Follows steps 1-7
+```text
+# Agent receives task → Read pstack-workflow → Read poteto-mode → Match playbook
 ```
+
+### 🧪 [verify-dddfe](./verify-dddfe/SKILL.md)
+
+**Use when**: Proving login, amount, address, or route-guard behavior in the
+demo UI, or when a UI change needs a runtime check.
+
+### 📐 [when-to-use-formal-verification.md](./when-to-use-formal-verification.md)
+
+**Use when**: Deciding whether state machines, concurrency, money, or security
+rules need formal / property-based checks (alongside pstack formal-verification
+skills).
 
 ---
 
@@ -27,22 +38,22 @@
 
 When you receive a task:
 
-1. **Read the appropriate skill** (usually `ddd-development-workflow.md`)
-2. **Follow the steps sequentially**
-3. **Do NOT skip steps** (especially verification)
+1. **Read [pstack-workflow](./pstack-workflow/SKILL.md)**
+2. **Read the poteto-mode skill** (pstack plugin) and match a playbook
+3. **Do not skip verification** (`./scripts/verify.sh`, verify-dddfe when UI)
 4. **Self-correct** when verification fails (don't ask human)
 
 ### For Humans
 
 Skills are:
-- ✅ Executable SOPs (not vague guidelines)
-- ✅ Decision trees (what to do in each situation)
-- ✅ Error recovery procedures (how to fix common failures)
-- ❌ NOT just documentation (they're runnable workflows)
+- ✅ Executable SOPs (pstack playbooks + project gates)
+- ✅ Decision trees (which playbook / which verify surface)
+- ✅ Error recovery (fix root cause → re-verify)
+- ❌ NOT a second workflow competing with pstack
 
 ---
 
-## Skill Principles (Lauren Tan's Approach)
+## Skill Principles (Lauren Tan / pstack)
 
 ### 1. Reference Tools, Don't Repeat Logic
 
@@ -50,15 +61,12 @@ Skills are:
 
 ✅ **Good**: "Run `./scripts/verify.sh` (starts with `pnpm lint` / oxlint + ddd-plugin)"
 
-**Why**: Tools are deterministic. Skills guide when/why to use them.
-
-### 2. Workflows, Not Instructions
+### 2. Playbooks, Not Ad-Hoc Steps
 
 ❌ **Bad**: "Make sure to test your code"
 
-✅ **Good**: "Step 5: Run `./scripts/verify.sh`. If it fails, go to Step 6 (Fix Errors)."
-
-**Why**: Clear flow, no ambiguity.
+✅ **Good**: "Match Feature / Bug fix playbook. Verify on the matching surface.
+If it fails, fix root cause and re-verify."
 
 ### 3. Self-Correcting Loops
 
@@ -66,96 +74,51 @@ Skills are:
 
 ✅ **Good**: "If tests fail, read error → understand → fix code → re-verify"
 
-**Why**: Agent autonomy. Human only needed for requirements clarification.
-
 ---
 
 ## Adding New Skills
-
-### When to Add
 
 Add a skill when:
 - You find yourself repeatedly explaining the same workflow to agents
 - A process has >3 steps
 - Errors are common and need standardized recovery
 
-### Template Structure
-
-```markdown
-# Skill Name
-
-> **When to use**: [Trigger condition]
-
-## Overview
-[Visual workflow diagram]
-
-## Step-by-Step
-### Step 1: [Name]
-[What to do]
-[Example]
-[Common errors]
-
-### Step 2: [Name]
-...
-
-## Success Criteria
-[How to know you're done]
-
-## Quick Reference
-[Cheat sheet]
-```
+Prefer extending **pstack** (or a thin project overlay like `pstack-workflow`)
+over inventing a parallel SOP.
 
 ### File Naming
 
-- `<action>-<object>-<context>.md`
-- Examples:
-  - `ddd-development-workflow.md`
-  - `debug-xstate-machine.md`
-  - `add-new-repository.md`
-
----
-
-## Skill Maintenance
-
-### Update When
-
-- Agent repeatedly makes the same mistake → Add to "Common Mistakes"
-- Verification catches new pattern → Add to checklist
-- Workflow changes → Update steps
-
-### Don't Update For
-
-- Individual cases (skills are patterns, not case-by-case fixes)
-- Personal preferences (skills enforce team standards)
+- Folder skills: `<name>/SKILL.md` (Cursor skill format)
+- Flat docs: `<topic>.md` when they are decision guides, not the front-door SOP
 
 ---
 
 ## Integration with Verification
 
-Skills + Verification = Closed Loop
-
 ```text
-Skill (WORKFLOW)          Verification (TRUTH)
-       ↓                          ↓
-  Follow steps      →      Run ./scripts/verify.sh
-       ↓                          ↓
-  Implementation           All checks pass?
-       ↓                          ↓
+pstack playbook (WORKFLOW)     Verification (TRUTH)
+       ↓                              ↓
+  Match + execute      →      ./scripts/verify.sh
+       ↓                              ↓
+  Implementation              All checks pass?
+       ↓                              ↓
        ← ← ← ← ← ← ← ← ← ←  No: Fix & retry
                                   ↓
-                             Yes: Commit
+                             Yes: Commit / PR
 ```
 
-**Key**: Verification is objective truth. Skills teach how to satisfy it.
+UI paths also use **verify-dddfe**. Verification is objective truth. Skills
+teach how to satisfy it.
 
 ---
 
 ## Quick Links
 
-- [DDD Development Workflow](./ddd-development-workflow.md) - Main SOP
-- [Main AGENT.md](../../AGENT.md) - High-level agent guidelines
-- [Verification Tools](../../docs/verification-tools-setup.md) - Tool documentation
+- [pstack-workflow](./pstack-workflow/SKILL.md) — Main SOP
+- [Main AGENT.md](../../AGENT.md) — Architecture + verify tables
+- [Verification Tools](../../docs/verification-tools-setup.md) — Tool documentation
+- [pstack](https://github.com/poteto/pstack) — Upstream skill library
 
 ---
 
-**Start every task by reading [ddd-development-workflow.md](./ddd-development-workflow.md).** 🚀
+**Start every task by reading [pstack-workflow](./pstack-workflow/SKILL.md).**

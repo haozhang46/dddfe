@@ -378,14 +378,14 @@ function selectFormalMethod(analysis: TaskAnalysis): FormalMethod {
 
 ---
 
-## 📋 集成到 SOP
+## 📋 集成到 SOP（pstack）
 
-### 更新 ddd-development-workflow.md
+本仓库 SOP 是 **pstack**（见 [pstack-workflow](./pstack-workflow/SKILL.md)）。形式化验证挂在 playbook 的验证面，而不是旧的「Step 3.5」。
 
-在 **Step 3: TDD - 写测试** 之后添加：
+### 在 Feature / Bug fix 验证阶段
 
 ```markdown
-### Step 3.5: 判断是否需要形式化验证（可选）
+### 可选：判断是否需要形式化验证
 
 运行判断：
 
@@ -396,13 +396,13 @@ function selectFormalMethod(analysis: TaskAnalysis): FormalMethod {
 □ 用户是否明确要求？
 
 如果任一项为 YES:
-  → 继续 Step 3.6
-  
+  → 按本文件实施（或使用 pstack /create-formal-verification-skill）
+
 如果全部为 NO:
-  → 跳过形式化验证，继续 Step 4（实现代码）
+  → 跳过；继续 ./scripts/verify.sh / verify-dddfe
 ```
 
-### Step 3.6: 实施形式化验证
+### 实施形式化验证
 
 ```markdown
 #### 场景 A: 状态机/并发（使用 TLA+）

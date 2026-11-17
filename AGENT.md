@@ -6,20 +6,18 @@
 
 ## 🚨 START HERE: Standard Operating Procedure
 
-**Every time you receive a task**, follow this workflow:
+**This repo's SOP is pstack.** There is no separate custom step list.
 
-👉 **[Read DDD Development Workflow](./.cursor/skills/ddd-development-workflow.md)** 👈
+👉 **[Read pstack-workflow](./.cursor/skills/pstack-workflow/SKILL.md)** 👈
 
-It contains the complete 7-step SOP:
-1. **Clarify requirements** (ASK questions before coding)
-2. **Analyze layer impact** (Domain? Application? Infrastructure? Presentation?)
-3. **Write tests FIRST** (TDD - tests define correct behavior)
-4. **Implement code** (follow layer dependencies)
-5. **Run verification** (`./scripts/verify.sh`)
-6. **Fix errors autonomously** (read → understand → fix → retry)
-7. **Commit & push** (only after verification passes)
+Then:
+1. **Read the poteto-mode skill** (pstack plugin) in full
+2. **Match a playbook** (Feature, Bug fix, Refactoring, …) and copy its steps to todos
+3. **Apply project gates** from pstack-workflow: DDD layers, `./scripts/verify.sh`, verify-dddfe for UI
+4. **Fix failures autonomously** (read → understand → fix code → re-verify)
+5. **Open / ship** via poteto Opening a PR / Babysit / Shipping when landing work
 
-**Do NOT skip this.** The skill guides you through every scenario, including error recovery.
+**Do NOT skip poteto-mode.** Do not invent a parallel 7-step workflow.
 
 ---
 
@@ -112,19 +110,19 @@ Test the actual running app with real browser interaction.
 
 ## Making Changes: The Verification Loop
 
-Lauren Tan's key insight: **Close the feedback loop**. Don't ask humans for verification when machines can do it.
+Lauren Tan / pstack: **Close the feedback loop**. Don't ask humans for verification when machines can do it.
 
 ### Workflow
 
 ```text
-1. Write failing test (TDD)
+1. Match poteto playbook (Feature / Bug fix / …)
    ↓
-2. Implement the feature
+2. Implement in verifiable units (failing check first when cheap / required)
    ↓
-3. Run ./scripts/verify.sh
+3. Run ./scripts/verify.sh (+ verify-dddfe when UI)
    ↓
-4a. ✅ Passes → Commit and push
-4b. ❌ Fails → Read error, revise code (go to step 2)
+4a. ✅ Passes → Commit / Opening a PR
+4b. ❌ Fails → Read error, fix root cause, re-verify
 ```
 
 **Never modify tests to match broken code.** Tests are the truth. Code must change to satisfy them.
@@ -258,7 +256,8 @@ The goal is to **prevent recurrence**, not just fix the instance.
 
 ### Project Docs
 
-- [DDD Development Workflow](./.cursor/skills/ddd-development-workflow.md) - **START HERE** for every task
+- [pstack-workflow](./.cursor/skills/pstack-workflow/SKILL.md) - **START HERE** (SOP = pstack)
+- [verify-dddfe](./.cursor/skills/verify-dddfe/SKILL.md) - Drive the demo UI for proof
 - [SUMMARY](./docs/SUMMARY.md) - Approach overview
 - [demo agent.md](./templates/demo/agent.md) - Layering + oxlint rule table
 - [Unit Tests in AI](./docs/unit-tests-for-ai-agents.md) - Why tests matter
@@ -267,7 +266,7 @@ The goal is to **prevent recurrence**, not just fix the instance.
 ### External
 
 - [All Code Is Slop (Except Mine)](https://www.youtube.com/watch?v=O_zcc6Xl12g) - Lauren Tan's talk
-- [pstack](https://github.com/poteto/pstack) - Lauren Tan's skill library
+- [pstack](https://github.com/poteto/pstack) - Lauren Tan's skill library (the SOP)
 
 ---
 
@@ -279,7 +278,7 @@ The goal is to **prevent recurrence**, not just fix the instance.
 This repository's structure, lints, and tests are designed so that the **simplest path is also the correct path**. If you find yourself fighting the tools, that's a signal that the approach may be wrong.
 
 When in doubt:
-1. Read [DDD Development Workflow](./.cursor/skills/ddd-development-workflow.md)
+1. Read [pstack-workflow](./.cursor/skills/pstack-workflow/SKILL.md) and poteto-mode
 2. Run `./scripts/verify.sh`
 3. Read the error
 4. Fix the violation (not the verifier)
@@ -293,20 +292,18 @@ The verifier is your ally, not your enemy.
 ```text
 📋 Receive task
    ↓
-📖 Read .cursor/skills/ddd-development-workflow.md
+📖 Read .cursor/skills/pstack-workflow/SKILL.md
    ↓
-❓ Ask clarifying questions (Step 1)
+📖 Read poteto-mode → match playbook → copy steps to todos
    ↓
-🏗️  Analyze layers (Step 2)
+🏗️  Name DDD layers / architect as poteto requires
    ↓
-✅ Write tests FIRST (Step 3)
+💻 Implement in verifiable units (delegate / arena when poteto says)
    ↓
-💻 Implement code (Step 4)
+🔍 ./scripts/verify.sh (+ verify-dddfe if UI)
    ↓
-🔍 Run ./scripts/verify.sh (Step 5)
-   ↓
-   ├─ ✅ Pass → Commit (Step 7)
-   └─ ❌ Fail → Fix & retry (Step 6)
+   ├─ ✅ Pass → Commit / Opening a PR
+   └─ ❌ Fail → Fix root cause & retry
 ```
 
-**Start every task by reading the skill. Follow it step by step. You'll succeed.** 🚀
+**Start every task with pstack-workflow. The playbook owns the steps.** 🚀

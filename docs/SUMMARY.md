@@ -9,11 +9,12 @@
 | 文档 | 用途 | 阅读时间 |
 |------|------|---------|
 | [本页 SUMMARY](./SUMMARY.md) | 实施总览 | 10 分钟 |
-| [AI 如何遵循 SOP](./how-ai-follows-sop.md) | Agent 执行流程 | 15 分钟 |
+| [pstack-workflow](../.cursor/skills/pstack-workflow/SKILL.md) | 项目 SOP（= pstack + 门禁） | 5 分钟 |
+| [AI 如何遵循 SOP](./how-ai-follows-sop.md) | Agent 为何走 poteto playbook | 15 分钟 |
 | [验证工具实现指南](./verification-tools-setup.md) | oxlint、Playwright、DevTools | 20-30 分钟 |
 | [AI 场景下的单元测试价值](./unit-tests-for-ai-agents.md) | 深度分析、常见误区 | 15-20 分钟 |
 | [测试策略速查表](./testing-cheatsheet-ai-agents.md) | 快速决策、场景矩阵 | 5 分钟 |
-| [Agent 使用指南](../AGENT.md) | AI Agent 工作规范 | 10 分钟 |
+| [Agent 使用指南](../AGENT.md) | 架构表 + 指向 pstack SOP | 10 分钟 |
 
 ### 🛠️ 实用工具（已实现）
 
@@ -359,12 +360,14 @@ git commit -m "perf: reduce bundle size to 380KB"
 | 文档 | 链接 |
 |------|------|
 | 实施总结 | [SUMMARY.md](./SUMMARY.md) |
-| AI 遵循 SOP | [how-ai-follows-sop.md](./how-ai-follows-sop.md) |
+| AI 遵循 SOP（= pstack） | [how-ai-follows-sop.md](./how-ai-follows-sop.md) |
+| 项目 SOP skill | [../.cursor/skills/pstack-workflow/SKILL.md](../.cursor/skills/pstack-workflow/SKILL.md) |
 | 工具实现（oxlint） | [verification-tools-setup.md](./verification-tools-setup.md) |
 | 单元测试分析 | [unit-tests-for-ai-agents.md](./unit-tests-for-ai-agents.md) |
 | 测试速查表 | [testing-cheatsheet-ai-agents.md](./testing-cheatsheet-ai-agents.md) |
 | demo oxlint 规则 | [../templates/demo/agent.md](../templates/demo/agent.md) |
 | Agent 指南 | [../AGENT.md](../AGENT.md) |
+| pstack 上游 | https://github.com/poteto/pstack |
 
 ---
 

@@ -107,7 +107,8 @@ scripts/
 | Document | Purpose |
 |----------|---------|
 | [SUMMARY](./docs/SUMMARY.md) | Lauren Tan approach overview |
-| [How AI follows SOP](./docs/how-ai-follows-sop.md) | Agent SOP behavior |
+| [How AI follows SOP](./docs/how-ai-follows-sop.md) | Agent SOP = pstack |
+| [pstack-workflow](./.cursor/skills/pstack-workflow/SKILL.md) | Project SOP skill (poteto-mode + gates) |
 | [Verification Tools](./docs/verification-tools-setup.md) | Playwright, DevTools, oxlint |
 | [AGENT.md](./AGENT.md) | Agent guidelines (references tools, not prose) |
 | [demo agent.md](./templates/demo/agent.md) | Template layering + oxlint rule table |
