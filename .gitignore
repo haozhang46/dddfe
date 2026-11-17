@@ -4,6 +4,7 @@
 *.local
 .env
 .env.*
+!.env.example
 .idea/
 .vscode/
 *.tsbuildinfo

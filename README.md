@@ -37,21 +37,33 @@ Key principle: **Make the easy thing the right thing.**
 
 ## Create a project
 
-**From this repo (copy + rename + install + git init):**
+Generated apps include the **agent scaffold** from the template:
+
+- `AGENT.md` + `agent.md`
+- `.cursor/skills/` (DDD workflow SOP)
+- `.cursor/environment.json` (Cloud Agent `install` / `start`)
+- `.cursor/install.sh` + `.cursor/start.sh` (env bootstrap)
+- `.env.example` → `.env` on create/install (`.env` gitignored)
+- `.gitignore` (includes `.env` / `.env.*`, keeps `.env.example`)
+- `.githooks/` (oxlint + oxfmt on commit)
+- `docs/` (verification / SOP guides)
+- `scripts/verify.sh` + `pnpm lint` / `fmt` / `verify`
+
+**From this repo (create script → copy + git init + install):**
 
 ```bash
-pnpm install
-make create NAME=../my-app
-# optional: TEMPLATE=demo (default)
+bash .cursor/install.sh
+./scripts/create-app.sh ../my-app
+# or: make create NAME=../my-app
 ```
 
 **CLI only (copy + rename `package.json` name):**
 
 ```bash
-pnpm install
+bash .cursor/install.sh
 pnpm --filter create-dddfe build
 pnpm exec create-dddfe ../my-app --template demo
-cd ../my-app && pnpm install && git init
+cd ../my-app && git init && bash .cursor/install.sh
 ```
 
 After publish (not done yet), the same entry will support:
@@ -64,16 +76,18 @@ pnpm create dddfe my-app
 ## Develop
 
 ```bash
-pnpm install                       # also points git hooks at .githooks
+bash .cursor/install.sh            # workspace + templates/demo + optional verify skill
 pnpm lint                          # oxlint in templates/demo, including the ddd plugin
 pnpm fmt:check                     # oxfmt --check in templates/demo
 pnpm fmt                           # oxfmt (write)
 pnpm test                          # create-dddfe unit tests
 pnpm --filter create-dddfe build   # compile CLI
-cd templates/demo && pnpm install --ignore-workspace && pnpm test && pnpm dev
+bash .cursor/start.sh              # demo Vite on :5173 (or: pnpm --dir templates/demo dev)
 ```
 
-`pnpm install` at the repo root sets `core.hooksPath` to `.githooks`. The pre-commit hook runs `pnpm lint` (oxlint) and `pnpm fmt:check` (oxfmt).
+`bash .cursor/install.sh` (or root `pnpm install`) sets `core.hooksPath` to `.githooks`. The pre-commit hook runs `pnpm lint` (oxlint) and `pnpm fmt:check` (oxfmt).
+
+Cloud Agent env fields: see [docs/environment-setup.md](./docs/environment-setup.md).
 
 ## Layout
 
@@ -109,6 +123,7 @@ scripts/
 | [SUMMARY](./docs/SUMMARY.md) | Lauren Tan approach overview |
 | [How AI follows SOP](./docs/how-ai-follows-sop.md) | Agent SOP behavior |
 | [Verification Tools](./docs/verification-tools-setup.md) | Playwright, DevTools, oxlint |
+| [Environment setup](./docs/environment-setup.md) | Cloud Agent install/start scripts + templates |
 | [AGENT.md](./AGENT.md) | Agent guidelines (references tools, not prose) |
 | [demo agent.md](./templates/demo/agent.md) | Template layering + oxlint rule table |
 | [Frontend DDD](./frontend-ddd-xstate-request-queue.md) | Architecture deep-dive (Chinese) |

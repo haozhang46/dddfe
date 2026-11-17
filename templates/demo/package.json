@@ -10,9 +10,11 @@
     "lint:css": "node oxlint/check-css-bem.js",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
+    "verify": "./scripts/verify.sh",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "prepare": "git rev-parse --is-inside-work-tree >/dev/null 2>&1 && git config core.hooksPath .githooks || true"
   },
   "dependencies": {
     "immer": "^11.1.21",

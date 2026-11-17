@@ -1,5 +1,5 @@
 import { existsSync } from 'node:fs'
-import { access, cp, readFile, writeFile } from 'node:fs/promises'
+import { access, chmod, cp, readFile, writeFile } from 'node:fs/promises'
 import { constants } from 'node:fs'
 import { basename, join, resolve } from 'node:path'
 
@@ -15,10 +15,25 @@ export type CreateProjectOptions = {
   templatesRoot: string
 }
 
-const EXCLUDED_NAMES = new Set(['node_modules', 'dist', '.git', '.DS_Store'])
+const EXCLUDED_NAMES = new Set(['node_modules', 'dist', '.git', '.DS_Store', '.env'])
 
 function shouldExclude(name: string): boolean {
-  return EXCLUDED_NAMES.has(name) || name.endsWith('.tsbuildinfo')
+  // Never copy local secrets; .env.example is kept and used to seed .env
+  return (
+    EXCLUDED_NAMES.has(name) ||
+    name.endsWith('.tsbuildinfo') ||
+    (name.startsWith('.env.') && name !== '.env.example')
+  )
+}
+
+/** Create `.env` from `.env.example` when missing (idempotent). */
+export async function ensureDotEnv(projectRoot: string): Promise<boolean> {
+  const envPath = join(projectRoot, '.env')
+  if (existsSync(envPath)) return false
+  const examplePath = join(projectRoot, '.env.example')
+  if (!existsSync(examplePath)) return false
+  await writeFile(envPath, await readFile(examplePath, 'utf8'), 'utf8')
+  return true
 }
 
 export function parseArgs(argv: string[]): ParsedArgs {
@@ -82,6 +97,21 @@ export async function createProject(opts: CreateProjectOptions): Promise<string>
   const pkg = JSON.parse(pkgRaw) as Record<string, unknown>
   pkg.name = basename(dest)
   await writeFile(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`, 'utf8')
+
+  // Ensure hooks / verify / env scripts are executable after copy (cp may drop +x)
+  for (const rel of [
+    '.githooks/pre-commit',
+    'scripts/verify.sh',
+    '.cursor/install.sh',
+    '.cursor/start.sh',
+  ]) {
+    const file = join(dest, rel)
+    if (existsSync(file)) {
+      await chmod(file, 0o755)
+    }
+  }
+
+  await ensureDotEnv(dest)
 
   return dest
 }

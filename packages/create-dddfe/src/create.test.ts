@@ -4,12 +4,17 @@ import {
   mkdtempSync,
   readFileSync,
   rmSync,
+  statSync,
   writeFileSync,
 } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { afterEach, describe, expect, it } from 'vitest'
-import { createProject, parseArgs } from './create.js'
+import { createProject, ensureDotEnv, parseArgs } from './create.js'
+
+const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+const realTemplatesRoot = resolve(packageRoot, '..', '..', 'templates')
 
 const dirs: string[] = []
 afterEach(() => {
@@ -78,5 +83,68 @@ describe('createProject', () => {
     expect(existsSync(join(dest, 'dist'))).toBe(false)
     const pkg = JSON.parse(readFileSync(join(dest, 'package.json'), 'utf8'))
     expect(pkg.name).toBe('my-app')
+  })
+
+  it('copies agent scaffold (skills, githooks, docs, verify) from real demo template', async () => {
+    expect(existsSync(join(realTemplatesRoot, 'demo', 'package.json'))).toBe(true)
+    const cwd = mkdtempSync(join(tmpdir(), 'dddfe-cwd-'))
+    dirs.push(cwd)
+    const dest = await createProject({
+      projectName: 'scaffold-app',
+      template: 'demo',
+      cwd,
+      templatesRoot: realTemplatesRoot,
+    })
+
+    const mustExist = [
+      'AGENT.md',
+      'agent.md',
+      '.cursor/skills/ddd-development-workflow.md',
+      '.cursor/skills/when-to-use-formal-verification.md',
+      '.cursor/install.sh',
+      '.cursor/start.sh',
+      '.cursor/environment.json',
+      '.githooks/pre-commit',
+      'scripts/verify.sh',
+      'docs/SUMMARY.md',
+      'oxlint/ddd-plugin.js',
+      'oxlint/check-css-bem.js',
+      '.oxlintrc.json',
+      '.oxfmtrc.json',
+      '.gitignore',
+      '.env.example',
+      '.env',
+    ]
+    for (const rel of mustExist) {
+      expect(existsSync(join(dest, rel)), rel).toBe(true)
+    }
+
+    const gitignore = readFileSync(join(dest, '.gitignore'), 'utf8')
+    expect(gitignore).toMatch(/^\.env$/m)
+    expect(gitignore).toMatch(/!\.env\.example/)
+
+    const pkg = JSON.parse(readFileSync(join(dest, 'package.json'), 'utf8')) as {
+      name: string
+      scripts: Record<string, string>
+    }
+    expect(pkg.name).toBe('scaffold-app')
+    expect(pkg.scripts.lint).toMatch(/oxlint/)
+    expect(pkg.scripts['fmt:check']).toMatch(/oxfmt/)
+    expect(pkg.scripts.verify).toBe('./scripts/verify.sh')
+    expect(pkg.scripts.prepare).toMatch(/core\.hooksPath/)
+
+    expect(statSync(join(dest, '.githooks/pre-commit')).mode & 0o111).toBeTruthy()
+    expect(statSync(join(dest, 'scripts/verify.sh')).mode & 0o111).toBeTruthy()
+    expect(statSync(join(dest, '.cursor/install.sh')).mode & 0o111).toBeTruthy()
+    expect(statSync(join(dest, '.cursor/start.sh')).mode & 0o111).toBeTruthy()
+  })
+
+  it('ensureDotEnv seeds .env once from .env.example', async () => {
+    const root = mkdtempSync(join(tmpdir(), 'dddfe-env-'))
+    dirs.push(root)
+    writeFileSync(join(root, '.env.example'), 'VITE_API=\n')
+    expect(await ensureDotEnv(root)).toBe(true)
+    expect(readFileSync(join(root, '.env'), 'utf8')).toBe('VITE_API=\n')
+    expect(await ensureDotEnv(root)).toBe(false)
   })
 })

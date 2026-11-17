@@ -14,11 +14,16 @@ async function main() {
   })
 
   console.log(`Created ${dest}`)
+  console.log(
+    'Includes: AGENT.md, .env (+ .env.example), .gitignore, .cursor/environment.json, .cursor/install.sh, .cursor/start.sh, .cursor/skills, .githooks, docs, scripts/verify.sh',
+  )
   console.log('Next:')
   console.log(`  cd ${projectName}`)
-  console.log('  pnpm install')
   console.log('  git init')
-  console.log('Or from this repo: make create NAME=../your-app')
+  console.log('  bash .cursor/install.sh   # or: pnpm install')
+  console.log('  pnpm verify')
+  console.log('  bash .cursor/start.sh     # optional Vite on :5173')
+  console.log('Or from this repo: ./scripts/create-app.sh ../your-app')
 }
 
 main().catch((err: unknown) => {
