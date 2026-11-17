@@ -16,7 +16,7 @@ Add more under `templates/<name>/` (standalone app root with its own `package.js
 
 This repository implements Lauren Tan's methodology (see `docs/` and `AGENT.md`) from SpaceX:
 
-- ✅ **Executable constraints** (oxlint + `ddd-plugin` enforce DDD architecture)
+- ✅ **Executable constraints** (oxlint + `ddd-plugin` enforce DDD; oxfmt formats)
 - ✅ **Verification loop** (Agents can run tests autonomously)
 - ✅ **Runtime verification** (Playwright E2E + DevTools integration)
 - ✅ **Hill climbing** (Bundle size tracking for performance optimization)
@@ -66,12 +66,14 @@ pnpm create dddfe my-app
 ```bash
 pnpm install                       # also points git hooks at .githooks
 pnpm lint                          # oxlint in templates/demo, including the ddd plugin
+pnpm fmt:check                     # oxfmt --check in templates/demo
+pnpm fmt                           # oxfmt (write)
 pnpm test                          # create-dddfe unit tests
 pnpm --filter create-dddfe build   # compile CLI
-cd templates/demo && pnpm install && pnpm test && pnpm dev
+cd templates/demo && pnpm install --ignore-workspace && pnpm test && pnpm dev
 ```
 
-`pnpm install` at the repo root sets `core.hooksPath` to `.githooks`. The pre-commit hook runs the root `pnpm lint` script and stops the commit when oxlint reports an error.
+`pnpm install` at the repo root sets `core.hooksPath` to `.githooks`. The pre-commit hook runs `pnpm lint` (oxlint) and `pnpm fmt:check` (oxfmt).
 
 ## Layout
 
@@ -90,6 +92,7 @@ docs/                           # maintainer specs / plans
   └── verification-tools-setup.md
 templates/demo/
   ├── .oxlintrc.json           # oxlint config
+  ├── .oxfmtrc.json            # oxfmt config
   └── oxlint/ddd-plugin.js     # DDD layer rules (primary enforcement)
 scripts/
   ├── verify.sh                # Main verification (starts with pnpm lint / oxlint)

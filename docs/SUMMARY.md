@@ -65,19 +65,22 @@ pnpm test:e2e                    # Playwright 自动化测试
 - 自动启动 dev server
 - 失败时自动截图/录屏
 
-#### 5. oxlint 架构规则（主强制）
+#### 5. oxlint + oxfmt（Oxc 工具链）
 ```text
-templates/demo/.oxlintrc.json    # oxlint 配置
+templates/demo/.oxlintrc.json        # oxlint 配置
 templates/demo/oxlint/ddd-plugin.js  # DDD 分层规则
+templates/demo/.oxfmtrc.json         # oxfmt 配置
 ```
 
-**规则覆盖**（`pnpm lint`）：
+**oxlint 规则**（`pnpm lint`）：
 - `ddd/domain-purity` — Domain 不能导入 UI / fetch / storage / 其他层
 - `ddd/domain-barrel` — Domain 包外只能走 barrel
 - `ddd/application-boundary` — Application 不能导入 UI / Infrastructure
 - `ddd/infrastructure-boundary` — Infrastructure 不能导入 UI / use case
 - `ddd/section-viewmodel` — Section 不直连 Domain / use case
 - `ddd/apply-change-name` / `ddd/base-component` — 命名与 base 组件约定
+
+**oxfmt**（`pnpm fmt` / `pnpm fmt:check`）：Oxc 格式化器，不是 Prettier。
 
 ---
 
@@ -90,6 +93,7 @@ templates/demo/oxlint/ddd-plugin.js  # DDD 分层规则
 │ 第 1 层：代码约束（最大层）                           │
 │ · TypeScript 类型系统                                │
 │ · oxlint + ddd-plugin（DDD 架构强制）                │
+│ · oxfmt（格式强制）                                  │
 │ · API 设计、目录结构                                 │
 │ 💡 让错误变得不可能                                  │
 └─────────────────────────────────────────────────────┘

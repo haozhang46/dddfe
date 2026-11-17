@@ -1,8 +1,8 @@
 type Props = {
-  qty: number
-  unitPrice: number
-  onChange: (qty: number) => void
-}
+  qty: number;
+  unitPrice: number;
+  onChange: (qty: number) => void;
+};
 
 export function QtySection({ qty, unitPrice, onChange }: Props) {
   return (
@@ -19,5 +19,5 @@ export function QtySection({ qty, unitPrice, onChange }: Props) {
       </label>
       <p className="muted">单价（分）：{unitPrice}（只读）</p>
     </fieldset>
-  )
+  );
 }

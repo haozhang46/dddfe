@@ -1,12 +1,12 @@
-export type Permission = string
+export type Permission = string;
 
 export type AuthSession = {
-  userId: string
-  displayName: string
-  roles: string[]
-  permissions: Permission[]
-  issuedAt: number
-}
+  userId: string;
+  displayName: string;
+  roles: string[];
+  permissions: Permission[];
+  issuedAt: number;
+};
 
 export function createAuthSession(partial: AuthSession): AuthSession {
   return {
@@ -15,29 +15,29 @@ export function createAuthSession(partial: AuthSession): AuthSession {
     roles: [...partial.roles],
     permissions: [...partial.permissions],
     issuedAt: partial.issuedAt,
-  }
+  };
 }
 
 function isStringArray(value: unknown): value is string[] {
-  return Array.isArray(value) && value.every((item) => typeof item === 'string')
+  return Array.isArray(value) && value.every((item) => typeof item === "string");
 }
 
 export function parseAuthJson(json: string): AuthSession | null {
-  let raw: unknown
+  let raw: unknown;
   try {
-    raw = JSON.parse(json)
+    raw = JSON.parse(json);
   } catch {
-    return null
+    return null;
   }
-  if (!raw || typeof raw !== 'object') return null
+  if (!raw || typeof raw !== "object") return null;
 
-  const obj = raw as Record<string, unknown>
-  if (typeof obj.userId !== 'string' || obj.userId.length === 0) return null
-  if (typeof obj.displayName !== 'string') return null
-  if (!isStringArray(obj.permissions)) return null
+  const obj = raw as Record<string, unknown>;
+  if (typeof obj.userId !== "string" || obj.userId.length === 0) return null;
+  if (typeof obj.displayName !== "string") return null;
+  if (!isStringArray(obj.permissions)) return null;
 
-  const roles = isStringArray(obj.roles) ? obj.roles : []
-  const issuedAt = typeof obj.issuedAt === 'number' ? obj.issuedAt : 0
+  const roles = isStringArray(obj.roles) ? obj.roles : [];
+  const issuedAt = typeof obj.issuedAt === "number" ? obj.issuedAt : 0;
 
   return createAuthSession({
     userId: obj.userId,
@@ -45,5 +45,5 @@ export function parseAuthJson(json: string): AuthSession | null {
     roles,
     permissions: obj.permissions,
     issuedAt,
-  })
+  });
 }

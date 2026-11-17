@@ -15,8 +15,8 @@ NC='\033[0m'
 
 FAILED=0
 
-if [ ! -f "$DEMO/node_modules/oxlint/package.json" ]; then
-  echo -e "${RED}❌ demo oxlint is missing.${NC}"
+if [ ! -f "$DEMO/node_modules/oxlint/package.json" ] || [ ! -f "$DEMO/node_modules/oxfmt/package.json" ]; then
+  echo -e "${RED}❌ demo oxlint/oxfmt is missing.${NC}"
   echo "   Run: cd templates/demo && pnpm install --ignore-workspace"
   exit 1
 fi
@@ -50,6 +50,15 @@ echo ""
 #        ddd/infrastructure-boundary, ddd/section-viewmodel,
 #        ddd/apply-change-name, ddd/base-component
 run_check "oxlint (DDD layer rules)" "pnpm lint"
+
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "✨ FORMAT (oxfmt)"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+# Formatter: oxfmt (Oxc), not Prettier / ESLint
+# Config: templates/demo/.oxfmtrc.json
+run_check "oxfmt --check" "pnpm fmt:check"
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "📘 TYPE CHECKING"

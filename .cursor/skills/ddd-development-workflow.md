@@ -285,9 +285,10 @@ type OrderEvent =
 
 This runs (see `scripts/verify.sh`):
 1. ✅ **oxlint** — DDD layer rules via `pnpm lint` / `ddd-plugin`
-2. ✅ TypeScript compilation
-3. ✅ Unit tests (demo + create-dddfe)
-4. ✅ Production build
+2. ✅ **oxfmt --check** — format via `pnpm fmt:check` (fix with `pnpm fmt`)
+3. ✅ TypeScript compilation
+4. ✅ Unit tests (demo + create-dddfe)
+5. ✅ Production build
 
 Optional (not in default verify): E2E, runtime inspector, bundle size, `verify:arch`.
 
@@ -512,6 +513,7 @@ You've completed the workflow correctly when:
 
 # Individual checks (for debugging)
 pnpm lint                      # oxlint + ddd-plugin (PRIMARY architecture)
+pnpm fmt:check                 # oxfmt (formatter; fix with pnpm fmt)
 pnpm --dir templates/demo test # Unit tests
 pnpm run verify:arch           # Optional ts-morph scan (secondary)
 pnpm run verify:runtime        # Optional Chrome DevTools

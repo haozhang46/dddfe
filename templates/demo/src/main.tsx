@@ -1,14 +1,14 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router'
-import App from './App.tsx'
-import { AppDepsProvider } from './presentation/AppDepsContext'
-import { createAppDeps } from './presentation/createAppDeps'
-import { AuthProvider } from './presentation/auth/AuthContext'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router";
+import App from "./App.tsx";
+import { AppDepsProvider } from "./presentation/AppDepsContext";
+import { createAppDeps } from "./presentation/createAppDeps";
+import { AuthProvider } from "./presentation/auth/AuthContext";
 
-const appDeps = createAppDeps()
+const appDeps = createAppDeps();
 
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <AppDepsProvider deps={appDeps}>
@@ -18,4 +18,4 @@ createRoot(document.getElementById('root')!).render(
       </AppDepsProvider>
     </BrowserRouter>
   </StrictMode>,
-)
+);

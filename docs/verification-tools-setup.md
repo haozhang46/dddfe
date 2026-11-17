@@ -9,7 +9,8 @@
 │ 1. 静态检查 (编译时)                                          │
 │    · TypeScript (tsc)                                       │
 │    · oxlint + ddd-plugin (架构约束)                          │
-│    · ts-morph (AST 分析 + Codemod)                          │
+│    · oxfmt (格式化，--check / write)                         │
+│    · ts-morph (AST 分析 + Codemod，可选)                     │
 └─────────────────────────────────────────────────────────────┘
                             ↓
 ┌─────────────────────────────────────────────────────────────┐
@@ -1025,23 +1026,27 @@ set -euo pipefail
 pnpm lint
 # → templates/demo/.oxlintrc.json
 # → templates/demo/oxlint/ddd-plugin.js
-# rules: ddd/domain-purity, ddd/domain-barrel, ddd/application-boundary, ...
 
-# 2. 类型检查
+# 2. 格式化检查：oxfmt（不是 Prettier）
+pnpm fmt:check
+# → templates/demo/.oxfmtrc.json
+# 失败时：pnpm fmt
+
+# 3. 类型检查
 pnpm --dir templates/demo exec tsc -b
 
-# 3. 单元测试
+# 4. 单元测试
 pnpm --dir templates/demo test
 pnpm --filter create-dddfe test
 
-# 4. 构建
+# 5. 构建
 pnpm --dir templates/demo build
 ```
 
 可选增强（不在默认 verify 里）：
 - `pnpm run verify:arch` — ts-morph 二次扫描（**不能替代 oxlint**）
 - `pnpm run verify:runtime` / `verify:runtime:lighthouse` — Chrome DevTools + Lighthouse
-- `pnpm --dir templates/demo test:e2e` — Playwright（需先装依赖）
+- Playwright E2E — 需先装依赖
 
 ---
 
@@ -1053,6 +1058,8 @@ pnpm --dir templates/demo build
 {
   "scripts": {
     "lint": "pnpm --dir templates/demo lint",
+    "fmt": "pnpm --dir templates/demo fmt",
+    "fmt:check": "pnpm --dir templates/demo fmt:check",
     "verify": "./scripts/verify.sh",
     "verify:arch": "tsx scripts/tools/architecture-scanner.ts",
     "verify:bundle": "tsx scripts/tools/measure-bundle.ts",
@@ -1062,7 +1069,7 @@ pnpm --dir templates/demo build
 }
 ```
 
-demo 内：`"lint": "oxlint"`（见 `templates/demo/package.json`）。
+demo 内：`"lint": "oxlint"`，`"fmt": "oxfmt"`，`"fmt:check": "oxfmt --check"`。
 
 ### Agent 使用指南
 

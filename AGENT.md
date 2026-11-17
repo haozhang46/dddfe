@@ -59,10 +59,13 @@ Domain → Application → Infrastructure
 | Section uses ViewModel, not Domain/use case | oxlint `ddd/section-viewmodel` | ❌ Section calls `applyChange` directly |
 | Layer boundaries (extra scan) | optional `pnpm run verify:arch` | secondary to oxlint |
 
-**Primary enforcement:** `pnpm lint` → oxlint + `templates/demo/oxlint/ddd-plugin.js`  
-(Config: `templates/demo/.oxlintrc.json`. Pre-commit runs the same.)
+**Primary enforcement:**
+- `pnpm lint` → **oxlint** + `templates/demo/oxlint/ddd-plugin.js` (`.oxlintrc.json`)
+- `pnpm fmt:check` → **oxfmt** (`.oxfmtrc.json`); fix with `pnpm fmt`
 
-**You don't need to remember these rules.** oxlint will stop you if you violate them.
+Pre-commit runs both. Not ESLint / Prettier.
+
+**You don't need to remember these rules.** oxlint / oxfmt will stop you if you violate them.
 
 ---
 

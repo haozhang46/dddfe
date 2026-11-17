@@ -1,28 +1,21 @@
-import type { ReactNode } from 'react'
+import type { ReactNode } from "react";
 
 type Props = {
-  dirty: boolean
-  saving: boolean
-  version: number
-  lastSavedAt: number | null
-  onSave: () => void
-  submitButton: ReactNode
-}
+  dirty: boolean;
+  saving: boolean;
+  version: number;
+  lastSavedAt: number | null;
+  onSave: () => void;
+  submitButton: ReactNode;
+};
 
-export function SaveBar({
-  dirty,
-  saving,
-  version,
-  lastSavedAt,
-  onSave,
-  submitButton,
-}: Props) {
+export function SaveBar({ dirty, saving, version, lastSavedAt, onSave, submitButton }: Props) {
   return (
     <div className="save-bar">
       <span>
         version: <strong>{version}</strong>
-        {dirty ? ' · dirty' : ' · clean'}
-        {saving ? ' · saving…' : ''}
+        {dirty ? " · dirty" : " · clean"}
+        {saving ? " · saving…" : ""}
       </span>
       {lastSavedAt && (
         <span className="muted">上次保存 {new Date(lastSavedAt).toLocaleTimeString()}</span>
@@ -32,5 +25,5 @@ export function SaveBar({
       </button>
       {submitButton}
     </div>
-  )
+  );
 }

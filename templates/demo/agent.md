@@ -25,12 +25,12 @@ presentation  →  application  →  domain
 infrastructure implements application/ports
 ```
 
-| Layer | Owns | Must not |
-|-------|------|----------|
-| `src/domain/<bc>/` | Model + pure rules (`applyChange`, visibility, derived, …) | Import React, fetch, queue, orchestrator |
-| `src/application/` | Ports + use cases (timing, call Domain, call ports) | UI, concrete HTTP clients |
-| `src/infrastructure/` | Repos, queue, mocks, DTO mapping | Business convergence rules |
-| `src/presentation/` | Pages, page-local components, shared `components/` | Call Domain helpers directly from section `onChange` |
+| Layer                 | Owns                                                       | Must not                                             |
+| --------------------- | ---------------------------------------------------------- | ---------------------------------------------------- |
+| `src/domain/<bc>/`    | Model + pure rules (`applyChange`, visibility, derived, …) | Import React, fetch, queue, orchestrator             |
+| `src/application/`    | Ports + use cases (timing, call Domain, call ports)        | UI, concrete HTTP clients                            |
+| `src/infrastructure/` | Repos, queue, mocks, DTO mapping                           | Business convergence rules                           |
+| `src/presentation/`   | Pages, page-local components, shared `components/`         | Call Domain helpers directly from section `onChange` |
 
 **Single write path for field edits:** UI → `orchestrator.changeField` → use case `changeField` → Domain `applyChange` → (optional IO) → `dispatch` → `buildViewModel` → UI.
 
@@ -53,7 +53,7 @@ src/domain/<bc>/
 Example (`order`):
 
 ```ts
-import { applyChange, createOrderDraft, type OrderDraft } from '../domain/order'
+import { applyChange, createOrderDraft, type OrderDraft } from "../domain/order";
 ```
 
 Rules:
@@ -127,32 +127,34 @@ src/presentation/
 - Invent a different mutation entry name per BC (`applyPayChange`, `updateOrder`, …) without a strong reason.
 - Treat the orchestrator as the Domain — it is presentation/application state machinery.
 
-## Enforced by lint
+## Enforced by lint / format
 
-`pnpm lint` runs oxlint plus `oxlint/ddd-plugin.js`. When a check fails, the message names the file or function to use instead. These rules encode the layering above; the prose stays for judgment calls the linter cannot see.
+`pnpm lint` runs **oxlint** plus `oxlint/ddd-plugin.js`. When a check fails, the message names the file or function to use instead. These rules encode the layering above; the prose stays for judgment calls the linter cannot see.
 
-| Mistake | Check |
-|---------|--------|
-| Domain imports React, fetch, storage, a queue, another layer, or any package other than `immer` | `ddd/domain-purity` |
-| Import of `src/domain/<bc>/someFile` from outside that package | `ddd/domain-barrel` |
-| Application imports UI, infrastructure, `fetch`, or storage | `ddd/application-boundary` |
-| Infrastructure imports UI, or an application use case instead of a port | `ddd/infrastructure-boundary` |
-| A page section value-imports domain, a use case, or a repository, or calls `applyChange` | `ddd/section-viewmodel` |
-| A domain function named `applyOrderChange`, `updateOrder`, `mutateDraft`, and similar | `ddd/apply-change-name` |
-| A native control or third-party widget that duplicates a file in `components/base/` | `ddd/base-component` |
+`pnpm fmt` / `pnpm fmt:check` runs **oxfmt** (Oxc formatter, not Prettier). Config: `.oxfmtrc.json`. Fix with `pnpm fmt`, never hand-format around the tool.
+
+| Mistake                                                                                         | Check                         |
+| ----------------------------------------------------------------------------------------------- | ----------------------------- |
+| Domain imports React, fetch, storage, a queue, another layer, or any package other than `immer` | `ddd/domain-purity`           |
+| Import of `src/domain/<bc>/someFile` from outside that package                                  | `ddd/domain-barrel`           |
+| Application imports UI, infrastructure, `fetch`, or storage                                     | `ddd/application-boundary`    |
+| Infrastructure imports UI, or an application use case instead of a port                         | `ddd/infrastructure-boundary` |
+| A page section value-imports domain, a use case, or a repository, or calls `applyChange`        | `ddd/section-viewmodel`       |
+| A domain function named `applyOrderChange`, `updateOrder`, `mutateDraft`, and similar           | `ddd/apply-change-name`       |
+| A native control or third-party widget that duplicates a file in `components/base/`             | `ddd/base-component`          |
 
 ## Base components
 
 Put a shared widget at `src/presentation/components/base/<Name>.tsx` (or `<Name>/index.tsx`). `ddd/base-component` stays quiet until that file exists. The implementation inside `base/` may use the native element. Every other file under `src/` must use the base component. The error names that component.
 
-| When this file exists | Do not write this outside `base/` |
-|-----------------------|-------------------------------------|
-| `DatePicker.tsx` | `<input type="date">`, `datetime-local`, `month`, `week`, `time`; another `DatePicker` import; `react-datepicker`; `@mui/x-date-pickers` |
-| `Form.tsx` | `<form>`; another `Form` import; `formik` |
-| `Text.tsx` | `<p>`, `<span>`, `<h1>`–`<h6>`; another `Text` import |
-| `Input.tsx` | `<textarea>`; `<input>` of type text, email, password, search, tel, url, or with no type |
-| `Select.tsx` | `<select>` |
-| `Button.tsx` | `<button>` |
+| When this file exists | Do not write this outside `base/`                                                                                                        |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `DatePicker.tsx`      | `<input type="date">`, `datetime-local`, `month`, `week`, `time`; another `DatePicker` import; `react-datepicker`; `@mui/x-date-pickers` |
+| `Form.tsx`            | `<form>`; another `Form` import; `formik`                                                                                                |
+| `Text.tsx`            | `<p>`, `<span>`, `<h1>`–`<h6>`; another `Text` import                                                                                    |
+| `Input.tsx`           | `<textarea>`; `<input>` of type text, email, password, search, tel, url, or with no type                                                 |
+| `Select.tsx`          | `<select>`                                                                                                                               |
+| `Button.tsx`          | `<button>`                                                                                                                               |
 
 `<input type="radio">` and `<input type="number">` stay legal. They are not one of these widgets.
 
