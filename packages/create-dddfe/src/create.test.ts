@@ -101,6 +101,9 @@ describe('createProject', () => {
       'agent.md',
       '.cursor/skills/ddd-development-workflow.md',
       '.cursor/skills/when-to-use-formal-verification.md',
+      '.cursor/install.sh',
+      '.cursor/start.sh',
+      '.cursor/environment.template.json',
       '.githooks/pre-commit',
       'scripts/verify.sh',
       'docs/SUMMARY.md',
@@ -125,5 +128,7 @@ describe('createProject', () => {
 
     expect(statSync(join(dest, '.githooks/pre-commit')).mode & 0o111).toBeTruthy()
     expect(statSync(join(dest, 'scripts/verify.sh')).mode & 0o111).toBeTruthy()
+    expect(statSync(join(dest, '.cursor/install.sh')).mode & 0o111).toBeTruthy()
+    expect(statSync(join(dest, '.cursor/start.sh')).mode & 0o111).toBeTruthy()
   })
 })

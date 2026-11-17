@@ -23,6 +23,15 @@ It contains the complete 7-step SOP:
 
 ---
 
+## Environment bootstrap
+
+```bash
+bash .cursor/install.sh   # workspace + templates/demo deps
+bash .cursor/start.sh     # demo Vite on :5173 (optional)
+```
+
+See [docs/environment-setup.md](./docs/environment-setup.md).
+
 ## Quick Verification
 
 Before committing any change:

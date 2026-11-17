@@ -83,8 +83,13 @@ export async function createProject(opts: CreateProjectOptions): Promise<string>
   pkg.name = basename(dest)
   await writeFile(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`, 'utf8')
 
-  // Ensure hooks / verify are executable after copy (cp may drop +x)
-  for (const rel of ['.githooks/pre-commit', 'scripts/verify.sh']) {
+  // Ensure hooks / verify / env scripts are executable after copy (cp may drop +x)
+  for (const rel of [
+    '.githooks/pre-commit',
+    'scripts/verify.sh',
+    '.cursor/install.sh',
+    '.cursor/start.sh',
+  ]) {
     const file = join(dest, rel)
     if (existsSync(file)) {
       await chmod(file, 0o755)

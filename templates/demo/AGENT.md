@@ -19,15 +19,19 @@ DDD layer rules and BEM: see [`agent.md`](./agent.md).
 ## Commands
 
 ```bash
-pnpm lint          # oxlint + ddd-plugin + CSS BEM nesting check
-pnpm fmt           # oxfmt (write)
-pnpm fmt:check     # oxfmt --check
-pnpm test          # vitest
-pnpm verify        # lint → fmt:check → tsc → test → build
-pnpm dev           # Vite
+bash .cursor/install.sh   # deps + githooks (or: pnpm install)
+bash .cursor/start.sh     # Vite on :5173 (Cloud Agent / optional)
+pnpm lint                 # oxlint + ddd-plugin + CSS BEM nesting check
+pnpm fmt                  # oxfmt (write)
+pnpm fmt:check            # oxfmt --check
+pnpm test                 # vitest
+pnpm verify               # lint → fmt:check → tsc → test → build
+pnpm dev                  # Vite (foreground)
 ```
 
-Pre-commit runs `pnpm lint` and `pnpm fmt:check` (via `.githooks`, set by `prepare` on install).
+Pre-commit runs `pnpm lint` and `pnpm fmt:check` (via `.githooks`, set by `prepare` / `.cursor/install.sh`).
+
+Cloud Agent: copy `.cursor/environment.template.json` into your environment `install` / `start` fields.
 
 ## Architecture (enforced)
 
