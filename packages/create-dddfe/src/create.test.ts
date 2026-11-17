@@ -103,7 +103,7 @@ describe('createProject', () => {
       '.cursor/skills/when-to-use-formal-verification.md',
       '.cursor/install.sh',
       '.cursor/start.sh',
-      '.cursor/environment.template.json',
+      '.cursor/environment.json',
       '.githooks/pre-commit',
       'scripts/verify.sh',
       'docs/SUMMARY.md',

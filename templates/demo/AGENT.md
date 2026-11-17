@@ -31,7 +31,7 @@ pnpm dev                  # Vite (foreground)
 
 Pre-commit runs `pnpm lint` and `pnpm fmt:check` (via `.githooks`, set by `prepare` / `.cursor/install.sh`).
 
-Cloud Agent: copy `.cursor/environment.template.json` into your environment `install` / `start` fields.
+Cloud Agent: `.cursor/environment.json` defines `install` / `start` (`bash .cursor/install.sh` / `start.sh`).
 
 ## Architecture (enforced)
 

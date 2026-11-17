@@ -9,10 +9,9 @@ test:
 	pnpm test
 
 # Prefer creating outside this repo, e.g. make create NAME=../my-app
-# Install runs `prepare` → git config core.hooksPath .githooks (lint + fmt:check).
-create: build-cli
+# Uses scripts/create-app.sh → create-dddfe + git init + .cursor/install.sh
+create:
 ifndef NAME
 	$(error NAME is required, e.g. make create NAME=../my-app)
 endif
-	pnpm exec create-dddfe $(NAME) --template $(TEMPLATE)
-	cd $(NAME) && git init && pnpm install
+	./scripts/create-app.sh $(NAME) $(TEMPLATE)

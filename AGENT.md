@@ -26,11 +26,12 @@ It contains the complete 7-step SOP:
 ## Environment bootstrap
 
 ```bash
-bash .cursor/install.sh   # workspace + templates/demo deps
-bash .cursor/start.sh     # demo Vite on :5173 (optional)
+bash .cursor/install.sh          # workspace + templates/demo deps
+bash .cursor/start.sh            # demo Vite on :5173 (optional)
+./scripts/create-app.sh ../app   # new project from template
 ```
 
-See [docs/environment-setup.md](./docs/environment-setup.md).
+Template: [`.cursor/environment.json`](./.cursor/environment.json). See [docs/environment-setup.md](./docs/environment-setup.md).
 
 ## Quick Verification
 

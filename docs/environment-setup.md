@@ -4,28 +4,43 @@
 
 | File | Role |
 |------|------|
+| [`.cursor/environment.json`](../.cursor/environment.json) | Cloud Agent template (`install` / `start`) |
 | [`.cursor/install.sh`](../.cursor/install.sh) | Dependencies: workspace + `templates/demo` + optional `verify-dddfe` skill |
 | [`.cursor/start.sh`](../.cursor/start.sh) | Boot demo Vite on `:5173` (tmux, re-runnable) |
+| [`scripts/create-app.sh`](../scripts/create-app.sh) | Create a new app from template + run its install |
 
-Cloud Agent `environment.json` fields (from workspace root; with `workDir` `/agent` use the `cd` guard):
+Committed `.cursor/environment.json`:
+
+```json
+{
+  "install": "bash .cursor/install.sh",
+  "start": "bash .cursor/start.sh"
+}
+```
+
+With Cloud Agent `workDir` `/agent`, dashboard `install` / `start` need a `cd` guard:
 
 ```text
-install:
 [ ! -d '/agent/repos/dddfe' ] || cd '/agent/repos/dddfe' || exit $?
 bash .cursor/install.sh
-
-start:
-[ ! -d '/agent/repos/dddfe' ] || cd '/agent/repos/dddfe' || exit $?
-bash .cursor/start.sh
 ```
 
 Local:
 
 ```bash
 bash .cursor/install.sh
-bash .cursor/start.sh          # optional; or pnpm --dir templates/demo dev
+bash .cursor/start.sh
 ./scripts/verify.sh
 ```
+
+## Create a project
+
+```bash
+./scripts/create-app.sh ../my-app
+# or: make create NAME=../my-app
+```
+
+`create-app.sh` / `make create` run `create-dddfe`, then `git init` + `bash .cursor/install.sh`.
 
 ## Generated apps (`create-dddfe`)
 
@@ -33,19 +48,18 @@ Copied from `templates/demo` into every new project:
 
 | File | Role |
 |------|------|
+| `.cursor/environment.json` | Cloud Agent `install` / `start` |
 | `.cursor/install.sh` | `pnpm install` + githooks |
 | `.cursor/start.sh` | Vite on `:5173` |
-| `.cursor/environment.template.json` | Suggested Cloud Agent install/start |
 | `.cursor/skills/` | Agent SOP |
 | `.githooks/` | pre-commit lint + fmt |
 | `scripts/verify.sh` | Full verify |
 | `AGENT.md` | Agent entry |
 
 ```bash
-make create NAME=../my-app
 cd ../my-app
-bash .cursor/install.sh
 pnpm verify
+bash .cursor/start.sh
 ```
 
 ## Lifecycle (Cursor Cloud Agents)

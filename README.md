@@ -41,28 +41,27 @@ Generated apps include the **agent scaffold** from the template:
 
 - `AGENT.md` + `agent.md`
 - `.cursor/skills/` (DDD workflow SOP)
-- `.cursor/install.sh` + `.cursor/start.sh` (Cloud Agent / local env init)
-- `.cursor/environment.template.json` (suggested `install` / `start`)
+- `.cursor/environment.json` (Cloud Agent `install` / `start`)
+- `.cursor/install.sh` + `.cursor/start.sh` (env bootstrap)
 - `.githooks/` (oxlint + oxfmt on commit)
 - `docs/` (verification / SOP guides)
 - `scripts/verify.sh` + `pnpm lint` / `fmt` / `verify`
 
-**From this repo (copy + rename + install + git init):**
+**From this repo (create script → copy + git init + install):**
 
 ```bash
-pnpm install
-make create NAME=../my-app
-# optional: TEMPLATE=demo (default)
+bash .cursor/install.sh
+./scripts/create-app.sh ../my-app
+# or: make create NAME=../my-app
 ```
 
 **CLI only (copy + rename `package.json` name):**
 
 ```bash
-pnpm install
+bash .cursor/install.sh
 pnpm --filter create-dddfe build
 pnpm exec create-dddfe ../my-app --template demo
-cd ../my-app && bash .cursor/install.sh && git init
-# prepare / install.sh set core.hooksPath=.githooks
+cd ../my-app && git init && bash .cursor/install.sh
 ```
 
 After publish (not done yet), the same entry will support:
