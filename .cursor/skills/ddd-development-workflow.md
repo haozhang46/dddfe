@@ -19,9 +19,9 @@
    ↓
 4. 实现代码
    ↓
-5. 运行验证（./scripts/verify.sh）
+5. 运行验证（./scripts/verify.sh → 先跑 `pnpm lint` / oxlint）
    ↓
-6. 修正错误（如果验证失败）
+6. 修正错误（如果验证失败；读 oxlint rule id，如 `ddd/domain-purity`）
    ↓
 7. Commit & Push
 ```
@@ -283,14 +283,13 @@ type OrderEvent =
 ./scripts/verify.sh
 ```
 
-This runs:
-1. ✅ Architecture check (Domain purity, layer boundaries)
+This runs (see `scripts/verify.sh`):
+1. ✅ **oxlint** — DDD layer rules via `pnpm lint` / `ddd-plugin`
 2. ✅ TypeScript compilation
-3. ✅ Lint rules
-4. ✅ Unit tests
-5. ✅ E2E tests
-6. ✅ Build
-7. ✅ Bundle size
+3. ✅ Unit tests (demo + create-dddfe)
+4. ✅ Production build
+
+Optional (not in default verify): E2E, runtime inspector, bundle size, `verify:arch`.
 
 ### Expected: ALL PASS
 
@@ -302,40 +301,33 @@ If ANY step fails, go to Step 6.
 
 ### Rule: Read Error, Understand, Fix CODE (NOT Tests)
 
-#### Example Error 1: Architecture Violation
+#### Example Error 1: oxlint DDD violation
 
 ```
-❌ Architecture check failed
-  templates/demo/src/domain/order/applyDiscount.ts:3
-  Domain layer must not import HTTP libraries
+❌ oxlint (DDD layer rules) failed
+  error: ddd/domain-purity
+  templates/demo/src/domain/order/applyDiscount.ts
 ```
 
 **Action**:
-1. Read error: "Domain importing HTTP library"
-2. Understand: I accidentally imported `axios`
-3. Fix: Remove `axios` import, use dependency inversion
+1. Read rule id: `ddd/domain-purity` (see `templates/demo/agent.md` table)
+2. Understand: Domain imported UI / fetch / storage / another layer
+3. Fix: move IO to Infrastructure; keep Domain pure
 
 ```typescript
-// ❌ BAD
+// ❌ BAD — Domain must not do HTTP
 import axios from 'axios';
 export async function applyDiscount(order: Order) {
   const discount = await axios.get('/api/discounts');
-  // ...
 }
 
-// ✅ GOOD
-// Domain: pure function
+// ✅ GOOD — Domain pure; Infrastructure implements Port
 export function applyDiscount(order: Order, discount: Money): Order {
-  // ...
-}
-
-// Infrastructure: HTTP call
-export class HttpDiscountService implements DiscountService {
-  async getDiscount(orderId: string): Promise<Money> {
-    return axios.get(`/api/discounts/${orderId}`);
-  }
+  // pure validation + transform
 }
 ```
+
+Primary lint command: `pnpm lint` (oxlint). Config: `.oxlintrc.json` + `oxlint/ddd-plugin.js`.
 
 #### Example Error 2: Unit Test Failure
 
@@ -492,7 +484,7 @@ You've completed the workflow correctly when:
 2. ✅ Layer analysis documented (you know which files to change)
 3. ✅ Tests written BEFORE implementation
 4. ✅ All unit tests pass
-5. ✅ `./scripts/verify.sh` passes (all 6 checks)
+5. ✅ `./scripts/verify.sh` passes (oxlint + tsc + tests + build)
 6. ✅ Code committed with descriptive message
 7. ✅ You did NOT need to ask human for help debugging errors
 
@@ -519,10 +511,11 @@ You've completed the workflow correctly when:
 ./scripts/verify.sh
 
 # Individual checks (for debugging)
-pnpm run verify:arch     # Architecture
-pnpm test               # Unit tests
-pnpm test:e2e           # E2E tests
-pnpm run verify:bundle  # Bundle size
+pnpm lint                      # oxlint + ddd-plugin (PRIMARY architecture)
+pnpm --dir templates/demo test # Unit tests
+pnpm run verify:arch           # Optional ts-morph scan (secondary)
+pnpm run verify:runtime        # Optional Chrome DevTools
+pnpm run verify:bundle         # Optional bundle size
 ```
 
 ---

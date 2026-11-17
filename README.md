@@ -14,9 +14,9 @@ Add more under `templates/<name>/` (standalone app root with its own `package.js
 
 ## 🤖 AI Agent Ready
 
-This repository implements [Lauren Tan's methodology](./docs/lauren-tan-ai-development-approach.md) from SpaceX:
+This repository implements Lauren Tan's methodology (see `docs/` and `AGENT.md`) from SpaceX:
 
-- ✅ **Executable constraints** (ESLint rules enforce DDD architecture)
+- ✅ **Executable constraints** (oxlint + `ddd-plugin` enforce DDD architecture)
 - ✅ **Verification loop** (Agents can run tests autonomously)
 - ✅ **Runtime verification** (Playwright E2E + DevTools integration)
 - ✅ **Hill climbing** (Bundle size tracking for performance optimization)
@@ -85,22 +85,27 @@ templates/demo                  # first init template
   ├── e2e/                     # Playwright E2E tests
   └── playwright.config.ts     # Browser automation config
 docs/                           # maintainer specs / plans
-  ├── lauren-tan-ai-development-approach.md  # Full methodology
-  ├── LAUREN_TAN_QUICKSTART.md               # 15-minute guide
-  └── verification-tools-setup.md            # Tool implementation guide
+  ├── SUMMARY.md               # Lauren Tan approach overview
+  ├── how-ai-follows-sop.md    # How agents follow the SOP
+  └── verification-tools-setup.md
+templates/demo/
+  ├── .oxlintrc.json           # oxlint config
+  └── oxlint/ddd-plugin.js     # DDD layer rules (primary enforcement)
 scripts/
-  ├── verify.sh                # Main verification script
-  └── tools/                   # Verification tools
-      ├── architecture-scanner.ts  # AST-based architecture checks
-      └── measure-bundle.ts        # Bundle size tracking
+  ├── verify.sh                # Main verification (starts with pnpm lint / oxlint)
+  └── tools/                   # Extra verification tools
+      ├── architecture-scanner.ts  # Optional AST scan (secondary to oxlint)
+      ├── measure-bundle.ts
+      └── runtime-inspector.ts
 ```
 
 ## Documentation
 
 | Document | Purpose |
 |----------|---------|
-| [Lauren Tan's Approach](./docs/lauren-tan-ai-development-approach.md) | Complete methodology from "All Code Is Slop (Except Mine)" |
-| [Quick Start](./docs/LAUREN_TAN_QUICKSTART.md) | Get started in 15 minutes |
-| [Verification Tools](./docs/verification-tools-setup.md) | Playwright, DevTools, ts-morph setup |
+| [SUMMARY](./docs/SUMMARY.md) | Lauren Tan approach overview |
+| [How AI follows SOP](./docs/how-ai-follows-sop.md) | Agent SOP behavior |
+| [Verification Tools](./docs/verification-tools-setup.md) | Playwright, DevTools, oxlint |
 | [AGENT.md](./AGENT.md) | Agent guidelines (references tools, not prose) |
+| [demo agent.md](./templates/demo/agent.md) | Template layering + oxlint rule table |
 | [Frontend DDD](./frontend-ddd-xstate-request-queue.md) | Architecture deep-dive (Chinese) |

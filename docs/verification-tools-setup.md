@@ -8,7 +8,7 @@
 ┌─────────────────────────────────────────────────────────────┐
 │ 1. 静态检查 (编译时)                                          │
 │    · TypeScript (tsc)                                       │
-│    · ESLint (架构约束)                                       │
+│    · oxlint + ddd-plugin (架构约束)                          │
 │    · ts-morph (AST 分析 + Codemod)                          │
 └─────────────────────────────────────────────────────────────┘
                             ↓
@@ -1013,42 +1013,35 @@ describe('applyChange properties', () => {
 
 ## 完整集成到 verify.sh
 
+仓库里的 `scripts/verify.sh` **以 oxlint 为主**（不是 ESLint，也不是先跑 ts-morph）：
+
 ```bash
 #!/bin/bash
-# 更新后的 scripts/verify.sh
+# scripts/verify.sh（摘要）
 
-set -e
+set -euo pipefail
 
-echo "🔍 Lauren Tan 验证流程"
-echo ""
-
-# 1. 架构扫描
-echo "━━━ 1/6 架构约束 (ts-morph) ━━━"
-pnpm exec tsx scripts/tools/architecture-scanner.ts || exit 1
+# 1. 架构约束（主强制）：oxlint + ddd-plugin
+pnpm lint
+# → templates/demo/.oxlintrc.json
+# → templates/demo/oxlint/ddd-plugin.js
+# rules: ddd/domain-purity, ddd/domain-barrel, ddd/application-boundary, ...
 
 # 2. 类型检查
-echo "━━━ 2/6 类型检查 (TypeScript) ━━━"
-cd templates/demo && npx tsc --noEmit || exit 1
+pnpm --dir templates/demo exec tsc -b
 
 # 3. 单元测试
-echo "━━━ 3/6 单元测试 (Vitest) ━━━"
-pnpm test || exit 1
+pnpm --dir templates/demo test
+pnpm --filter create-dddfe test
 
-# 4. E2E 测试
-echo "━━━ 4/6 E2E 测试 (Playwright) ━━━"
-pnpm exec playwright test || exit 1
-
-# 5. 应用验证（含 DevTools 上下文）
-echo "━━━ 5/6 应用验证 (Custom CLI) ━━━"
-pnpm exec tsx scripts/tools/app-verifier.ts order-flow || exit 1
-
-# 6. 性能度量
-echo "━━━ 6/6 性能度量 (Bundle + Lighthouse) ━━━"
-pnpm exec tsx scripts/tools/measure-bundle.ts || exit 1
-
-echo ""
-echo "✅ 所有验证通过！"
+# 4. 构建
+pnpm --dir templates/demo build
 ```
+
+可选增强（不在默认 verify 里）：
+- `pnpm run verify:arch` — ts-morph 二次扫描（**不能替代 oxlint**）
+- `pnpm run verify:runtime` / `verify:runtime:lighthouse` — Chrome DevTools + Lighthouse
+- `pnpm --dir templates/demo test:e2e` — Playwright（需先装依赖）
 
 ---
 
@@ -1059,16 +1052,17 @@ echo "✅ 所有验证通过！"
 ```json
 {
   "scripts": {
+    "lint": "pnpm --dir templates/demo lint",
     "verify": "./scripts/verify.sh",
     "verify:arch": "tsx scripts/tools/architecture-scanner.ts",
-    "verify:app": "tsx scripts/tools/app-verifier.ts",
     "verify:bundle": "tsx scripts/tools/measure-bundle.ts",
-    "test": "vitest",
-    "test:e2e": "playwright test",
-    "codemod:readonly": "tsx scripts/tools/codemod-add-readonly.ts"
+    "verify:runtime": "tsx scripts/tools/runtime-inspector.ts",
+    "verify:runtime:lighthouse": "tsx scripts/tools/runtime-inspector.ts --lighthouse"
   }
 }
 ```
+
+demo 内：`"lint": "oxlint"`（见 `templates/demo/package.json`）。
 
 ### Agent 使用指南
 

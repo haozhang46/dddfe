@@ -52,12 +52,17 @@ Domain → Application → Infrastructure
 
 | Rule | Enforced By | Violation Example |
 |------|-------------|-------------------|
-| Domain is pure (no HTTP, no UI) | ESLint + grep | ❌ `import { fetch } from 'node-fetch'` in domain/ |
-| Application depends on Ports, not Infrastructure | ESLint | ❌ `import HttpOrderRepository from 'infrastructure/...'` in application/ |
-| Immutable domain objects | TypeScript + tests | ❌ Mutable fields in domain entities |
-| Layer boundaries | Architecture tests | ❌ Cross-layer violations |
+| Domain is pure (no HTTP, no UI) | oxlint `ddd/domain-purity` | ❌ `import` React / fetch / storage in `domain/` |
+| Domain only via barrel outside package | oxlint `ddd/domain-barrel` | ❌ deep import into `domain/<bc>/file` |
+| Application depends on Ports, not Infrastructure | oxlint `ddd/application-boundary` | ❌ Application imports Infrastructure / UI |
+| Infrastructure stays off UI / use cases | oxlint `ddd/infrastructure-boundary` | ❌ Infrastructure imports React or a use case |
+| Section uses ViewModel, not Domain/use case | oxlint `ddd/section-viewmodel` | ❌ Section calls `applyChange` directly |
+| Layer boundaries (extra scan) | optional `pnpm run verify:arch` | secondary to oxlint |
 
-**You don't need to remember these rules.** The linter will stop you if you violate them.
+**Primary enforcement:** `pnpm lint` → oxlint + `templates/demo/oxlint/ddd-plugin.js`  
+(Config: `templates/demo/.oxlintrc.json`. Pre-commit runs the same.)
+
+**You don't need to remember these rules.** oxlint will stop you if you violate them.
 
 ---
 
@@ -179,11 +184,12 @@ The verification script will tell you:
 
 | Failure | Fix |
 |---------|-----|
-| "Domain layer purity" failed | Remove infrastructure imports from `src/domain/` |
-| "Domain has no fetch/axios" failed | Move HTTP calls to Infrastructure layer |
-| "Application uses Ports only" failed | Import from `application/ports/`, not `infrastructure/` |
-| "TypeScript compilation" failed | Fix type errors (run `tsc --noEmit` to see details) |
-| Tests failed | Fix the bug in implementation (don't change tests) |
+| `ddd/domain-purity` | Remove UI / fetch / storage / cross-layer imports from `src/domain/` |
+| `ddd/domain-barrel` | Import Domain only via `src/domain/<bc>` barrel |
+| `ddd/application-boundary` | Application depends on Ports, not Infrastructure / UI |
+| `ddd/infrastructure-boundary` | Infrastructure must not import UI or use cases |
+| `ddd/section-viewmodel` | Sections talk to ViewModel / orchestrator, not Domain / repos |
+| TypeScript / tests failed | Fix implementation (don't change tests to match broken code) |
 
 ### Self-Correcting Process
 
@@ -235,7 +241,7 @@ This repository should be **pristine**. Agents copy existing patterns, so:
 
 Don't just fix it and move on. Ask:
 
-1. **Can this be prevented?** → Add lint rule
+1. **Can this be prevented?** → Extend `templates/demo/oxlint/ddd-plugin.js` (oxlint, not ESLint)
 2. **Is this a pattern?** → Scan for other occurrences
 3. **Can a codemod fix it?** → Write script, don't do manually
 
@@ -248,10 +254,10 @@ The goal is to **prevent recurrence**, not just fix the instance.
 ### Project Docs
 
 - [DDD Development Workflow](./.cursor/skills/ddd-development-workflow.md) - **START HERE** for every task
-- [Lauren Tan's Approach](./docs/lauren-tan-ai-development-approach.md) - Full methodology
-- [Quick Start](./docs/LAUREN_TAN_QUICKSTART.md) - 15-minute getting started
+- [SUMMARY](./docs/SUMMARY.md) - Approach overview
+- [demo agent.md](./templates/demo/agent.md) - Layering + oxlint rule table
 - [Unit Tests in AI](./docs/unit-tests-for-ai-agents.md) - Why tests matter
-- [Verification Tools](./docs/verification-tools-setup.md) - Tool details
+- [Verification Tools](./docs/verification-tools-setup.md) - oxlint / Playwright / DevTools
 
 ### External
 
