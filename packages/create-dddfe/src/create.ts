@@ -15,10 +15,25 @@ export type CreateProjectOptions = {
   templatesRoot: string
 }
 
-const EXCLUDED_NAMES = new Set(['node_modules', 'dist', '.git', '.DS_Store'])
+const EXCLUDED_NAMES = new Set(['node_modules', 'dist', '.git', '.DS_Store', '.env'])
 
 function shouldExclude(name: string): boolean {
-  return EXCLUDED_NAMES.has(name) || name.endsWith('.tsbuildinfo')
+  // Never copy local secrets; .env.example is kept and used to seed .env
+  return (
+    EXCLUDED_NAMES.has(name) ||
+    name.endsWith('.tsbuildinfo') ||
+    (name.startsWith('.env.') && name !== '.env.example')
+  )
+}
+
+/** Create `.env` from `.env.example` when missing (idempotent). */
+export async function ensureDotEnv(projectRoot: string): Promise<boolean> {
+  const envPath = join(projectRoot, '.env')
+  if (existsSync(envPath)) return false
+  const examplePath = join(projectRoot, '.env.example')
+  if (!existsSync(examplePath)) return false
+  await writeFile(envPath, await readFile(examplePath, 'utf8'), 'utf8')
+  return true
 }
 
 export function parseArgs(argv: string[]): ParsedArgs {
@@ -95,6 +110,8 @@ export async function createProject(opts: CreateProjectOptions): Promise<string>
       await chmod(file, 0o755)
     }
   }
+
+  await ensureDotEnv(dest)
 
   return dest
 }

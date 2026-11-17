@@ -5,8 +5,9 @@
 | File | Role |
 |------|------|
 | [`.cursor/environment.json`](../.cursor/environment.json) | Cloud Agent template (`install` / `start`) |
-| [`.cursor/install.sh`](../.cursor/install.sh) | Dependencies: workspace + `templates/demo` + optional `verify-dddfe` skill |
+| [`.cursor/install.sh`](../.cursor/install.sh) | Dependencies + seed `.env` / `templates/demo/.env` |
 | [`.cursor/start.sh`](../.cursor/start.sh) | Boot demo Vite on `:5173` (tmux, re-runnable) |
+| [`.env.example`](../.env.example) | Monorepo env template (→ `.env`, gitignored) |
 | [`scripts/create-app.sh`](../scripts/create-app.sh) | Create a new app from template + run its install |
 
 Committed `.cursor/environment.json`:
@@ -49,8 +50,11 @@ Copied from `templates/demo` into every new project:
 | File | Role |
 |------|------|
 | `.cursor/environment.json` | Cloud Agent `install` / `start` |
-| `.cursor/install.sh` | `pnpm install` + githooks |
+| `.cursor/install.sh` | `pnpm install` + seed `.env` + githooks |
 | `.cursor/start.sh` | Vite on `:5173` |
+| `.env.example` | Committed env template |
+| `.env` | Created from `.env.example` if missing (gitignored) |
+| `.gitignore` | Ignores `.env` / `.env.*`, keeps `.env.example` |
 | `.cursor/skills/` | Agent SOP |
 | `.githooks/` | pre-commit lint + fmt |
 | `scripts/verify.sh` | Full verify |

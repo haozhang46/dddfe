@@ -8,6 +8,12 @@ cd "$ROOT"
 
 echo "==> app install (create-dddfe template)"
 
+# Seed .env from .env.example when missing (never overwrite)
+if [ ! -f .env ] && [ -f .env.example ]; then
+  cp .env.example .env
+  echo "    created .env from .env.example"
+fi
+
 if ! command -v pnpm >/dev/null 2>&1; then
   if command -v corepack >/dev/null 2>&1; then
     corepack enable

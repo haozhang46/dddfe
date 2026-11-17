@@ -8,6 +8,16 @@ cd "$ROOT"
 
 echo "==> dddfe install (monorepo)"
 
+# Seed .env from .env.example when missing (never overwrite)
+if [ ! -f .env ] && [ -f .env.example ]; then
+  cp .env.example .env
+  echo "    created .env from .env.example"
+fi
+if [ ! -f templates/demo/.env ] && [ -f templates/demo/.env.example ]; then
+  cp templates/demo/.env.example templates/demo/.env
+  echo "    created templates/demo/.env from .env.example"
+fi
+
 # Corepack / pnpm (Ubuntu login shells may not load ~/.bashrc PATH)
 if ! command -v pnpm >/dev/null 2>&1; then
   if command -v corepack >/dev/null 2>&1; then

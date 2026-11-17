@@ -15,7 +15,7 @@ async function main() {
 
   console.log(`Created ${dest}`)
   console.log(
-    'Includes: AGENT.md, .cursor/environment.json, .cursor/install.sh, .cursor/start.sh, .cursor/skills, .githooks, docs, scripts/verify.sh',
+    'Includes: AGENT.md, .env (+ .env.example), .gitignore, .cursor/environment.json, .cursor/install.sh, .cursor/start.sh, .cursor/skills, .githooks, docs, scripts/verify.sh',
   )
   console.log('Next:')
   console.log(`  cd ${projectName}`)

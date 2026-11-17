@@ -43,6 +43,8 @@ Generated apps include the **agent scaffold** from the template:
 - `.cursor/skills/` (DDD workflow SOP)
 - `.cursor/environment.json` (Cloud Agent `install` / `start`)
 - `.cursor/install.sh` + `.cursor/start.sh` (env bootstrap)
+- `.env.example` → `.env` on create/install (`.env` gitignored)
+- `.gitignore` (includes `.env` / `.env.*`, keeps `.env.example`)
 - `.githooks/` (oxlint + oxfmt on commit)
 - `docs/` (verification / SOP guides)
 - `scripts/verify.sh` + `pnpm lint` / `fmt` / `verify`

@@ -11,7 +11,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { afterEach, describe, expect, it } from 'vitest'
-import { createProject, parseArgs } from './create.js'
+import { createProject, ensureDotEnv, parseArgs } from './create.js'
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const realTemplatesRoot = resolve(packageRoot, '..', '..', 'templates')
@@ -111,10 +111,17 @@ describe('createProject', () => {
       'oxlint/check-css-bem.js',
       '.oxlintrc.json',
       '.oxfmtrc.json',
+      '.gitignore',
+      '.env.example',
+      '.env',
     ]
     for (const rel of mustExist) {
       expect(existsSync(join(dest, rel)), rel).toBe(true)
     }
+
+    const gitignore = readFileSync(join(dest, '.gitignore'), 'utf8')
+    expect(gitignore).toMatch(/^\.env$/m)
+    expect(gitignore).toMatch(/!\.env\.example/)
 
     const pkg = JSON.parse(readFileSync(join(dest, 'package.json'), 'utf8')) as {
       name: string
@@ -130,5 +137,14 @@ describe('createProject', () => {
     expect(statSync(join(dest, 'scripts/verify.sh')).mode & 0o111).toBeTruthy()
     expect(statSync(join(dest, '.cursor/install.sh')).mode & 0o111).toBeTruthy()
     expect(statSync(join(dest, '.cursor/start.sh')).mode & 0o111).toBeTruthy()
+  })
+
+  it('ensureDotEnv seeds .env once from .env.example', async () => {
+    const root = mkdtempSync(join(tmpdir(), 'dddfe-env-'))
+    dirs.push(root)
+    writeFileSync(join(root, '.env.example'), 'VITE_API=\n')
+    expect(await ensureDotEnv(root)).toBe(true)
+    expect(readFileSync(join(root, '.env'), 'utf8')).toBe('VITE_API=\n')
+    expect(await ensureDotEnv(root)).toBe(false)
   })
 })

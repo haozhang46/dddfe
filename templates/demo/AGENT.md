@@ -19,7 +19,7 @@ DDD layer rules and BEM: see [`agent.md`](./agent.md).
 ## Commands
 
 ```bash
-bash .cursor/install.sh   # deps + githooks (or: pnpm install)
+bash .cursor/install.sh   # deps + .env from .env.example + githooks
 bash .cursor/start.sh     # Vite on :5173 (Cloud Agent / optional)
 pnpm lint                 # oxlint + ddd-plugin + CSS BEM nesting check
 pnpm fmt                  # oxfmt (write)
