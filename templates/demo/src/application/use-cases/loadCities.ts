@@ -1,9 +1,9 @@
-import type { Option } from '../../domain/order'
-import type { CityQuery } from '../ports/CityQuery'
+import type { Option } from "../../domain/order";
+import type { CityQuery } from "../ports/CityQuery";
 
 export function createLoadCities(query: CityQuery) {
   return (province: string, signal?: AbortSignal): Promise<Option[]> =>
-    query.listByProvince(province, signal)
+    query.listByProvince(province, signal);
 }
 
-export type LoadCities = ReturnType<typeof createLoadCities>
+export type LoadCities = ReturnType<typeof createLoadCities>;

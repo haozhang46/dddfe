@@ -48,7 +48,7 @@ Skills are:
 
 ❌ **Bad**: "Run TypeScript compiler with `tsc --noEmit`"
 
-✅ **Good**: "Run `./scripts/verify.sh` (includes TypeScript + 5 other checks)"
+✅ **Good**: "Run `./scripts/verify.sh` (starts with `pnpm lint` / oxlint + ddd-plugin)"
 
 **Why**: Tools are deterministic. Skills guide when/why to use them.
 

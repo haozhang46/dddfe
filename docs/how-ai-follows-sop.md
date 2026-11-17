@@ -92,7 +92,7 @@ AI：Step 5 - 运行 ./scripts/verify.sh
 
 ### 3. 验证工具（强制执行）
 
-**位置**：`./scripts/verify.sh` + ESLint + 测试
+**位置**：`./scripts/verify.sh` + oxlint（`pnpm lint` / `ddd-plugin`）+ 测试
 
 **作用**：
 - AI 即使偏离 SOP，**验证工具会拦住它**
@@ -377,7 +377,7 @@ AI：自动遵循 SOP → 完成 100 个任务 → 某些类型自动 merge
 **解决**：
 - ✅ AGENT.md 第一行就写「必须先读 skill」
 - ✅ Skill 用命令式语气（「Do X」而非「You might do X」）
-- ✅ verify.sh 拦截不合规代码
+- ✅ verify.sh / `pnpm lint`（oxlint）拦截不合规代码
 
 ### Q2: 如果 AI 不问澄清问题怎么办？
 

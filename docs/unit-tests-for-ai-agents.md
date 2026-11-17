@@ -441,4 +441,4 @@ pnpm run verify:app    # 3. 真实运行（截图 + DevTools）
 
 - [Lauren Tan: All Code Is Slop](https://www.youtube.com/watch?v=O_zcc6Xl12g)
 - [Lauren Tan's Kitchen Explainer](https://bsbarkur.github.io/explainers/poteto-pstack/)
-- [本仓库 Lauren Tan 方法实现](./lauren-tan-ai-development-approach.md)
+- [本仓库实施总结](./SUMMARY.md)

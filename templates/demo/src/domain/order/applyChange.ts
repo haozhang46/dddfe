@@ -1,9 +1,9 @@
-import { produce } from 'immer'
-import type { FieldChange, OrderDraft } from './model'
-import { setPath } from './model'
-import { applyDerived } from './derived'
-import { applyReactions } from './reactions'
-import { applyVisibility } from './visibility'
+import { produce } from "immer";
+import type { FieldChange, OrderDraft } from "./model";
+import { setPath } from "./model";
+import { applyDerived } from "./derived";
+import { applyReactions } from "./reactions";
+import { applyVisibility } from "./visibility";
 
 /**
  * Deterministic convergence for one field edit:
@@ -13,9 +13,9 @@ import { applyVisibility } from './visibility'
  */
 export function applyChange(draft: OrderDraft, change: FieldChange): OrderDraft {
   return produce(draft, (d) => {
-    setPath(d, change.path, change.value)
-    applyReactions(d, change)
-    applyDerived(d)
-    applyVisibility(d)
-  })
+    setPath(d, change.path, change.value);
+    applyReactions(d, change);
+    applyDerived(d);
+    applyVisibility(d);
+  });
 }

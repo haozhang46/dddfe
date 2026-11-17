@@ -1,5 +1,5 @@
-import type { Option } from '../../domain/order'
+import type { Option } from "../../domain/order";
 
 export interface CityQuery {
-  listByProvince(province: string, signal?: AbortSignal): Promise<Option[]>
+  listByProvince(province: string, signal?: AbortSignal): Promise<Option[]>;
 }

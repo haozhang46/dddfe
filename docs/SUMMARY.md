@@ -8,9 +8,9 @@
 
 | 文档 | 用途 | 阅读时间 |
 |------|------|---------|
-| [Lauren Tan 方法完整指南](./lauren-tan-ai-development-approach.md) | 完整方法论、原理、案例 | 30-45 分钟 |
-| [15 分钟快速上手](./LAUREN_TAN_QUICKSTART.md) | 快速开始、实战示例 | 15 分钟 |
-| [验证工具实现指南](./verification-tools-setup.md) | Playwright、DevTools、ts-morph 详解 | 20-30 分钟 |
+| [本页 SUMMARY](./SUMMARY.md) | 实施总览 | 10 分钟 |
+| [AI 如何遵循 SOP](./how-ai-follows-sop.md) | Agent 执行流程 | 15 分钟 |
+| [验证工具实现指南](./verification-tools-setup.md) | oxlint、Playwright、DevTools | 20-30 分钟 |
 | [AI 场景下的单元测试价值](./unit-tests-for-ai-agents.md) | 深度分析、常见误区 | 15-20 分钟 |
 | [测试策略速查表](./testing-cheatsheet-ai-agents.md) | 快速决策、场景矩阵 | 5 分钟 |
 | [Agent 使用指南](../AGENT.md) | AI Agent 工作规范 | 10 分钟 |
@@ -65,17 +65,24 @@ pnpm test:e2e                    # Playwright 自动化测试
 - 自动启动 dev server
 - 失败时自动截图/录屏
 
-#### 5. ESLint 架构规则
-```json
-.eslintrc.lauren-tan.json        # DDD 架构强制规则
+#### 5. oxlint + oxfmt（Oxc 工具链）
+```text
+templates/demo/.oxlintrc.json        # oxlint 配置
+templates/demo/oxlint/ddd-plugin.js  # DDD 分层规则
+templates/demo/.oxfmtrc.json         # oxfmt 配置
 ```
 
-**规则覆盖**：
-- Domain 不能导入 Infrastructure
-- Domain 不能使用 `fetch`、`axios`
-- Domain 不能导入 React/Vue
-- Application 应使用 Ports 而非具体实现
-- 层级边界检查
+**oxlint 规则**（`pnpm lint`）：
+- `ddd/domain-purity` — Domain 不能导入 UI / fetch / storage / 其他层
+- `ddd/domain-barrel` — Domain 包外只能走 barrel
+- `ddd/application-boundary` — Application 不能导入 UI / Infrastructure
+- `ddd/infrastructure-boundary` — Infrastructure 不能导入 UI / use case
+- `ddd/section-viewmodel` — Section 不直连 Domain / use case
+- `ddd/apply-change-name` / `ddd/base-component` — 命名与 base 组件约定
+- `ddd/bem-classname` — presentation 层 JSX `className` 遵循 BEM
+- `check-css-bem` — CSS 嵌套禁止 `&__` / `&--`，子选择器写全名（如 `.page__hint`）
+
+**oxfmt**（`pnpm fmt` / `pnpm fmt:check`）：Oxc 格式化器，不是 Prettier。
 
 ---
 
@@ -87,7 +94,8 @@ pnpm test:e2e                    # Playwright 自动化测试
 ┌─────────────────────────────────────────────────────┐
 │ 第 1 层：代码约束（最大层）                           │
 │ · TypeScript 类型系统                                │
-│ · ESLint 规则（DDD 架构强制）                        │
+│ · oxlint + ddd-plugin（DDD 架构强制）                │
+│ · oxfmt（格式强制）                                  │
 │ · API 设计、目录结构                                 │
 │ 💡 让错误变得不可能                                  │
 └─────────────────────────────────────────────────────┘
@@ -293,17 +301,17 @@ git commit -m "perf: reduce bundle size to 380KB"
 
 ### 新手（0-2 小时）
 
-1. 读 [15 分钟快速上手](./LAUREN_TAN_QUICKSTART.md)
+1. 读 [AI 如何遵循 SOP](./how-ai-follows-sop.md)
 2. 运行 `./scripts/verify.sh`
 3. 看 [测试策略速查表](./testing-cheatsheet-ai-agents.md)
 4. 尝试一次「修改 → 验证 → 修正」循环
 
 ### 进阶（2-6 小时）
 
-1. 读 [Lauren Tan 完整方法](./lauren-tan-ai-development-approach.md)
-2. 读 [验证工具实现](./verification-tools-setup.md)
+1. 读 [验证工具实现](./verification-tools-setup.md)（oxlint 为主）
+2. 读 [templates/demo/agent.md](../templates/demo/agent.md) oxlint 规则表
 3. 添加一个新的 E2E 测试
-4. 添加一个自定义 lint rule
+4. 需要时扩展 `oxlint/ddd-plugin.js`（不是 ESLint）
 
 ### 专家（6+ 小时）
 
@@ -330,7 +338,7 @@ git commit -m "perf: reduce bundle size to 380KB"
 ### 实践检查清单
 
 - [ ] 验证脚本存在且可运行
-- [ ] Domain 层无 HTTP/UI 依赖（被 lint 强制）
+- [ ] Domain 层无 HTTP/UI 依赖（被 oxlint `ddd/domain-purity` 强制）
 - [ ] 至少 3 个关键流程有 E2E 测试
 - [ ] Agent 能读懂验证错误信息
 - [ ] Agent 能自主修正（不改测试）
@@ -350,11 +358,12 @@ git commit -m "perf: reduce bundle size to 380KB"
 
 | 文档 | 链接 |
 |------|------|
-| 完整方法论 | [lauren-tan-ai-development-approach.md](./lauren-tan-ai-development-approach.md) |
-| 快速上手 | [LAUREN_TAN_QUICKSTART.md](./LAUREN_TAN_QUICKSTART.md) |
-| 工具实现 | [verification-tools-setup.md](./verification-tools-setup.md) |
+| 实施总结 | [SUMMARY.md](./SUMMARY.md) |
+| AI 遵循 SOP | [how-ai-follows-sop.md](./how-ai-follows-sop.md) |
+| 工具实现（oxlint） | [verification-tools-setup.md](./verification-tools-setup.md) |
 | 单元测试分析 | [unit-tests-for-ai-agents.md](./unit-tests-for-ai-agents.md) |
 | 测试速查表 | [testing-cheatsheet-ai-agents.md](./testing-cheatsheet-ai-agents.md) |
+| demo oxlint 规则 | [../templates/demo/agent.md](../templates/demo/agent.md) |
 | Agent 指南 | [../AGENT.md](../AGENT.md) |
 
 ---

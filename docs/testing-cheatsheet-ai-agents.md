@@ -245,5 +245,5 @@ Agent 自主修正率：>80%（测试失败后，Agent 能自己改对）
 ## 参考
 
 - [完整分析](./unit-tests-for-ai-agents.md)
-- [Lauren Tan 方法](./lauren-tan-ai-development-approach.md)
+- [Lauren Tan 实施总结](./SUMMARY.md)
 - [验证工具设置](./verification-tools-setup.md)

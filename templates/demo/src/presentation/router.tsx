@@ -1,10 +1,10 @@
-import { Navigate, Route, Routes } from 'react-router'
-import { RequireAuth } from './components/RequireAuth'
-import { RequirePermission } from './components/RequirePermission'
-import { AdminPage } from './pages/admin/AdminPage'
-import { ForbiddenPage } from './pages/forbidden/ForbiddenPage'
-import { LoginPage } from './pages/login/LoginPage'
-import { OrderFormPage } from './pages/order'
+import { Navigate, Route, Routes } from "react-router";
+import { RequireAuth } from "./components/RequireAuth";
+import { RequirePermission } from "./components/RequirePermission";
+import { AdminPage } from "./pages/admin/AdminPage";
+import { ForbiddenPage } from "./pages/forbidden/ForbiddenPage";
+import { LoginPage } from "./pages/login/LoginPage";
+import { OrderFormPage } from "./pages/order";
 
 export function AppRouter() {
   return (
@@ -22,5 +22,5 @@ export function AppRouter() {
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
-  )
+  );
 }

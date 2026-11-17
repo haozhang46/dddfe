@@ -11,6 +11,7 @@
     "ddd/infrastructure-boundary": "error",
     "ddd/section-viewmodel": "error",
     "ddd/apply-change-name": "error",
-    "ddd/base-component": "error"
+    "ddd/base-component": "error",
+    "ddd/bem-classname": "error"
   }
 }

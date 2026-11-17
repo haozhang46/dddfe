@@ -1,8 +1,13 @@
 #!/usr/bin/env tsx
 /**
- * Architecture Scanner using ts-morph
- * Following Lauren Tan's approach: Make architecture violations impossible
- * 
+ * Architecture Scanner using ts-morph (optional / secondary).
+ *
+ * Primary DDD enforcement is oxlint + templates/demo/oxlint/ddd-plugin.js
+ * via `pnpm lint` (also run by ./scripts/verify.sh and pre-commit).
+ *
+ * Use this scanner for extra AST reports; do not treat it as a replacement
+ * for oxlint.
+ *
  * Usage: tsx scripts/tools/architecture-scanner.ts
  */
 

@@ -1,38 +1,35 @@
-import { useEffect, useMemo, useSyncExternalStore } from 'react'
-import { Link, useParams } from 'react-router'
-import { useAppDeps } from '../../AppDepsContext'
-import { useAuth } from '../../auth/AuthContext'
-import { Can } from '../../components/Can'
-import { buildViewModel } from './buildViewModel'
-import { createOrchestrator } from './orchestrator'
-import { AddressSection } from './components/AddressSection'
-import { AmountSection } from './components/AmountSection'
-import { PaySection } from './components/PaySection'
-import { QtySection } from './components/QtySection'
-import { SaveBar } from './components/SaveBar'
+import { useEffect, useMemo, useSyncExternalStore } from "react";
+import { Link, useParams } from "react-router";
+import { useAppDeps } from "../../AppDepsContext";
+import { useAuth } from "../../auth/AuthContext";
+import { Can } from "../../components/Can";
+import { buildViewModel } from "./buildViewModel";
+import { createOrchestrator } from "./orchestrator";
+import { AddressSection } from "./components/AddressSection";
+import { AmountSection } from "./components/AmountSection";
+import { PaySection } from "./components/PaySection";
+import { QtySection } from "./components/QtySection";
+import { SaveBar } from "./components/SaveBar";
 
 export function OrderFormPage() {
-  const { orderId = 'order-1' } = useParams()
-  const { session, logout } = useAuth()
-  const { order: deps } = useAppDeps()
+  const { orderId = "order-1" } = useParams();
+  const { session, logout } = useAuth();
+  const { order: deps } = useAppDeps();
 
-  const orchestrator = useMemo(
-    () => createOrchestrator(deps, orderId),
-    [deps, orderId],
-  )
+  const orchestrator = useMemo(() => createOrchestrator(deps, orderId), [deps, orderId]);
 
   const state = useSyncExternalStore(
     orchestrator.subscribe,
     orchestrator.getState,
     orchestrator.getState,
-  )
+  );
 
   useEffect(() => {
-    void orchestrator.hydrate()
-  }, [orchestrator])
+    void orchestrator.hydrate();
+  }, [orchestrator]);
 
   const vm = useMemo(() => {
-    if (!state.draft) return null
+    if (!state.draft) return null;
     return buildViewModel({
       draft: state.draft,
       phase: state.phase,
@@ -40,11 +37,11 @@ export function OrderFormPage() {
       dirty: state.dirty,
       lastSavedAt: state.lastSavedAt,
       error: state.error,
-    })
-  }, [state])
+    });
+  }, [state]);
 
-  if (state.phase === 'loading' || !vm) {
-    return <p className="page">加载中…</p>
+  if (state.phase === "loading" || !vm) {
+    return <p className="page">加载中…</p>;
   }
 
   return (
@@ -52,10 +49,9 @@ export function OrderFormPage() {
       <header>
         <h1>订单 Form · DDD Demo</h1>
         <p className="muted">
-          订单 <code>{orderId}</code> · {session?.displayName}（{session?.roles.join(', ')}）
-          {' · '}
+          订单 <code>{orderId}</code> · {session?.displayName}（{session?.roles.join(", ")}）{" · "}
           <Link to="/admin">Admin</Link>
-          {' · '}
+          {" · "}
           <button type="button" onClick={logout}>
             退出
           </button>
@@ -69,20 +65,20 @@ export function OrderFormPage() {
 
       <PaySection
         payType={vm.values.payType}
-        onChange={(v) => void orchestrator.changeField('payType', v)}
+        onChange={(v) => void orchestrator.changeField("payType", v)}
       />
       <QtySection
         qty={vm.values.qty}
         unitPrice={vm.values.unitPrice}
-        onChange={(v) => void orchestrator.changeField('qty', v)}
+        onChange={(v) => void orchestrator.changeField("qty", v)}
       />
       <AmountSection visible={vm.ui.amountVisible} amount={vm.values.amount} />
       <AddressSection
         province={vm.values.province}
         city={vm.values.city}
         cityOptions={vm.ui.cityOptions}
-        onProvince={(v) => void orchestrator.changeField('province', v)}
-        onCity={(v) => void orchestrator.changeField('city', v)}
+        onProvince={(v) => void orchestrator.changeField("province", v)}
+        onCity={(v) => void orchestrator.changeField("city", v)}
       />
 
       <SaveBar
@@ -103,7 +99,7 @@ export function OrderFormPage() {
             <button
               type="button"
               onClick={() => {
-                alert(JSON.stringify(vm.values, null, 2))
+                alert(JSON.stringify(vm.values, null, 2));
               }}
               disabled={!vm.canSubmit}
             >
@@ -118,5 +114,5 @@ export function OrderFormPage() {
         <pre>{JSON.stringify(vm, null, 2)}</pre>
       </details>
     </div>
-  )
+  );
 }

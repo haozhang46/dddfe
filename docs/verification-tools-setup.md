@@ -8,8 +8,9 @@
 ┌─────────────────────────────────────────────────────────────┐
 │ 1. 静态检查 (编译时)                                          │
 │    · TypeScript (tsc)                                       │
-│    · ESLint (架构约束)                                       │
-│    · ts-morph (AST 分析 + Codemod)                          │
+│    · oxlint + ddd-plugin (架构约束)                          │
+│    · oxfmt (格式化，--check / write)                         │
+│    · ts-morph (AST 分析 + Codemod，可选)                     │
 └─────────────────────────────────────────────────────────────┘
                             ↓
 ┌─────────────────────────────────────────────────────────────┐
@@ -1013,42 +1014,39 @@ describe('applyChange properties', () => {
 
 ## 完整集成到 verify.sh
 
+仓库里的 `scripts/verify.sh` **以 oxlint 为主**（不是 ESLint，也不是先跑 ts-morph）：
+
 ```bash
 #!/bin/bash
-# 更新后的 scripts/verify.sh
+# scripts/verify.sh（摘要）
 
-set -e
+set -euo pipefail
 
-echo "🔍 Lauren Tan 验证流程"
-echo ""
+# 1. 架构约束（主强制）：oxlint + ddd-plugin
+pnpm lint
+# → templates/demo/.oxlintrc.json
+# → templates/demo/oxlint/ddd-plugin.js
 
-# 1. 架构扫描
-echo "━━━ 1/6 架构约束 (ts-morph) ━━━"
-pnpm exec tsx scripts/tools/architecture-scanner.ts || exit 1
+# 2. 格式化检查：oxfmt（不是 Prettier）
+pnpm fmt:check
+# → templates/demo/.oxfmtrc.json
+# 失败时：pnpm fmt
 
-# 2. 类型检查
-echo "━━━ 2/6 类型检查 (TypeScript) ━━━"
-cd templates/demo && npx tsc --noEmit || exit 1
+# 3. 类型检查
+pnpm --dir templates/demo exec tsc -b
 
-# 3. 单元测试
-echo "━━━ 3/6 单元测试 (Vitest) ━━━"
-pnpm test || exit 1
+# 4. 单元测试
+pnpm --dir templates/demo test
+pnpm --filter create-dddfe test
 
-# 4. E2E 测试
-echo "━━━ 4/6 E2E 测试 (Playwright) ━━━"
-pnpm exec playwright test || exit 1
-
-# 5. 应用验证（含 DevTools 上下文）
-echo "━━━ 5/6 应用验证 (Custom CLI) ━━━"
-pnpm exec tsx scripts/tools/app-verifier.ts order-flow || exit 1
-
-# 6. 性能度量
-echo "━━━ 6/6 性能度量 (Bundle + Lighthouse) ━━━"
-pnpm exec tsx scripts/tools/measure-bundle.ts || exit 1
-
-echo ""
-echo "✅ 所有验证通过！"
+# 5. 构建
+pnpm --dir templates/demo build
 ```
+
+可选增强（不在默认 verify 里）：
+- `pnpm run verify:arch` — ts-morph 二次扫描（**不能替代 oxlint**）
+- `pnpm run verify:runtime` / `verify:runtime:lighthouse` — Chrome DevTools + Lighthouse
+- Playwright E2E — 需先装依赖
 
 ---
 
@@ -1059,16 +1057,19 @@ echo "✅ 所有验证通过！"
 ```json
 {
   "scripts": {
+    "lint": "pnpm --dir templates/demo lint",
+    "fmt": "pnpm --dir templates/demo fmt",
+    "fmt:check": "pnpm --dir templates/demo fmt:check",
     "verify": "./scripts/verify.sh",
     "verify:arch": "tsx scripts/tools/architecture-scanner.ts",
-    "verify:app": "tsx scripts/tools/app-verifier.ts",
     "verify:bundle": "tsx scripts/tools/measure-bundle.ts",
-    "test": "vitest",
-    "test:e2e": "playwright test",
-    "codemod:readonly": "tsx scripts/tools/codemod-add-readonly.ts"
+    "verify:runtime": "tsx scripts/tools/runtime-inspector.ts",
+    "verify:runtime:lighthouse": "tsx scripts/tools/runtime-inspector.ts --lighthouse"
   }
 }
 ```
+
+demo 内：`"lint": "oxlint"`，`"fmt": "oxfmt"`，`"fmt:check": "oxfmt --check"`。
 
 ### Agent 使用指南
 

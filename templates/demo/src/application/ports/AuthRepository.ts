@@ -1,3 +1,3 @@
 export interface AuthRepository {
-  login(username: string, signal?: AbortSignal): Promise<string>
+  login(username: string, signal?: AbortSignal): Promise<string>;
 }

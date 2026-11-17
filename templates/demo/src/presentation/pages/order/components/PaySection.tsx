@@ -1,9 +1,9 @@
-import type { PayType } from '../../../../domain/order'
+import type { PayType } from "../../../../domain/order";
 
 type Props = {
-  payType: PayType
-  onChange: (payType: PayType) => void
-}
+  payType: PayType;
+  onChange: (payType: PayType) => void;
+};
 
 export function PaySection({ payType, onChange }: Props) {
   return (
@@ -13,8 +13,8 @@ export function PaySection({ payType, onChange }: Props) {
         <input
           type="radio"
           name="payType"
-          checked={payType === 'online'}
-          onChange={() => onChange('online')}
+          checked={payType === "online"}
+          onChange={() => onChange("online")}
         />
         线上（显示并计算金额）
       </label>
@@ -22,11 +22,11 @@ export function PaySection({ payType, onChange }: Props) {
         <input
           type="radio"
           name="payType"
-          checked={payType === 'offline'}
-          onChange={() => onChange('offline')}
+          checked={payType === "offline"}
+          onChange={() => onChange("offline")}
         />
         线下（隐藏金额）
       </label>
     </fieldset>
-  )
+  );
 }

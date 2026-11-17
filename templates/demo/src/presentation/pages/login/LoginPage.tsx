@@ -1,34 +1,33 @@
-import { useState } from 'react'
-import { Navigate, useLocation, useNavigate } from 'react-router'
-import { listMockUsernames } from '../../../infrastructure/auth/mockUsers'
-import { useAuth } from '../../auth/AuthContext'
+import { useState } from "react";
+import { Navigate, useLocation, useNavigate } from "react-router";
+import { listMockUsernames } from "../../../infrastructure/auth/mockUsers";
+import { useAuth } from "../../auth/AuthContext";
 
-type LocationState = { from?: { pathname?: string } }
+type LocationState = { from?: { pathname?: string } };
 
 export function LoginPage() {
-  const { status, login } = useAuth()
-  const navigate = useNavigate()
-  const location = useLocation()
-  const [error, setError] = useState<string | null>(null)
-  const [busy, setBusy] = useState(false)
+  const { status, login } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
-  if (status === 'authed') {
-    return <Navigate to="/" replace />
+  if (status === "authed") {
+    return <Navigate to="/" replace />;
   }
 
-  const from =
-    (location.state as LocationState | null)?.from?.pathname ?? '/orders/order-1'
+  const from = (location.state as LocationState | null)?.from?.pathname ?? "/orders/order-1";
 
   async function handleLogin(username: string) {
-    setBusy(true)
-    setError(null)
+    setBusy(true);
+    setError(null);
     try {
-      await login(username)
-      navigate(from, { replace: true })
+      await login(username);
+      navigate(from, { replace: true });
     } catch (err) {
-      setError(String(err))
+      setError(String(err));
     } finally {
-      setBusy(false)
+      setBusy(false);
     }
   }
 
@@ -41,7 +40,7 @@ export function LoginPage() {
 
       {error && <p className="error">{error}</p>}
 
-      <div className="section" style={{ gap: '0.75rem' }}>
+      <div className="section" style={{ gap: "0.75rem" }}>
         {listMockUsernames().map((username) => (
           <button
             key={username}
@@ -54,5 +53,5 @@ export function LoginPage() {
         ))}
       </div>
     </div>
-  )
+  );
 }
