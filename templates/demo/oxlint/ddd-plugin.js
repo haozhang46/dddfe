@@ -680,6 +680,121 @@ const bemClassname = {
   },
 };
 
+/** Hooks whose first callback must be a named function (react-fe-skill §2). */
+const NAMED_CALLBACK_HOOKS = new Set(["useEffect", "useLayoutEffect", "useMemo", "useCallback"]);
+
+function isNamedHookCallback(node) {
+  if (!node) return false;
+  if (node.type === "Identifier") return true;
+  if (node.type === "FunctionExpression") return typeof node.id?.name === "string";
+  return false;
+}
+
+const namedHookCallback = {
+  meta: {
+    type: "problem",
+    docs: {
+      description:
+        "Require named function callbacks for useEffect / useLayoutEffect / useMemo / useCallback (react-fe-skill).",
+    },
+    messages: {
+      named:
+        "`{{hook}}` must use a named function callback (e.g. `{{hook}}(function syncX() { … }, deps)`), not an arrow or anonymous function. See react-fe-skill §2.",
+    },
+  },
+  create(context) {
+    const filename = filePath(context);
+    if (!srcRel(filename).startsWith("src/presentation/")) return {};
+
+    return {
+      CallExpression(node) {
+        const hook = calleeName(node.callee);
+        if (!hook || !NAMED_CALLBACK_HOOKS.has(hook)) return;
+        const callback = node.arguments?.[0];
+        if (!callback) return;
+        if (isNamedHookCallback(callback)) return;
+        context.report({ node: callback, messageId: "named", data: { hook } });
+      },
+    };
+  },
+};
+
+const noCloneElement = {
+  meta: {
+    type: "problem",
+    docs: {
+      description:
+        "Disallow React.cloneElement; prefer render props or a registry (react-fe-skill §11).",
+    },
+    messages: {
+      clone:
+        "Do not use `cloneElement`. Prefer a render prop, children-as-function, or a component registry. See react-fe-skill §11.",
+    },
+  },
+  create(context) {
+    const filename = filePath(context);
+    if (!srcRel(filename).startsWith("src/presentation/")) return {};
+
+    return {
+      CallExpression(node) {
+        const callee = node.callee;
+        if (!callee) return;
+        if (callee.type === "Identifier" && callee.name === "cloneElement") {
+          context.report({ node, messageId: "clone" });
+          return;
+        }
+        if (
+          callee.type === "MemberExpression" &&
+          callee.computed === false &&
+          callee.property?.type === "Identifier" &&
+          callee.property.name === "cloneElement"
+        ) {
+          context.report({ node, messageId: "clone" });
+        }
+      },
+    };
+  },
+};
+
+const noImperativeHandle = {
+  meta: {
+    type: "problem",
+    docs: {
+      description:
+        "Disallow useImperativeHandle; expose an API object from a hook instead (react-fe-skill §9).",
+    },
+    messages: {
+      handle:
+        "Do not use `useImperativeHandle`. Return methods from a custom hook (e.g. `useTable()` → `{ reset, refresh }`) instead of `forwardRef` + imperative handle. See react-fe-skill §9. `forwardRef` for DOM focus refs is still fine.",
+    },
+  },
+  create(context) {
+    const filename = filePath(context);
+    if (!srcRel(filename).startsWith("src/presentation/")) return {};
+
+    return {
+      CallExpression(node) {
+        if (calleeName(node.callee) !== "useImperativeHandle") return;
+        context.report({ node, messageId: "handle" });
+      },
+      ImportSpecifier(node) {
+        const imported = node.imported;
+        const name =
+          imported?.type === "Identifier"
+            ? imported.name
+            : typeof imported?.name === "string"
+              ? imported.name
+              : typeof imported?.value === "string"
+                ? imported.value
+                : null;
+        if (name === "useImperativeHandle") {
+          context.report({ node, messageId: "handle" });
+        }
+      },
+    };
+  },
+};
+
 const plugin = {
   meta: { name: "ddd" },
   rules: {
@@ -691,6 +806,9 @@ const plugin = {
     "apply-change-name": applyChangeName,
     "base-component": baseComponent,
     "bem-classname": bemClassname,
+    "named-hook-callback": namedHookCallback,
+    "no-clone-element": noCloneElement,
+    "no-imperative-handle": noImperativeHandle,
   },
 };
 

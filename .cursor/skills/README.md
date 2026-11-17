@@ -21,6 +21,24 @@
 
 ---
 
+### ⚛️ [React Frontend Conventions](./react-fe-skill/SKILL.md)
+
+**Use when**: Writing or refactoring React components / hooks in `presentation/`.
+
+**What it does**:
+- Component breakdown before coding (props, responsibility, scope, data flow)
+- Named hook callbacks (`useEffect(function syncX() { … })`)
+- Page vs global component placement; hook vs util split
+- ErrorBoundary + Suspense patterns; avoid `forwardRef` / `cloneElement` for custom APIs
+- State guidance (`useState` → context → Zustand) with immutability / immer notes
+
+**Quick start**:
+```bash
+# Presentation UI change → read react-fe-skill → then follow DDD workflow SOP
+```
+
+---
+
 ## How Skills Work
 
 ### For AI Agents
@@ -153,6 +171,7 @@ Skill (WORKFLOW)          Verification (TRUTH)
 ## Quick Links
 
 - [DDD Development Workflow](./ddd-development-workflow.md) - Main SOP
+- [React Frontend Conventions](./react-fe-skill/SKILL.md) - Presentation React rules
 - [Main AGENT.md](../../AGENT.md) - High-level agent guidelines
 - [Verification Tools](../../docs/verification-tools-setup.md) - Tool documentation
 

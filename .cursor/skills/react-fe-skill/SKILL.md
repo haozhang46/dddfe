@@ -1,0 +1,682 @@
+---
+name: react-fe-skill
+description: Use when writing React components or hooks — enforces named hook functions, component/hook splitting by cohesion, and team conventions not covered by vercel-react-best-practices
+---
+
+# React Frontend Conventions
+
+Team-specific React rules complementing `vercel-react-best-practices`.
+
+## In this repo (dddfe)
+
+- Layer rules in root [`AGENT.md`](../../AGENT.md) and `templates/demo/agent.md` win over generic React advice when they conflict.
+- Presentation layout already matches §3: page-only UI under `pages/<page>/components/`, shared under `presentation/components/`.
+- Field edits stay on the orchestrator write path (`changeField` → Domain `applyChange`). Do not put business convergence in React `onChange`.
+- Demo order hydrate uses orchestrator `phase` loading; prefer Suspense for true suspending data sources. A single `phase === 'loading'` check on the page entry is acceptable here.
+
+**Enforced by oxlint** (`templates/demo/oxlint/ddd-plugin.js`):
+
+| Skill rule | oxlint id |
+|------------|-----------|
+| §2 Named hook callbacks | `ddd/named-hook-callback` |
+| §9 No `useImperativeHandle` | `ddd/no-imperative-handle` |
+| §11 No `cloneElement` | `ddd/no-clone-element` |
+
+Judgment calls that stay prose-only: component cohesion (§1/§3), ErrorBoundary placement (§7), Suspense vs `phase` loading (§8), state-library choice (§6), virtual list thresholds (§13).
+
+## 1. Component Design — Before Writing Code
+
+Before implementing, write a component breakdown:
+
+```
+Component: PostCard
+  Props: { post: PostCardDTO; index: number }
+  Responsibility: render a single post with left accent bar
+  Scope: page — only used in BlogHomeSections
+  Data flow: BlogHomeSections → useSWR → toPostCard[] → PostCard
+
+Component: PostHero
+  Props: { post: PostCardDTO }
+  Responsibility: expanded first post with excerpt
+  Scope: page — only used in BlogHomeSections
+  Data flow: same as PostCard
+
+Decision:
+  - PostCard + PostHero → DON'T merge (different layout, different responsibilities)
+  - PostCard → page-level, NOT global (only used by one page)
+```
+
+**Checklist before writing code:**
+
+1. List each component with its props type signature
+2. One sentence describing what it does (no "and")
+3. Page-level or global?
+4. Data source → which parent provides props → which child consumes them
+5. Can any components merge? (same data, same responsibility, only styling differs)
+6. Does any page component need promotion to global? (now used by 2+ pages)
+
+## 2. Named Hook Functions
+
+All React hooks must use named functions. Anonymous arrow functions forbidden.
+
+```tsx
+// ❌ anonymous
+useEffect(() => { fetchData(); }, []);
+
+// ✅ named
+useEffect(function syncScroll() { fetchData(); }, []);
+```
+
+## 3. Component Splitting — High Cohesion, Low Coupling
+
+**By scope:**
+
+```
+components/
+├── ParticleBackground.tsx    # global — used across multiple pages
+├── ScrollIndicator.tsx       # global
+├── PostHero.tsx              # page — only used in blog home
+├── PostListItem.tsx          # page
+```
+
+| Type | Location | Rule |
+|------|----------|------|
+| Global | `components/` | Used by 2+ pages or the root layout |
+| Page | `app/<page>/` colocated | Only used by one page |
+
+**By responsibility:** One component = one clear job. If you need "and" to describe what it does, split it.
+
+```tsx
+// ❌ too many responsibilities
+function PostCardAndChat() { ... }
+
+// ✅ single responsibility
+function PostCard() { ... }
+function ChatPanel() { ... }
+```
+
+## 4. Hook vs Util — The State Rule
+
+```
+Needs useState/useEffect/useRef? → Custom hook (useXxx)
+Pure computation / formatting?    → Util function (src/utils/)
+```
+
+```tsx
+// ❌ duplicate stateful logic in components
+function PageA() {
+  const [scroll, setScroll] = useState(0);
+  useEffect(() => { ... }, []);
+}
+function PageB() {
+  const [scroll, setScroll] = useState(0); // duplicated!
+  useEffect(() => { ... }, []);
+}
+
+// ✅ extract to custom hook
+function useScrollProgress() {
+  const [scroll, setScroll] = useState(0);
+  useEffect(() => { ... }, []);
+  return scroll;
+}
+
+// ✅ extract to util (no state)
+function formatPostDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+```
+
+| Has state / effects? | Extract to |
+|---------------------|------------|
+| Yes | `hooks/useXxx.ts` |
+| No | `lib/xxx.ts` or `utils/xxx.ts` |
+
+## 5. useContext + useReducer + useSelector
+
+When `useContext` holds complex state, pair it with `useReducer` for predictable transitions and a custom `useSelector` to avoid full re-renders.
+
+```tsx
+// ✅ Context + Reducer + Selector pattern
+type State = { posts: Post[]; filter: string; loading: boolean };
+type Action = { type: 'SET_POSTS'; posts: Post[] } | { type: 'SET_FILTER'; filter: string };
+
+function postReducer(state: State, action: Action): State { ... }
+
+const PostCtx = createContext<{ state: State; dispatch: Dispatch<Action> }>(null!);
+
+// Custom selector — component only re-renders when its slice changes
+function useSelector<T>(selector: (s: State) => T): T {
+  const { state } = useContext(PostCtx);
+  const ref = useRef(selector(state));
+  const next = selector(state);
+  if (!Object.is(ref.current, next)) ref.current = next;
+  return ref.current;
+}
+
+// Usage in component — no re-render on unrelated state changes
+function PostList() {
+  const posts = useSelector(s => s.posts);
+  ...
+}
+```
+
+**Why not just useContext alone:** Every state change re-renders ALL consumers. `useReducer` + `useSelector` gives you Redux-like precision without a library.
+
+## 6. State Management — When to Use What
+
+```
+Component local state?
+  → useState / useReducer
+
+Shared by 2-5 components in same subtree?
+  → useContext + custom hook wrapping it
+
+Shared across pages, or 6+ consumers, or needs outside-React access?
+  → Zustand (lightweight, selector-based, no boilerplate)
+
+Large team, complex middleware, time-travel debugging?
+  → Redux Toolkit
+```
+
+| Tool | Use when |
+|------|----------|
+| `useState` | Local to one component |
+| `useContext` | Few consumers, same subtree, simple get/set |
+| **Zustand** | App-wide, many consumers, outside React, selectors |
+| Redux | Rare — only if the team/project already uses it |
+
+**Key rule:** Never jump to a state library because "we might need it later." Start with `useContext`, extract to Zustand when the context re-render problem actually bites.
+
+### Immutability — When Required, When Not
+
+| Library | Needs immutability? | Why |
+|---------|---------------------|-----|
+| **Redux** | Always | `connect` / `useSelector` does `===` reference check. Mutate = no re-render |
+| **Zustand** | Always | Same — shallow compare by default. `set((s) => ({ ...s, key: val }))` |
+| **useState** objects/arrays | Always | `setState` only triggers re-render if reference changes |
+| **useContext + useReducer** | Always | Reducer must return new reference for changes |
+
+```ts
+// ✅ immutable update
+set((s) => ({ ...s, count: s.count + 1 }));
+dispatch({ type: 'INC' }); // reducer returns new state
+
+// ❌ mutate in place — NO re-render
+state.count += 1;
+set(state); // same reference — zustand skips
+```
+
+**When you DON'T need immutability:**
+- Local variables in a function — no one is watching them
+- `useRef` — mutable by design, `.current` is meant to be mutated
+
+### Immer — When to Use
+
+Use `immer` when the update is deeply nested and spread becomes unreadable:
+
+```tsx
+import { produce } from 'immer';
+import { create } from 'zustand';
+import { immer } from 'zustand/middleware/immer';
+
+// ❌ spread hell — 4 levels deep, easy to miss a level
+set((s) => ({
+  ...s,
+  posts: {
+    ...s.posts,
+    [postId]: {
+      ...s.posts[postId],
+      meta: {
+        ...s.posts[postId].meta,
+        viewCount: s.posts[postId].meta.viewCount + 1,
+      }
+    }
+  }
+}));
+
+// ✅ immer — "mutate" a draft, immer produces the new reference
+set(produce((s) => {
+  s.posts[postId].meta.viewCount += 1;
+}));
+
+// ✅ or zustand immer middleware — no produce() wrap needed
+const useStore = create(immer((set) => ({
+  posts: {},
+  incView: (postId) => set((s) => { s.posts[postId].meta.viewCount += 1; }),
+})));
+```
+
+| Use immer | Use spread | Use neither |
+|-----------|-----------|-------------|
+| 3+ levels deep | 1-2 levels | useRef (mutable by design) |
+| Array element update | Simple object | Local temp variables |
+| Normalized state shape | Flat state | — |
+
+**With Redux Toolkit:** `createSlice` already includes immer — `state.count += 1` in a reducer is safe.
+
+## 7. Error Boundaries
+
+## 7. Error Boundaries — Crash a Section, Not the Whole Page
+
+Wrap each logical section in its own ErrorBoundary. One component crashes → only that section shows fallback, the rest stays functional.
+
+```tsx
+// ✅ section-level boundaries
+<ScrollSections>
+  <section id="posts">
+    <ErrorBoundary fallback={<p>Failed to load posts.</p>}>
+      <PostList />
+    </ErrorBoundary>
+  </section>
+  <section id="about">
+    <ErrorBoundary fallback={<p>About section crashed.</p>}>
+      <About />
+    </ErrorBoundary>
+  </section>
+</ScrollSections>
+```
+
+Use `react-error-boundary` — same API as class-based, but hooks-friendly:
+
+```tsx
+import { ErrorBoundary } from 'react-error-boundary';
+
+function PostList() {
+  return (
+    <ErrorBoundary
+      fallback={<p className="editorial-empty">Something went wrong.</p>}
+      onError={(err) => console.error(err)}
+    >
+      <Posts />
+    </ErrorBoundary>
+  );
+}
+```
+
+| Rule | Why |
+|------|-----|
+| One per logical section | Isolate crashes, don't take down the page |
+| `fallback` is a ReactNode | Match the design system, not a generic "Error!" text |
+| `onError` to log | Don't swallow errors silently |
+| NOT around every component | Only at meaningful boundaries (page sections, feature blocks) |
+
+## 8. Suspense — Loading States Without `isLoading` Booleans
+
+Use `Suspense` to handle async boundaries declaratively. No manual `if (isLoading)` checks.
+
+```tsx
+// ❌ manual loading flag — every component repeats this pattern
+function Posts() {
+  const { data, isLoading } = useSWR('/api/posts', fetcher);
+  if (isLoading) return <Skeleton />;
+  return <PostList posts={data} />;
+}
+
+// ✅ Suspense — loading lives at the boundary, component stays clean
+function Posts() {
+  const { data } = useSWR('/api/posts', fetcher, { suspense: true });
+  return <PostList posts={data} />; // no isLoading check!
+}
+
+// Parent wraps with Suspense + fallback
+<Suspense fallback={<PostListSkeleton />}>
+  <Posts />
+</Suspense>
+```
+
+Pair with ErrorBoundary for complete async state coverage:
+
+```tsx
+<ErrorBoundary fallback={<p>Failed</p>}>
+  <Suspense fallback={<Skeleton />}>
+    <Posts />
+  </Suspense>
+</ErrorBoundary>
+// ↑ loading → Skeleton, error → Failed, success → Posts
+```
+
+| Pattern | Use |
+|---------|-----|
+| `if (isLoading)` in component | Simple, one-off — fine for small components |
+| `Suspense` at page/section level | Multiple async components, want clean component code |
+| `Suspense` + `ErrorBoundary` | Full coverage — loading + error handled declaratively |
+
+## 9. Avoid forwardRef — Return API Object from Hook Instead
+
+`forwardRef` + `useImperativeHandle` is fragile. Expose component API via a hook that returns methods.
+
+```tsx
+// ❌ forwardRef — fragile contract, no type-safe return, hidden API
+const Table = forwardRef<TableHandle, Props>((props, ref) => {
+  useImperativeHandle(ref, () => ({ reset: () => { ... }, refresh: () => { ... } }));
+  return <table>...</table>;
+});
+// Usage: <Table ref={tableRef} /> — parent needs ref + typeof TableHandle
+
+// ✅ hook returns API object — explicit, type-safe, discoverable
+function useTable() {
+  const [data, setData] = useState([]);
+  const reset = () => setData([]);
+  const refresh = () => fetchData().then(setData);
+  return { data, reset, refresh };
+}
+
+function Table({ data }: { data: Item[] }) {
+  return <table>...</table>;
+}
+
+// Usage:
+function Page() {
+  const { data, reset, refresh } = useTable();
+  return (
+    <>
+      <button onClick={reset}>Reset</button>
+      <Table data={data} />
+    </>
+  );
+}
+```
+
+**Why:**
+- Hook return type is explicit and IDE-discoverable
+- No hidden imperative API — `const { reset } = useTable()` is self-documenting
+- No ref juggling — `ref.current?.reset()` vs just calling `reset()`
+- Works with React DevTools — ref methods are invisible
+
+**Exception:** `forwardRef` is fine for DOM ref forwarding (`ref` to an `<input>` for focus management). Just don't use it to expose custom imperative methods.
+
+## 10. Dynamic Rendering — Conditional Components, Lazy Load, Registry
+
+**Conditional render — simple ternary or map:**
+
+```tsx
+// ✅ status → component map (strategy pattern)
+const VIEW_MAP = { loading: Skeleton, error: ErrorCard, empty: Empty, ready: PostList } as const;
+
+function Posts({ status }: { status: 'loading' | 'error' | 'empty' | 'ready' }) {
+  const View = VIEW_MAP[status];
+  return <View />;
+}
+```
+
+**Dynamic import — heavy component, load on demand:**
+
+```tsx
+// ✅ Next.js dynamic — component only loaded when rendered
+import dynamic from 'next/dynamic';
+const HeavyChart = dynamic(() => import('./Chart'), {
+  loading: () => <Skeleton />,
+  ssr: false, // if it uses window/DOM
+});
+```
+
+**Lazy — React built-in (no Next.js):**
+
+```tsx
+import { lazy, Suspense } from 'react';
+const Chart = lazy(() => import('./Chart'));
+<Suspense fallback={<Skeleton />}><Chart /></Suspense>
+```
+
+**Component Registry — render by name from data:**
+
+```tsx
+// ✅ registry pattern — data drives which component renders
+const BLOCK_RENDERER: Record<string, React.FC<Block>> = {
+  text: TextBlock,
+  image: ImageBlock,
+  code: CodeBlock,
+  embed: EmbedBlock,
+};
+
+function Article({ blocks }: { blocks: Block[] }) {
+  return blocks.map((b) => {
+    const Renderer = BLOCK_RENDERER[b.type] ?? FallbackBlock;
+    return <Renderer key={b.id} block={b} />;
+  });
+}
+```
+
+| Pattern | Use when | Platform |
+|---------|----------|----------|
+| Ternary / `&&` | 2 states, simple | All |
+| Map object | 3+ states, static list of variants | All |
+| `dynamic()` | Next.js, heavy lib, SSR-skip | **Next.js only** |
+| `lazy()` + `Suspense` | Plain React, code-splitting | React / React Native |
+| `React.lazy()` | React Native heavy screen | **React Native** |
+| Component registry | Data drives which component renders (CMS, block editor) | All |
+
+**Platform note:** `next/dynamic` is Next.js-only. React Native uses `React.lazy()` + `Suspense` for code-splitting screens, or a navigation-based lazy load.
+
+## 11. Avoid cloneElement — Use Render Prop or Registry
+
+`cloneElement` creates a new element every render, breaks `memo`, and causes cascading re-renders.
+
+```tsx
+// ❌ cloneElement — new element every render, breaks memo
+function FormField({ children, label }: { children: ReactElement; label: string }) {
+  return (
+    <div>
+      <span>{label}</span>
+      {cloneElement(children, { id: label, required: true })}
+    </div>
+  );
+}
+
+// ✅ render prop — no clone, explicit contract
+function FormField({ render, label }: { render: (props: FieldProps) => ReactNode; label: string }) {
+  return (
+    <div>
+      <span>{label}</span>
+      {render({ id: label, required: true })}
+    </div>
+  );
+}
+<FormField label="Email" render={(p) => <Input {...p} />} />
+
+// ✅ component registry — data drives rendering, no clone
+const FIELD_COMPONENTS = { text: Input, select: Select, date: DatePicker } as const;
+
+function FormField({ type, ...fieldProps }: { type: keyof typeof FIELD_COMPONENTS } & FieldProps) {
+  const Component = FIELD_COMPONENTS[type];
+  return (
+    <div>
+      <span>{fieldProps.label}</span>
+      <Component {...fieldProps} />
+    </div>
+  );
+}
+
+// ✅ children as function — pass props through function call
+function FormField({ children, label }: { children: (props: FieldProps) => ReactNode; label: string }) {
+  return <div><span>{label}</span>{children({ id: label, required: true })}</div>;
+}
+```
+
+**Why cloneElement is harmful:**
+- New React element object every render → `memo` is useless on children
+- Cascading re-renders down the tree
+- Hidden contract — child has no idea what props are being injected
+- Slower than function call or JSX
+
+**When cloneElement IS acceptable:** Injecting a class name or style into a single immediate child in a design-system component (e.g., `ButtonGroup` adding margin to `Button` children). Even then, prefer CSS `gap` or `:has()`.
+
+---
+
+## 12. 锚点导航 — 点击列表滚动到对应区域
+
+### 推荐：`react-scroll`
+
+```bash
+npm install react-scroll
+```
+
+```tsx
+import { Link, Element } from 'react-scroll';
+
+function Toc() {
+  return (
+    <nav>
+      <Link to="section1" smooth duration={500} offset={-80}
+            activeClass="active" spy>
+        第一章
+      </Link>
+      <Link to="section2" smooth duration={500} offset={-80}
+            activeClass="active" spy>
+        第二章
+      </Link>
+    </nav>
+  );
+}
+
+function Content() {
+  return (
+    <div>
+      <Element name="section1"><h2>第一章</h2></Element>
+      <Element name="section2"><h2>第二章</h2></Element>
+    </div>
+  );
+}
+```
+
+### 轻量方案：原生 scrollIntoView（零依赖）
+
+```tsx
+const scrollTo = (id: string) => {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+<button onClick={() => scrollTo('section1')}>第一章</button>
+<div id="section1"><h2>第一章</h2></div>
+```
+
+| 功能 | 原生 scrollIntoView | react-scroll |
+|------|-------------------|-------------|
+| 平滑滚动 | ✅ | ✅ |
+| offset（导航栏补偿） | ❌ 需自己算 | ✅ `offset={-80}` |
+| spy（当前高亮） | ❌ 需自己监听 | ✅ `spy + activeClass` |
+| 依赖 | 零 | 需安装 |
+
+**简单场景用原生，需要 spy + offset 时上 `react-scroll`。**
+
+---
+
+## 13. 虚拟滚动 — 什么时候用
+
+### 虚拟列表解决的问题
+
+大量数据列表（1000+ 条）时，渲染所有 DOM 节点会导致：
+- 首屏渲染慢
+- 内存占用高
+- 滚动卡顿
+
+虚拟列表只渲染可视区域内的 DOM，其他用空白占位。
+
+### 常用库
+
+| 包 | 特点 | 推荐度 |
+|----|------|--------|
+| `react-window` | 轻量（~5KB），功能稳定 | ⭐ **推荐** |
+| `react-virtuoso` | 自动高度、Group、Sticky header | ✅ 功能多 |
+| `react-native` (FlatList) | RN 内置 | ✅ RN 首选 |
+| 自己实现 | 不推荐，坑多 | ❌ |
+
+### 什么时候该用
+
+```
+列表项数量
+├── < 100 条 → ❌ 不需要虚拟滚动，普通 map
+├── 100~1000 条
+│   ├── 每一项很简单（几行文字） → ❌ 不需要
+│   └── 每一项很复杂（图片、富文本） → ✅ 考虑使用
+├── 1000~10000 条 → ✅ 推荐使用
+└── > 10000 条 → ✅ 必须使用
+```
+
+### react-window 示例
+
+```tsx
+import { FixedSizeList } from 'react-window';
+
+function VirtualList({ items }: { items: Item[] }) {
+  const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => (
+    <div style={style}>
+      <div className="item">{items[index].name}</div>
+    </div>
+  );
+
+  return (
+    <FixedSizeList
+      height={600}             // 可视区域高度
+      itemCount={items.length}  // 总数据量
+      itemSize={80}             // 每项高度（px）
+      width="100%"
+    >
+      {Row}
+    </FixedSizeList>
+  );
+}
+```
+
+### 什么时候不需要虚拟滚动
+
+```tsx
+// ✅ 不需要：分页列表（后端分页，每次只返回 10~20 条）
+function PaginatedList() {
+  const { data, fetchNextPage } = useInfiniteQuery(...);
+  return data?.pages.map(page =>
+    page.items.map(item => <ItemCard key={item.id} item={item} />)
+  );
+}
+
+// ✅ 不需要：数据量 < 100 且每项简单
+function ShortList({ items }: { items: Item[] }) {
+  return items.map(item => <div key={item.id}>{item.name}</div>);
+}
+
+// ✅ 不需要：搜索下拉框（最多几十条）
+function SearchSelect() {
+  return <List>{filteredItems.slice(0, 50).map(renderOption)}</List>;
+}
+```
+
+### 虚拟滚动 + 锚点跳转
+
+```tsx
+import { FixedSizeList as List } from 'react-window';
+import { useRef } from 'react';
+
+function TocAndList() {
+  const listRef = useRef<List>(null);
+
+  const scrollToSection = (index: number) => {
+    listRef.current?.scrollToItem(index, 'start');
+  };
+
+  return (
+    <div>
+      <nav>
+        <button onClick={() => scrollToSection(0)}>第一项</button>
+        <button onClick={() => scrollToSection(10)}>第十项</button>
+      </nav>
+      <List ref={listRef} height={600} itemCount={1000} itemSize={80}>
+        {Row}
+      </List>
+    </div>
+  );
+}
+```
+
+### 总结
+
+| 数据量 | 每项复杂度 | 方案 |
+|--------|-----------|------|
+| < 100 | 任意 | 普通 map |
+| 100~1000 | 简单 | 普通 map |
+| 100~1000 | 复杂（图片） | 虚拟列表 |
+| 1000~10000 | 任意 | 虚拟列表 |
+| > 10000 | 任意 | 虚拟列表 + 分页加载 |
+
+## Why a Separate Skill
+
+`vercel-react-best-practices` is upstream. Team conventions live here so the upstream skill stays updateable.

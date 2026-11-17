@@ -1,46 +1,31 @@
-import { useEffect, useMemo, useSyncExternalStore } from "react";
 import { Link, useParams } from "react-router";
-import { useAppDeps } from "../../AppDepsContext";
 import { useAuth } from "../../auth/AuthContext";
 import { Can } from "../../components/Can";
-import { buildViewModel } from "./buildViewModel";
-import { createOrchestrator } from "./orchestrator";
+import { SectionErrorBoundary } from "../../components/SectionErrorBoundary";
 import { AddressSection } from "./components/AddressSection";
 import { AmountSection } from "./components/AmountSection";
 import { PaySection } from "./components/PaySection";
 import { QtySection } from "./components/QtySection";
 import { SaveBar } from "./components/SaveBar";
+import { useOrderPage } from "./useOrderPage";
 
+/**
+ * Component: OrderFormPage
+ *   Props: route `orderId`
+ *   Responsibility: compose order form sections from ViewModel
+ *   Scope: page
+ *   Data flow: useOrderPage → FormViewModel + orchestrator → section components
+ *
+ * Component: SectionErrorBoundary (shared)
+ *   Responsibility: isolate one section crash
+ *   Scope: global — presentation/components
+ */
 export function OrderFormPage() {
   const { orderId = "order-1" } = useParams();
   const { session, logout } = useAuth();
-  const { order: deps } = useAppDeps();
+  const { orchestrator, vm, loading } = useOrderPage(orderId);
 
-  const orchestrator = useMemo(() => createOrchestrator(deps, orderId), [deps, orderId]);
-
-  const state = useSyncExternalStore(
-    orchestrator.subscribe,
-    orchestrator.getState,
-    orchestrator.getState,
-  );
-
-  useEffect(() => {
-    void orchestrator.hydrate();
-  }, [orchestrator]);
-
-  const vm = useMemo(() => {
-    if (!state.draft) return null;
-    return buildViewModel({
-      draft: state.draft,
-      phase: state.phase,
-      cityOptions: state.cityOptions,
-      dirty: state.dirty,
-      lastSavedAt: state.lastSavedAt,
-      error: state.error,
-    });
-  }, [state]);
-
-  if (state.phase === "loading" || !vm) {
+  if (loading || !vm) {
     return <p className="page">加载中…</p>;
   }
 
@@ -63,51 +48,64 @@ export function OrderFormPage() {
 
       {vm.errors.form && <p className="error">{vm.errors.form}</p>}
 
-      <PaySection
-        payType={vm.values.payType}
-        onChange={(v) => void orchestrator.changeField("payType", v)}
-      />
-      <QtySection
-        qty={vm.values.qty}
-        unitPrice={vm.values.unitPrice}
-        onChange={(v) => void orchestrator.changeField("qty", v)}
-      />
-      <AmountSection visible={vm.ui.amountVisible} amount={vm.values.amount} />
-      <AddressSection
-        province={vm.values.province}
-        city={vm.values.city}
-        cityOptions={vm.ui.cityOptions}
-        onProvince={(v) => void orchestrator.changeField("province", v)}
-        onCity={(v) => void orchestrator.changeField("city", v)}
-      />
+      <SectionErrorBoundary label="支付方式">
+        <PaySection
+          payType={vm.values.payType}
+          onChange={(v) => void orchestrator.changeField("payType", v)}
+        />
+      </SectionErrorBoundary>
 
-      <SaveBar
-        dirty={vm.ui.dirty}
-        saving={vm.ui.saving}
-        version={vm.values.version}
-        lastSavedAt={vm.ui.lastSavedAt}
-        onSave={() => void orchestrator.saveNow()}
-        submitButton={
-          <Can
-            permission="order:submit"
-            fallback={
-              <button type="button" disabled>
-                无提交权限
-              </button>
-            }
-          >
-            <button
-              type="button"
-              onClick={() => {
-                alert(JSON.stringify(vm.values, null, 2));
-              }}
-              disabled={!vm.canSubmit}
+      <SectionErrorBoundary label="数量">
+        <QtySection
+          qty={vm.values.qty}
+          unitPrice={vm.values.unitPrice}
+          onChange={(v) => void orchestrator.changeField("qty", v)}
+        />
+      </SectionErrorBoundary>
+
+      <SectionErrorBoundary label="金额">
+        <AmountSection visible={vm.ui.amountVisible} amount={vm.values.amount} />
+      </SectionErrorBoundary>
+
+      <SectionErrorBoundary label="地址">
+        <AddressSection
+          province={vm.values.province}
+          city={vm.values.city}
+          cityOptions={vm.ui.cityOptions}
+          onProvince={(v) => void orchestrator.changeField("province", v)}
+          onCity={(v) => void orchestrator.changeField("city", v)}
+        />
+      </SectionErrorBoundary>
+
+      <SectionErrorBoundary label="保存栏">
+        <SaveBar
+          dirty={vm.ui.dirty}
+          saving={vm.ui.saving}
+          version={vm.values.version}
+          lastSavedAt={vm.ui.lastSavedAt}
+          onSave={() => void orchestrator.saveNow()}
+          submitButton={
+            <Can
+              permission="order:submit"
+              fallback={
+                <button type="button" disabled>
+                  无提交权限
+                </button>
+              }
             >
-              提交
-            </button>
-          </Can>
-        }
-      />
+              <button
+                type="button"
+                onClick={function submitOrderSnapshot() {
+                  alert(JSON.stringify(vm.values, null, 2));
+                }}
+                disabled={!vm.canSubmit}
+              >
+                提交
+              </button>
+            </Can>
+          }
+        />
+      </SectionErrorBoundary>
 
       <details className="debug">
         <summary>ViewModel / Domain 快照</summary>
