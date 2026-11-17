@@ -39,10 +39,14 @@ pnpm create dddfe my-app
 ## Develop
 
 ```bash
+pnpm install                       # also points git hooks at .githooks
+pnpm lint                          # oxlint in templates/demo, including the ddd plugin
 pnpm test                          # create-dddfe unit tests
 pnpm --filter create-dddfe build   # compile CLI
 cd templates/demo && pnpm install && pnpm test && pnpm dev
 ```
+
+`pnpm install` at the repo root sets `core.hooksPath` to `.githooks`. The pre-commit hook runs the root `pnpm lint` script and stops the commit when oxlint reports an error.
 
 ## Layout
 

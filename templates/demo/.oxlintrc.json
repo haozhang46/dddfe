@@ -1,8 +1,16 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["react", "typescript", "oxc"],
+  "jsPlugins": ["./oxlint/ddd-plugin.js"],
   "rules": {
     "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+    "react/only-export-components": ["warn", { "allowConstantExport": true }],
+    "ddd/domain-purity": "error",
+    "ddd/domain-barrel": "error",
+    "ddd/application-boundary": "error",
+    "ddd/infrastructure-boundary": "error",
+    "ddd/section-viewmodel": "error",
+    "ddd/apply-change-name": "error",
+    "ddd/base-component": "error"
   }
 }

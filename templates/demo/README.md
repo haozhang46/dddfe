@@ -5,7 +5,8 @@ Spec: `../docs/superpowers/specs/2026-10-09-order-form-ddd-demo-design.md`
 ```bash
 pnpm install
 pnpm dev      # UI
-pnpm test     # Domain applyChange tests
+pnpm test     # Domain rules + the layer lint
+pnpm lint     # oxlint, including oxlint/ddd-plugin.js
 ```
 
 试玩：
