@@ -16,6 +16,8 @@
 
 DDD layer rules and BEM: see [`agent.md`](./agent.md).
 
+Before adding UI, read [`registry.json`](./registry.json), then `r/<name>.json` for the component you will use. `pnpm registry:check` fails when a shared component is missing from that index.
+
 ## Commands
 
 ```bash
