@@ -1,0 +1,71 @@
+.button {
+  font: inherit;
+  width: fit-content;
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;
+  border: 1px solid #2f3a4f;
+  background: #2f3a4f;
+  color: #fff;
+  cursor: pointer;
+}
+
+.button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.button--ghost {
+  background: transparent;
+  color: #2f3a4f;
+}
+
+.button--danger {
+  background: #a32020;
+  border-color: #a32020;
+}
+
+.input,
+.select,
+.date-picker {
+  padding: 0.45rem 0.55rem;
+  border: 1px solid #b0b8c8;
+  border-radius: 6px;
+  font: inherit;
+  max-width: 220px;
+  box-sizing: border-box;
+}
+
+textarea.input {
+  max-width: 100%;
+  min-height: 5rem;
+}
+
+.input--invalid,
+.select--invalid,
+.date-picker--invalid {
+  border-color: #a32020;
+}
+
+.text--muted {
+  color: #5c667a;
+  font-size: 0.9rem;
+}
+
+.text--error {
+  color: #a32020;
+  background: #fdeaea;
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+}
+
+.form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.form .form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.95rem;
+}

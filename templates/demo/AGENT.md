@@ -27,6 +27,8 @@ pnpm fmt:check            # oxfmt --check
 pnpm test                 # vitest
 pnpm verify               # lint → fmt:check → tsc → test → build
 pnpm dev                  # Vite (foreground)
+pnpm storybook            # Base component catalog on :6006
+pnpm build-storybook      # Static Storybook build (also in pnpm verify)
 ```
 
 Pre-commit runs `pnpm lint` and `pnpm fmt:check` (via `.githooks`, set by `prepare` / `.cursor/install.sh`).

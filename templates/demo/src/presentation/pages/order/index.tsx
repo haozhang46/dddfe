@@ -1,5 +1,6 @@
 import { Link, useParams } from "react-router";
 import { useAuth } from "../../auth/AuthContext";
+import { Button, Text } from "../../components/base";
 import { Can } from "../../components/Can";
 import { SectionErrorBoundary } from "../../components/SectionErrorBoundary";
 import { AddressSection } from "./components/AddressSection";
@@ -26,27 +27,25 @@ export function OrderFormPage() {
   const { orchestrator, vm, loading } = useOrderPage(orderId);
 
   if (loading || !vm) {
-    return <p className="page">加载中…</p>;
+    return <Text className="page">加载中…</Text>;
   }
 
   return (
     <div className="page">
       <header>
-        <h1>订单 Form · DDD Demo</h1>
-        <p className="muted">
+        <Text as="h1">订单 Form · DDD Demo</Text>
+        <Text className="muted">
           订单 <code>{orderId}</code> · {session?.displayName}（{session?.roles.join(", ")}）{" · "}
           <Link to="/admin">Admin</Link>
           {" · "}
-          <button type="button" onClick={logout}>
-            退出
-          </button>
-        </p>
-        <p className="muted">
+          <Button onClick={logout}>退出</Button>
+        </Text>
+        <Text className="muted">
           所有 onChange → <code>changeField</code> → Domain <code>applyChange</code>
-        </p>
+        </Text>
       </header>
 
-      {vm.errors.form && <p className="error">{vm.errors.form}</p>}
+      {vm.errors.form && <Text className="error">{vm.errors.form}</Text>}
 
       <SectionErrorBoundary label="支付方式">
         <PaySection
@@ -85,23 +84,15 @@ export function OrderFormPage() {
           lastSavedAt={vm.ui.lastSavedAt}
           onSave={() => void orchestrator.saveNow()}
           submitButton={
-            <Can
-              permission="order:submit"
-              fallback={
-                <button type="button" disabled>
-                  无提交权限
-                </button>
-              }
-            >
-              <button
-                type="button"
+            <Can permission="order:submit" fallback={<Button disabled>无提交权限</Button>}>
+              <Button
                 onClick={function submitOrderSnapshot() {
                   alert(JSON.stringify(vm.values, null, 2));
                 }}
                 disabled={!vm.canSubmit}
               >
                 提交
-              </button>
+              </Button>
             </Can>
           }
         />

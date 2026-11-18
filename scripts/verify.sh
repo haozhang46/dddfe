@@ -81,6 +81,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 
 run_check "demo production build" "pnpm --dir templates/demo build"
+run_check "demo storybook build" "pnpm --dir templates/demo build-storybook"
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 if [ "$FAILED" -eq 0 ]; then

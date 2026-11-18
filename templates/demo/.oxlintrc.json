@@ -16,5 +16,13 @@
     "ddd/named-hook-callback": "error",
     "ddd/no-clone-element": "error",
     "ddd/no-imperative-handle": "error"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["**/*.stories.tsx"],
+      "rules": {
+        "react/only-export-components": "off"
+      }
+    }
+  ]
 }

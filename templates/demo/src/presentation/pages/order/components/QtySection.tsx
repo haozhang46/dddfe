@@ -1,3 +1,5 @@
+import { Text } from "../../../components/base";
+
 type Props = {
   qty: number;
   unitPrice: number;
@@ -17,7 +19,7 @@ export function QtySection({ qty, unitPrice, onChange }: Props) {
           onChange={(e) => onChange(Number(e.target.value))}
         />
       </label>
-      <p className="muted">单价（分）：{unitPrice}（只读）</p>
+      <Text className="muted">单价（分）：{unitPrice}（只读）</Text>
     </fieldset>
   );
 }

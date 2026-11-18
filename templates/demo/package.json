@@ -12,6 +12,8 @@
     "fmt:check": "oxfmt --check",
     "verify": "./scripts/verify.sh",
     "preview": "vite preview",
+    "storybook": "STORYBOOK_DISABLE_TELEMETRY=1 storybook dev -p 6006",
+    "build-storybook": "STORYBOOK_DISABLE_TELEMETRY=1 storybook build",
     "test": "vitest run",
     "test:watch": "vitest",
     "prepare": "git rev-parse --is-inside-work-tree >/dev/null 2>&1 && git config core.hooksPath .githooks || true"
@@ -25,12 +27,14 @@
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
+    "@storybook/react-vite": "^10.6.5",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^6.1.1",
     "oxfmt": "^0.79.0",
     "oxlint": "^1.81.0",
+    "storybook": "^10.6.5",
     "typescript": "~6.0.2",
     "vite": "^8.3.0",
     "vitest": "^5.0.3"
