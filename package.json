@@ -4,7 +4,9 @@
   "private": true,
   "description": "DDD frontend scaffolding with AI agent support (Lauren Tan's approach)",
   "scripts": {
-    "test": "pnpm --filter create-dddfe test",
+    "test": "NX_DAEMON=false nx run-many -t test",
+    "affected:test": "NX_DAEMON=false nx affected:test",
+    "affected:graph": "NX_DAEMON=false node scripts/check-nx-affected.mjs",
     "verify": "./scripts/verify.sh",
     "verify:arch": "tsx scripts/tools/architecture-scanner.ts",
     "verify:bundle": "tsx scripts/tools/measure-bundle.ts",
@@ -32,6 +34,7 @@
     "@playwright/test": "^1.48.2",
     "chrome-launcher": "^1.1.2",
     "lighthouse": "^12.2.1",
+    "nx": "^24.0.6",
     "ts-morph": "^24.0.0",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",

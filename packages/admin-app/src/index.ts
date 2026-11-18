@@ -1,0 +1,1 @@
+export { formatStockLabel } from './stockLabel'

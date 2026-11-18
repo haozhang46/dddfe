@@ -133,6 +133,17 @@ Test Repository implementations with test doubles or local servers.
 
 Test the actual running app with real browser interaction.
 
+### 5. Affected tests (Nx)
+
+Workspace packages are an Nx project graph. `nx affected:test` runs a project's tests and the tests of every project that depends on it.
+
+Changing `packages/core-lib` runs `core-lib`, `order-app`, and `admin-app`. `create-dddfe` does not depend on `core-lib`, so that change leaves it out. `templates/demo` is not in the graph.
+
+```bash
+pnpm affected:test --base=main --head=HEAD
+pnpm affected:graph
+```
+
 ---
 
 ## Making Changes: The Verification Loop

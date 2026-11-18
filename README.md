@@ -80,12 +80,16 @@ bash .cursor/install.sh            # workspace + templates/demo + optional verif
 pnpm lint                          # oxlint in templates/demo, including the ddd plugin
 pnpm fmt:check                     # oxfmt --check in templates/demo
 pnpm fmt                           # oxfmt (write)
-pnpm test                          # create-dddfe unit tests
+pnpm test                          # nx run-many -t test (every workspace project)
+pnpm affected:test                 # nx affected:test, since main
+pnpm affected:graph                # assert core-lib pulls in its dependents
 pnpm --filter create-dddfe build   # compile CLI
 bash .cursor/start.sh              # demo Vite on :5173 (or: pnpm --dir templates/demo dev)
 ```
 
 `bash .cursor/install.sh` (or root `pnpm install`) sets `core.hooksPath` to `.githooks`. The pre-commit hook runs `pnpm lint` (oxlint) and `pnpm fmt:check` (oxfmt).
+
+`pnpm affected:test` is `nx affected:test`. The project graph comes from workspace `package.json` dependencies. A change under `packages/core-lib` runs tests for `core-lib` and for every project that depends on it (`order-app`, `admin-app`). A change under `packages/create-dddfe` runs only that project. `templates/demo` is not in the graph; it stays a standalone template.
 
 Cloud Agent env fields: see [docs/environment-setup.md](./docs/environment-setup.md).
 
@@ -93,7 +97,10 @@ Cloud Agent env fields: see [docs/environment-setup.md](./docs/environment-setup
 
 ```text
 packages/create-dddfe           # create-dddfe CLI (publishable later)
-templates/demo                  # first init template
+packages/core-lib               # shared kernel; Nx project core-lib
+packages/order-app              # depends on core-lib
+packages/admin-app              # depends on core-lib
+templates/demo                  # first init template (not an Nx project)
   ├── src/domain/              # Pure business logic (no HTTP, no UI)
   ├── src/application/         # Use cases + Ports (abstractions)
   ├── src/infrastructure/      # HTTP, Queue, Repository implementations
