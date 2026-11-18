@@ -11,6 +11,7 @@ Team-specific React rules complementing `vercel-react-best-practices`.
 
 - Layer rules in root [`AGENT.md`](../../AGENT.md) and `templates/demo/agent.md` win over generic React advice when they conflict.
 - Presentation layout already matches §3: page-only UI under `pages/<page>/components/`, shared under `presentation/components/`.
+- Before adding UI in `templates/demo`, read `templates/demo/registry.json`, then `templates/demo/r/<name>.json` for props and the file to import. A new shared component needs an `r/<name>.json` in the same change.
 - Field edits stay on the orchestrator write path (`changeField` → Domain `applyChange`). Do not put business convergence in React `onChange`.
 - Demo order hydrate uses orchestrator `phase` loading; prefer Suspense for true suspending data sources. A single `phase === 'loading'` check on the page entry is acceptable here.
 

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "form",
+  "type": "registry:ui",
+  "title": "Form",
+  "description": "The only form. Formik holds the draft, a Zod object schema parses one field, and onCommit receives the parsed value.",
+  "dependencies": ["formik", "zod"],
+  "categories": ["form"],
+  "docs": "Use for every form. Import Form from src/presentation/components/base/Form. Props: values (external draft), schema (Zod object), onCommit(path, parsedValue), onSubmit(), children(form). form.commit(path, raw) keeps the raw value locally and calls onCommit only when that field parses. form.error(path) is the message after the field is touched. form.submit() runs onSubmit. A later external snapshot updates keys that changed and leaves an invalid local value in place when that key did not change. The order page passes orchestrator.changeField as onCommit. Do not import formik or render <form> outside this file.",
+  "files": [
+    {
+      "path": "src/presentation/components/base/Form.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "src/presentation/components/base/parseFormField.ts",
+      "type": "registry:lib"
+    },
+    {
+      "path": "src/presentation/components/base/mergeExternalValues.ts",
+      "type": "registry:lib"
+    }
+  ]
+}
