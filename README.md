@@ -89,7 +89,7 @@ bash .cursor/start.sh              # demo Vite on :5173 (or: pnpm --dir template
 
 `bash .cursor/install.sh` (or root `pnpm install`) sets `core.hooksPath` to `.githooks`. The pre-commit hook runs `pnpm lint` (oxlint) and `pnpm fmt:check` (oxfmt).
 
-`pnpm affected:test` is `nx affected:test`. The project graph comes from workspace `package.json` dependencies. A change under `packages/core-lib` runs tests for `core-lib` and for every project that depends on it (`order-app`, `admin-app`). A change under `packages/create-dddfe` runs only that project. `templates/demo` is not in the graph; it stays a standalone template.
+`pnpm affected:test` is `nx affected:test`. The project graph comes from workspace `package.json` dependencies. A change under `packages/core-lib` runs tests for `core-lib` and for every project that depends on it (`order-app`, `admin-app`). A change under `packages/create-dddfe` runs only that project. `templates/demo` is a separate Nx workspace (`.nxignore` keeps it out of this graph). `create-dddfe` copies that workspace, so a generated app has the same `affected:test` behavior for its own `libs/core-lib`.
 
 Cloud Agent env fields: see [docs/environment-setup.md](./docs/environment-setup.md).
 
@@ -100,7 +100,7 @@ packages/create-dddfe           # create-dddfe CLI (publishable later)
 packages/core-lib               # shared kernel; Nx project core-lib
 packages/order-app              # depends on core-lib
 packages/admin-app              # depends on core-lib
-templates/demo                  # first init template (not an Nx project)
+templates/demo                  # init template; own Nx workspace, copied by create
   ├── src/domain/              # Pure business logic (no HTTP, no UI)
   ├── src/application/         # Use cases + Ports (abstractions)
   ├── src/infrastructure/      # HTTP, Queue, Repository implementations

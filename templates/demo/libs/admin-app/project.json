@@ -1,0 +1,11 @@
+{
+  "name": "admin-app",
+  "sourceRoot": "libs/admin-app/src",
+  "projectType": "library",
+  "implicitDependencies": ["core-lib"],
+  "targets": {
+    "test": {
+      "command": "pnpm exec vitest run --config libs/admin-app/vitest.config.ts"
+    }
+  }
+}

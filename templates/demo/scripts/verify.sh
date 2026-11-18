@@ -60,7 +60,8 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo "🧪 UNIT TESTS"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
-run_check "vitest" "pnpm test"
+run_check "nx affected graph" "node scripts/check-nx-affected.mjs"
+run_check "nx unit tests" "pnpm test"
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "🏗️  BUILD"

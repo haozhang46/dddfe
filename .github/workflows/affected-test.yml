@@ -21,7 +21,9 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: pnpm install --dir templates/demo --ignore-workspace --frozen-lockfile
       - run: node scripts/check-nx-affected.mjs
+      - run: pnpm --dir templates/demo affected:graph
       - run: pnpm exec nx affected:test --base=${{ github.event.pull_request.base.sha }} --head=${{ github.sha }}
         env:
           NX_DAEMON: "false"

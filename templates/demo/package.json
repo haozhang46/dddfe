@@ -12,8 +12,10 @@
     "fmt:check": "oxfmt --check",
     "verify": "./scripts/verify.sh",
     "preview": "vite preview",
-    "test": "vitest run",
+    "test": "NX_DAEMON=false nx run-many -t test",
     "test:watch": "vitest",
+    "affected:test": "NX_DAEMON=false nx affected:test",
+    "affected:graph": "NX_DAEMON=false node scripts/check-nx-affected.mjs",
     "prepare": "git rev-parse --is-inside-work-tree >/dev/null 2>&1 && git config core.hooksPath .githooks || true"
   },
   "dependencies": {
@@ -29,6 +31,7 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^6.1.1",
+    "nx": "^24.0.6",
     "oxfmt": "^0.79.0",
     "oxlint": "^1.81.0",
     "typescript": "~6.0.2",

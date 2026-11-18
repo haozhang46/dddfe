@@ -1,0 +1,10 @@
+{
+  "name": "demo",
+  "sourceRoot": "src",
+  "projectType": "application",
+  "targets": {
+    "test": {
+      "command": "pnpm exec vitest run"
+    }
+  }
+}

@@ -137,7 +137,7 @@ Test the actual running app with real browser interaction.
 
 Workspace packages are an Nx project graph. `nx affected:test` runs a project's tests and the tests of every project that depends on it.
 
-Changing `packages/core-lib` runs `core-lib`, `order-app`, and `admin-app`. `create-dddfe` does not depend on `core-lib`, so that change leaves it out. `templates/demo` is not in the graph.
+Changing `packages/core-lib` runs `core-lib`, `order-app`, and `admin-app`. `create-dddfe` does not depend on `core-lib`, so that change leaves it out. `templates/demo` is its own Nx workspace and is copied into apps created by `create-dddfe`. Run `pnpm affected:test` inside the generated app.
 
 ```bash
 pnpm affected:test --base=main --head=HEAD
