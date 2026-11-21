@@ -17,4 +17,6 @@
 # Runtime / performance reports (CI uploads as artifacts)
 runtime-report.json
 runtime-report-*.json
+lighthouse-*.json
 **/screenshot-*.png
+screenshots/

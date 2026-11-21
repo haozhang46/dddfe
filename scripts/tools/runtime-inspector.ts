@@ -12,10 +12,9 @@
  * Usage: tsx scripts/tools/runtime-inspector.ts
  */
 
+import { spawnSync } from 'node:child_process';
+import { promises as fs } from 'node:fs';
 import { chromium, type Browser, type Page, type CDPSession } from 'playwright';
-import lighthouse from 'lighthouse';
-import * as chromeLauncher from 'chrome-launcher';
-import { promises as fs } from 'fs';
 
 interface ConsoleMessage {
   type: 'log' | 'info' | 'warn' | 'error';
@@ -319,90 +318,95 @@ export class RuntimeInspector {
   }
   
   private async runLighthouse(url: string): Promise<LighthouseResult> {
-    // Launch Chrome for Lighthouse (CHROME_PATH lets CI point at Playwright's Chromium)
-    const chrome = await chromeLauncher.launch({
-      chromePath: process.env.CHROME_PATH || undefined,
-      chromeFlags: ['--headless', '--no-sandbox', '--disable-dev-shm-usage'],
+    // Spawn the Lighthouse CLI (not the JS API). Importing lighthouse under tsx/esbuild
+    // rewrites in-browser gatherer scripts with `__name`, which then crashes in Chrome.
+    const outPath = `./lighthouse-${Date.now()}.json`;
+    const chromePath = process.env.CHROME_PATH || chromium.executablePath();
+    const args = [
+      'exec',
+      'lighthouse',
+      url,
+      '--quiet',
+      '--output=json',
+      `--output-path=${outPath}`,
+      '--only-categories=performance,accessibility,best-practices,seo',
+      `--chrome-path=${chromePath}`,
+      '--chrome-flags=--headless --no-sandbox --disable-dev-shm-usage',
+    ];
+
+    const spawned = spawnSync('pnpm', args, {
+      encoding: 'utf8',
+      maxBuffer: 20 * 1024 * 1024,
     });
+    if (spawned.status !== 0) {
+      const detail = (spawned.stderr || spawned.stdout || '').trim();
+      throw new Error(`Lighthouse CLI failed (exit ${spawned.status}): ${detail.slice(0, 2000)}`);
+    }
 
-    try {
-      const options = {
-        logLevel: 'error' as const,
-        output: 'json' as const,
-        // Lighthouse 12+ no longer ships a PWA category
-        onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo'],
-        port: chrome.port,
-      };
-
-      const runnerResult = await lighthouse(url, options);
-
-      if (!runnerResult) {
-        throw new Error('Lighthouse returned no results');
-      }
-
-      const report = runnerResult.lhr;
-      const score = (id: string) => (report.categories[id]?.score ?? 0) * 100;
-
-      const result: LighthouseResult = {
-        performance: score('performance'),
-        accessibility: score('accessibility'),
-        bestPractices: score('best-practices'),
-        seo: score('seo'),
-        pwa: report.categories.pwa ? score('pwa') : undefined,
-
-        metrics: {
-          firstContentfulPaint: report.audits['first-contentful-paint'].numericValue!,
-          largestContentfulPaint: report.audits['largest-contentful-paint'].numericValue!,
-          totalBlockingTime: report.audits['total-blocking-time'].numericValue!,
-          cumulativeLayoutShift: report.audits['cumulative-layout-shift'].numericValue!,
-          speedIndex: report.audits['speed-index'].numericValue!,
-        },
-
-        opportunities: [],
-      };
-
-      // Extract opportunities
-      const opportunityAudits = Object.values(report.audits).filter(
-        audit => audit.details && audit.details.type === 'opportunity'
-      );
-
-      for (const audit of opportunityAudits) {
-        if (audit.numericValue && audit.numericValue > 100) {
-          result.opportunities.push({
-            title: audit.title,
-            description: audit.description,
-            savings: audit.numericValue,
-          });
+    const report = JSON.parse(await fs.readFile(outPath, 'utf8')) as {
+      categories: Record<string, { score: number | null }>;
+      audits: Record<
+        string,
+        {
+          title: string;
+          description: string;
+          numericValue?: number;
+          details?: { type?: string };
         }
+      >;
+    };
+    await fs.unlink(outPath).catch(() => undefined);
+
+    const score = (id: string) => (report.categories[id]?.score ?? 0) * 100;
+
+    const result: LighthouseResult = {
+      performance: score('performance'),
+      accessibility: score('accessibility'),
+      bestPractices: score('best-practices'),
+      seo: score('seo'),
+      pwa: report.categories.pwa ? score('pwa') : undefined,
+
+      metrics: {
+        firstContentfulPaint: report.audits['first-contentful-paint'].numericValue!,
+        largestContentfulPaint: report.audits['largest-contentful-paint'].numericValue!,
+        totalBlockingTime: report.audits['total-blocking-time'].numericValue!,
+        cumulativeLayoutShift: report.audits['cumulative-layout-shift'].numericValue!,
+        speedIndex: report.audits['speed-index'].numericValue!,
+      },
+
+      opportunities: [],
+    };
+
+    for (const audit of Object.values(report.audits)) {
+      if (audit.details?.type === 'opportunity' && audit.numericValue && audit.numericValue > 100) {
+        result.opportunities.push({
+          title: audit.title,
+          description: audit.description,
+          savings: audit.numericValue,
+        });
       }
+    }
+    result.opportunities.sort((a, b) => b.savings - a.savings);
 
-      // Sort by savings
-      result.opportunities.sort((a, b) => b.savings - a.savings);
+    console.log('🏠 Lighthouse Scores:');
+    console.log(`  Performance:    ${result.performance.toFixed(0)}/100`);
+    console.log(`  Accessibility:  ${result.accessibility.toFixed(0)}/100`);
+    console.log(`  Best Practices: ${result.bestPractices.toFixed(0)}/100`);
+    console.log(`  SEO:            ${result.seo.toFixed(0)}/100`);
+    if (result.pwa != null) {
+      console.log(`  PWA:            ${result.pwa.toFixed(0)}/100`);
+    }
+    console.log();
 
-      // Print Lighthouse results
-      console.log('🏠 Lighthouse Scores:');
-      console.log(`  Performance:    ${result.performance.toFixed(0)}/100`);
-      console.log(`  Accessibility:  ${result.accessibility.toFixed(0)}/100`);
-      console.log(`  Best Practices: ${result.bestPractices.toFixed(0)}/100`);
-      console.log(`  SEO:            ${result.seo.toFixed(0)}/100`);
-      if (result.pwa != null) {
-        console.log(`  PWA:            ${result.pwa.toFixed(0)}/100`);
+    if (result.opportunities.length > 0) {
+      console.log('💡 Top Opportunities:');
+      for (const opp of result.opportunities.slice(0, 3)) {
+        console.log(`  - ${opp.title}: Save ${(opp.savings / 1000).toFixed(2)}s`);
       }
       console.log();
-
-      if (result.opportunities.length > 0) {
-        console.log('💡 Top Opportunities:');
-        for (const opp of result.opportunities.slice(0, 3)) {
-          console.log(`  - ${opp.title}: Save ${(opp.savings / 1000).toFixed(2)}s`);
-        }
-        console.log();
-      }
-
-      return result;
-
-    } finally {
-      await chrome.kill();
     }
+
+    return result;
   }
   
   private getConsoleIcon(type: string): string {

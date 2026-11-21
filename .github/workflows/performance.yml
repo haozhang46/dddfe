@@ -57,8 +57,9 @@ jobs:
           CI: "true"
           RUNTIME_REPORT_PATH: ./runtime-report.json
         run: |
-          export CHROME_PATH="$(node -e "console.log(require('playwright').chromium.executablePath())")"
+          export CHROME_PATH="$(pnpm exec tsx -e "import { chromium } from 'playwright'; console.log(chromium.executablePath())")"
           echo "CHROME_PATH=$CHROME_PATH"
+          test -n "$CHROME_PATH" && test -x "$CHROME_PATH"
           pnpm exec tsx scripts/tools/runtime-inspector.ts http://127.0.0.1:4173 --lighthouse
 
       - name: Upload report
