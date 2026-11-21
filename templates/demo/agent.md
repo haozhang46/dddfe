@@ -176,14 +176,14 @@ When nesting CSS, **write the child class in full**. Do not use `&__` / `&--` sh
 
 Put a shared widget at `src/presentation/components/base/<Name>.tsx` (or `<Name>/index.tsx`). `ddd/base-component` stays quiet until that file exists. The implementation inside `base/` may use the native element. Every other file under `src/` must use the base component. The error names that component.
 
-| When this file exists | Do not write this outside `base/`                                                                                                        |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `DatePicker.tsx`      | `<input type="date">`, `datetime-local`, `month`, `week`, `time`; another `DatePicker` import; `react-datepicker`; `@mui/x-date-pickers` |
-| `Form.tsx`            | `<form>`; another `Form` import; `formik`                                                                                                |
-| `Text.tsx`            | `<p>`, `<span>`, `<h1>`–`<h6>`; another `Text` import                                                                                    |
-| `Input.tsx`           | `<textarea>`; `<input>` of type text, email, password, search, tel, url, or with no type                                                 |
-| `Select.tsx`          | `<select>`                                                                                                                               |
-| `Button.tsx`          | `<button>`                                                                                                                               |
+| When this file exists | Do not write this outside `base/`                                                                                                          |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `DatePicker.tsx`      | `<input type="date">`, `datetime-local`, `month`, `week`, `time`; another `DatePicker` import; `react-datepicker`; `@mui/x-date-pickers`   |
+| `Form.tsx`            | `<form>`; another `Form` import; `formik`. Zod stays on the page schema; `Form` parses one field and calls `onCommit` only when it matches |
+| `Text.tsx`            | `<p>`, `<span>`, `<h1>`–`<h6>`; another `Text` import                                                                                      |
+| `Input.tsx`           | `<textarea>`; `<input>` of type text, email, password, search, tel, url, or with no type                                                   |
+| `Select.tsx`          | `<select>`                                                                                                                                 |
+| `Button.tsx`          | `<button>`                                                                                                                                 |
 
 `<input type="radio">` and `<input type="number">` stay legal. They are not one of these widgets.
 

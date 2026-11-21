@@ -19,6 +19,8 @@ pnpm storybook                    # Base 组件 Storybook（:6006）
 Agent entry: [`AGENT.md`](./AGENT.md) → [`.cursor/skills/ddd-development-workflow.md`](./.cursor/skills/ddd-development-workflow.md)  
 Layer / BEM rules: [`agent.md`](./agent.md)
 
+订单页用 `presentation/components/base/Form`（Formik）。每个字段先用页面上的 Zod schema 解析，通过后才进入 `changeField`。金额显隐仍由 Domain 决定。
+
 试玩：
 
 1. 切「线下」→ 金额隐藏且为 null；改数量金额仍为 null
