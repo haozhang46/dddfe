@@ -240,7 +240,7 @@ async function daemon(port) {
 async function callControl(command) {
   const state = readState()
   if (!state || state.status !== 'ready') {
-    fail('No verification instance is ready. Run: node .cursor/skills/verify-dddfe/control.mjs launch')
+    fail('No verification instance is ready. Run: node .cursor/skills/verify/control.mjs launch')
   }
   let response
   try {
@@ -381,14 +381,14 @@ if (group === 'daemon') {
   console.log('absent')
 } else {
   fail(`Usage:
-  node .cursor/skills/verify-dddfe/control.mjs launch [--port 4173]
-  node .cursor/skills/verify-dddfe/control.mjs doctor
-  node .cursor/skills/verify-dddfe/control.mjs stop
-  node .cursor/skills/verify-dddfe/control.mjs browser open /login
-  node .cursor/skills/verify-dddfe/control.mjs browser click --role button --name "以 editor 登录"
-  node .cursor/skills/verify-dddfe/control.mjs browser wait-text "订单 Form · DDD Demo"
-  node .cursor/skills/verify-dddfe/control.mjs browser fill --label "数量" --value 3
-  node .cursor/skills/verify-dddfe/control.mjs browser select --label "省" --value 浙江
-  node .cursor/skills/verify-dddfe/control.mjs browser screenshot --path artifacts/login/order.png
-  node .cursor/skills/verify-dddfe/control.mjs storage get dddfe.authJson`)
+  node .cursor/skills/verify/control.mjs launch [--port 4173]
+  node .cursor/skills/verify/control.mjs doctor
+  node .cursor/skills/verify/control.mjs stop
+  node .cursor/skills/verify/control.mjs browser open /login
+  node .cursor/skills/verify/control.mjs browser click --role button --name "以 editor 登录"
+  node .cursor/skills/verify/control.mjs browser wait-text "订单 Form · DDD Demo"
+  node .cursor/skills/verify/control.mjs browser fill --label "数量" --value 3
+  node .cursor/skills/verify/control.mjs browser select --label "省" --value 浙江
+  node .cursor/skills/verify/control.mjs browser screenshot --path artifacts/login/order.png
+  node .cursor/skills/verify/control.mjs storage get dddfe.authJson`)
 }

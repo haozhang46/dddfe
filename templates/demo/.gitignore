@@ -30,3 +30,6 @@ storybook-static
 *.njsproj
 *.sln
 *.sw?
+
+# Restored from skills-lock.json
+.agents/skills/

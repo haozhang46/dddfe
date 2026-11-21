@@ -380,7 +380,7 @@ function selectFormalMethod(analysis: TaskAnalysis): FormalMethod {
 
 ## 📋 集成到 SOP
 
-### 更新 ddd-development-workflow.md
+### 更新 poteto-mode / `.agents/playbooks/`
 
 在 **Step 3: TDD - 写测试** 之后添加：
 

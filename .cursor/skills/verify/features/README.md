@@ -4,8 +4,8 @@ This directory is the maintained source for verifying the user-facing behavior o
 
 ## Baseline preconditions
 
-- Launch with `node .cursor/skills/verify-dddfe/control.mjs launch` and require the `ready http://127.0.0.1:4173` line (or the port you passed).
-- Run `node .cursor/skills/verify-dddfe/control.mjs doctor` and require `doctor ok` for that same URL.
+- Launch with `node .cursor/skills/verify/control.mjs launch` and require the `ready http://127.0.0.1:4173` line (or the port you passed).
+- Run `node .cursor/skills/verify/control.mjs doctor` and require `doctor ok` for that same URL.
 - A fresh Vite process seeds order `order-1`: pay type online, quantity `1`, unit price `100`, amount `100 分`, province `浙江`, city `杭州`. Auth is logged out.
 - The seed lives in that Vite process. After a recipe saves, later recipes in the same process see the saved draft. `stop` then `launch` restores the seed.
 - Never drive an instance that was not started by this verification run.
@@ -15,7 +15,7 @@ This directory is the maintained source for verifying the user-facing behavior o
 - Start every recipe from the baseline state unless its preconditions say otherwise.
 - Prefer ARIA roles and accessible names over CSS selectors or DOM position.
 - Treat every command as literal. Keep quoted names and flags unchanged.
-- Run browser and storage actions through `node .cursor/skills/verify-dddfe/control.mjs`.
+- Run browser and storage actions through `node .cursor/skills/verify/control.mjs`.
 - Do not remove proof artifacts during cleanup.
 
 ## Proof and skip reporting

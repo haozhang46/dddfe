@@ -4,22 +4,20 @@
 
 ---
 
-## 🚨 START HERE: Standard Operating Procedure
+## 🚨 START HERE: poteto-mode (pstack SOP)
 
-**Every time you receive a task**, follow this workflow:
+**Every non-trivial task:** read and follow **`poteto-mode`** from `.agents/skills/poteto-mode/SKILL.md` (restored by `pnpm skills:install` from `skills-lock.json`).
 
-👉 **[Read DDD Development Workflow](./.cursor/skills/ddd-development-workflow.md)** 👈
+Skills-only Cursor installs have no pstack session hook, so this file is the standing instruction: invoke **poteto-mode**, match a playbook, then apply project playbooks under [`.agents/playbooks/`](./.agents/playbooks/).
 
-It contains the complete 7-step SOP:
-1. **Clarify requirements** (ASK questions before coding)
-2. **Analyze layer impact** (Domain? Application? Infrastructure? Presentation?)
-3. **Write tests FIRST** (TDD - tests define correct behavior)
-4. **Implement code** (follow layer dependencies)
-5. **Run verification** (`./scripts/verify.sh`)
-6. **Fix errors autonomously** (read → understand → fix → retry)
-7. **Commit & push** (only after verification passes)
+Project playbooks (dddfe-specific):
+- [feature](./.agents/playbooks/feature.md) — DDD layers + `./scripts/verify.sh` + `.cursor/skills/verify/`
+- [bug-fix](./.agents/playbooks/bug-fix.md) — reproduce/verify via the project driver
 
-**Do NOT skip this.** The skill guides you through every scenario, including error recovery.
+Also keep these project-local skills (committed under `.cursor/skills/`, not in the lock):
+- [verify](./.cursor/skills/verify/SKILL.md) — drive `templates/demo` UI + feature map
+- [react-fe-skill](./.cursor/skills/react-fe-skill/SKILL.md) — Presentation / React conventions
+- [when-to-use-formal-verification](./.cursor/skills/when-to-use-formal-verification.md) — high-risk rules
 
 ### Presentation / React UI
 
@@ -44,10 +42,11 @@ bash .cursor/start.sh            # demo Vite on :5173 (optional)
 pnpm skills:install              # .agents/skills from this repo's skills-lock.json (Cursor)
 pnpm skills:check                # fail when a locked skill has an upstream update
 pnpm skills:update               # move locked skills to the latest source commit
-pnpm exec skills add <owner/repo> --skill <name> -a cursor -y
+pnpm exec skills add https://github.com/haozhang46/pstack-claude/tree/main/plugins/pstack/skills --skill '*' -a cursor -y --full-depth
+node .agents/skills/poteto-mode/scripts/check-playbooks.mjs
 ```
 
-`skills` (the CLI) is a devDependency here and in `templates/demo`. Each tree has its own `skills-lock.json`. The CLI writes that lock and restores `.agents/skills/`. Cursor, Codex, and Copilot read that directory; they do not read the lock. Skills written under `.cursor/skills/` stay in git and are not part of the lock. The CLI needs Node `>=22.20`.
+`skills` (the CLI) is a devDependency here and in `templates/demo`. Each tree has its own `skills-lock.json`. The CLI writes that lock and restores `.agents/skills/` (gitignored copies). Cursor reads `.agents/skills/` and `.cursor/skills/`; it does not read the lock. Project-local skills under `.cursor/skills/` stay in git. The CLI needs Node `>=22.20`. After restore, run `/setup-pstack` once to pick model roles when you use multi-model playbooks.
 
 Template: [`.cursor/environment.json`](./.cursor/environment.json). See [docs/environment-setup.md](./docs/environment-setup.md).
 
@@ -303,7 +302,9 @@ The goal is to **prevent recurrence**, not just fix the instance.
 
 ### Project Docs
 
-- [DDD Development Workflow](./.cursor/skills/ddd-development-workflow.md) - **START HERE** for every task
+- [poteto-mode](./.agents/skills/poteto-mode/SKILL.md) - **START HERE** (after `pnpm skills:install`)
+- [Project playbooks](./.agents/playbooks/) - dddfe Feature / Bug fix overlays
+- [verify](./.cursor/skills/verify/SKILL.md) - demo UI driver + feature map
 - [SUMMARY](./docs/SUMMARY.md) - Approach overview
 - [demo agent.md](./templates/demo/agent.md) - Layering + oxlint rule table
 - [Unit Tests in AI](./docs/unit-tests-for-ai-agents.md) - Why tests matter
@@ -312,7 +313,7 @@ The goal is to **prevent recurrence**, not just fix the instance.
 ### External
 
 - [All Code Is Slop (Except Mine)](https://www.youtube.com/watch?v=O_zcc6Xl12g) - Lauren Tan's talk
-- [pstack](https://github.com/poteto/pstack) - Lauren Tan's skill library
+- [pstack-claude](https://github.com/haozhang46/pstack-claude) - pstack skills source locked in `skills-lock.json`
 
 ---
 
@@ -324,7 +325,7 @@ The goal is to **prevent recurrence**, not just fix the instance.
 This repository's structure, lints, and tests are designed so that the **simplest path is also the correct path**. If you find yourself fighting the tools, that's a signal that the approach may be wrong.
 
 When in doubt:
-1. Read [DDD Development Workflow](./.cursor/skills/ddd-development-workflow.md)
+1. Read **poteto-mode** and the matching project playbook
 2. Run `./scripts/verify.sh`
 3. Read the error
 4. Fix the violation (not the verifier)
@@ -338,20 +339,16 @@ The verifier is your ally, not your enemy.
 ```text
 📋 Receive task
    ↓
-📖 Read .cursor/skills/ddd-development-workflow.md
+📖 poteto-mode → match playbook → apply .agents/playbooks/*
    ↓
-❓ Ask clarifying questions (Step 1)
+🏗️  Name DDD layers (Domain / Application / Infrastructure / Presentation)
    ↓
-🏗️  Analyze layers (Step 2)
+💻 Implement (delegate per poteto-mode; React → react-fe-skill)
    ↓
-✅ Write tests FIRST (Step 3)
+🔍 ./scripts/verify.sh + .cursor/skills/verify when UI
    ↓
-💻 Implement code (Step 4)
-   ↓
-🔍 Run ./scripts/verify.sh (Step 5)
-   ↓
-   ├─ ✅ Pass → Commit (Step 7)
-   └─ ❌ Fail → Fix & retry (Step 6)
+   ├─ ✅ Pass → Opening a PR
+   └─ ❌ Fail → Fix & retry (maintain-verification-skill if map drift)
 ```
 
-**Start every task by reading the skill. Follow it step by step. You'll succeed.** 🚀
+**Start every task with poteto-mode. Keep DDD constraints via project playbooks and oxlint.**

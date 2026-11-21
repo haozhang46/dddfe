@@ -42,9 +42,9 @@ pnpm skills:install
 )
 
 # Optional: runtime UI driver skill (Chrome channel; no Playwright browser download)
-if [ -f .cursor/skills/verify-dddfe/package.json ]; then
+if [ -f .cursor/skills/verify/package.json ]; then
   (
-    cd .cursor/skills/verify-dddfe
+    cd .cursor/skills/verify
     pnpm install --ignore-workspace --frozen-lockfile || pnpm install --ignore-workspace
   )
 fi
