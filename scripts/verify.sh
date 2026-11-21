@@ -73,7 +73,8 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 
 run_check "demo unit tests" "pnpm --dir templates/demo test"
-run_check "create-dddfe unit tests" "pnpm --filter create-dddfe test"
+run_check "nx affected graph" "node scripts/check-nx-affected.mjs"
+run_check "workspace unit tests" "pnpm test"
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "🏗️  BUILD"

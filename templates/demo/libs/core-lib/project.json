@@ -1,0 +1,10 @@
+{
+  "name": "core-lib",
+  "sourceRoot": "libs/core-lib/src",
+  "projectType": "library",
+  "targets": {
+    "test": {
+      "command": "pnpm exec vitest run --config libs/core-lib/vitest.config.ts"
+    }
+  }
+}

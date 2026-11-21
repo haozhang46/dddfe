@@ -7,6 +7,7 @@ This project is a **CLI init template** for React + TypeScript apps that keep bu
 - React + Vite + TypeScript
 - `react-router` for app routes + permission guards
 - Vitest for Domain (and other pure) unit tests
+- Nx `affected:test`: `libs/core-lib` plus every project that depends on it (`libs/order-app`, `libs/admin-app`). The Vite app (`demo`) is its own project.
 - Orchestrator: thin reducer + effects (not Redux / XState in the default scaffold)
 - Package manager: `pnpm`
 

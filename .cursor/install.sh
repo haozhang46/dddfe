@@ -53,5 +53,6 @@ if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
 fi
 
 echo "==> install done"
-echo "    next: pnpm lint && pnpm --dir templates/demo test"
+echo "    next: pnpm lint && pnpm test"
+echo "    affected: pnpm affected:test   # core-lib change also tests its dependents"
 echo "    or:   ./scripts/verify.sh"

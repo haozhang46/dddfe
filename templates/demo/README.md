@@ -5,7 +5,9 @@ Scaffolded apps include this tree plus **AGENT.md**, `.cursor/skills/`, `.githoo
 ```bash
 pnpm install                      # also sets git hooksPath → .githooks (prepare)
 pnpm dev                          # UI
-pnpm test                         # unit tests
+pnpm test                         # nx run-many -t test
+pnpm affected:test                # nx affected:test, since main
+pnpm affected:graph               # core-lib change also selects its dependents
 pnpm lint                         # oxlint + ddd-plugin + CSS BEM nesting check
 pnpm lint:css                     # CSS: nested children must use full BEM names
 pnpm fmt                          # oxfmt (write)

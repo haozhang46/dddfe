@@ -1,0 +1,11 @@
+{
+  "name": "order-app",
+  "sourceRoot": "libs/order-app/src",
+  "projectType": "library",
+  "implicitDependencies": ["core-lib"],
+  "targets": {
+    "test": {
+      "command": "pnpm exec vitest run --config libs/order-app/vitest.config.ts"
+    }
+  }
+}

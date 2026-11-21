@@ -1,5 +1,7 @@
 **/node_modules/
 **/dist/
+.nx/cache
+.nx/workspace-data
 .DS_Store
 *.local
 .env
