@@ -30,13 +30,15 @@ command -v pnpm >/dev/null 2>&1 || {
   exit 1
 }
 
-# Workspace packages (create-dddfe)
+# Workspace packages (create-dddfe). prepare restores skills-lock.json when present.
 pnpm install --frozen-lockfile || pnpm install
+pnpm skills:install
 
-# Demo template is NOT a workspace member — own lockfile
+# Demo template is NOT a workspace member — own lockfile and own skills-lock.json
 (
   cd templates/demo
   pnpm install --ignore-workspace --frozen-lockfile || pnpm install --ignore-workspace
+  pnpm skills:install
 )
 
 # Optional: runtime UI driver skill (Chrome channel; no Playwright browser download)
@@ -53,6 +55,7 @@ if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
 fi
 
 echo "==> install done"
+echo "    skills: pnpm exec skills add <owner/repo> --skill <name> -a cursor -y"
 echo "    next: pnpm lint && pnpm test"
 echo "    affected: pnpm affected:test   # core-lib change also tests its dependents"
 echo "    or:   ./scripts/verify.sh"

@@ -16,7 +16,11 @@ pnpm fmt                          # oxfmt (write)
 pnpm fmt:check                    # oxfmt --check
 pnpm verify                       # lint → fmt:check → tsc → test → build → storybook
 pnpm storybook                    # Base 组件 Storybook（:6006）
+pnpm skills:install               # 按 skills-lock.json 装回外部 skill（.agents/skills）
+pnpm exec skills add <owner/repo> --skill <name> -a cursor -y
 ```
+
+外部 skill 由 `skills` CLI 管理，锁文件是项目根的 `skills-lock.json`。Agent 读 `.agents/skills/`，不读这把锁。`.cursor/skills/` 里的 SOP 随模板提交，不进锁。CLI 需要 Node `>=22.20`。
 
 Agent entry: [`AGENT.md`](./AGENT.md) → [`.cursor/skills/ddd-development-workflow.md`](./.cursor/skills/ddd-development-workflow.md)  
 Layer / BEM rules: [`agent.md`](./agent.md)

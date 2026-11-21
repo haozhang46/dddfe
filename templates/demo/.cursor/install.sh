@@ -25,11 +25,14 @@ command -v pnpm >/dev/null 2>&1 || {
   exit 1
 }
 
+# prepare restores skills-lock.json into .agents/skills when the lock exists
 pnpm install --frozen-lockfile || pnpm install
+pnpm skills:install
 
 if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   git config core.hooksPath .githooks || true
 fi
 
 echo "==> install done"
+echo "    skills: pnpm exec skills add <owner/repo> --skill <name> -a cursor -y"
 echo "    next: pnpm verify   # or pnpm lint && pnpm test && pnpm build"
