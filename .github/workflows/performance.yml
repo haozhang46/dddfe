@@ -1,0 +1,79 @@
+name: performance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  performance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install workspace
+        run: pnpm install --frozen-lockfile
+
+      - name: Install demo
+        run: pnpm install --dir templates/demo --ignore-workspace --frozen-lockfile
+
+      - name: Bundle size budget
+        run: pnpm verify:bundle
+
+      - name: Build demo
+        run: pnpm --dir templates/demo build
+
+      - name: Install Chromium (Playwright + Lighthouse)
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Preview demo
+        run: |
+          pnpm --dir templates/demo exec vite preview --host 127.0.0.1 --port 4173 &
+          echo $! > /tmp/vite-preview.pid
+          for i in $(seq 1 60); do
+            if curl -sf http://127.0.0.1:4173/ >/dev/null; then
+              echo "preview ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "preview failed to become ready" >&2
+          exit 1
+
+      - name: Runtime + Lighthouse
+        env:
+          CI: "true"
+          RUNTIME_REPORT_PATH: ./runtime-report.json
+        run: |
+          export CHROME_PATH="$(pnpm exec tsx -e "import { chromium } from 'playwright'; console.log(chromium.executablePath())")"
+          echo "CHROME_PATH=$CHROME_PATH"
+          test -n "$CHROME_PATH" && test -x "$CHROME_PATH"
+          pnpm exec tsx scripts/tools/runtime-inspector.ts http://127.0.0.1:4173 --lighthouse
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-report
+          path: |
+            runtime-report.json
+            runtime-report-*.json
+          if-no-files-found: ignore
+
+      - name: Stop preview
+        if: always()
+        run: |
+          if [ -f /tmp/vite-preview.pid ]; then
+            kill "$(cat /tmp/vite-preview.pid)" || true
+          fi
