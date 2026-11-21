@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "date-picker",
+  "type": "registry:ui",
+  "title": "DatePicker",
+  "description": "Native date-like input for date, datetime-local, month, week, and time.",
+  "dependencies": ["react"],
+  "categories": ["form"],
+  "docs": "Use instead of those input types outside components/base. Props: type (default date), invalid, className, and native input attrs. Import from src/presentation/components/base/DatePicker or the base barrel.",
+  "files": [
+    {
+      "path": "src/presentation/components/base/DatePicker.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "src/presentation/components/base/joinClass.ts",
+      "type": "registry:lib"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "input",
+  "type": "registry:ui",
+  "title": "Input",
+  "description": "Text-like input or textarea. number and radio stay native.",
+  "dependencies": ["react"],
+  "categories": ["form"],
+  "docs": "Use instead of text-like <input> or <textarea> outside components/base. Props: as (input | textarea), type for input (text email password search tel url), invalid, className, and native attrs. Import from src/presentation/components/base/Input or the base barrel.",
+  "files": [
+    {
+      "path": "src/presentation/components/base/Input.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "src/presentation/components/base/joinClass.ts",
+      "type": "registry:lib"
+    }
+  ]
+}

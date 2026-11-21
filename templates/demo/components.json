@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/index.css",
+    "baseColor": "neutral",
+    "cssVariables": false,
+    "prefix": ""
+  },
+  "aliases": {
+    "components": "src/presentation/components",
+    "ui": "src/presentation/components/base",
+    "lib": "src/presentation",
+    "hooks": "src/presentation",
+    "utils": "src/presentation/components/base/parseFormField.ts"
+  },
+  "registries": {
+    "@dddfe": "./r/{name}.json"
+  }
+}

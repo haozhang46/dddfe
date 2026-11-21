@@ -1,0 +1,199 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "dddfe",
+  "homepage": "https://github.com/haozhang46/dddfe",
+  "items": [
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "button",
+      "type": "registry:ui",
+      "title": "Button",
+      "description": "Native button with primary, ghost, and danger variants.",
+      "dependencies": ["react"],
+      "categories": ["form"],
+      "docs": "Use instead of <button> outside components/base. Props: variant (primary | ghost | danger), type (default button), className, children, and native button attrs. Import from src/presentation/components/base/Button or the base barrel.",
+      "files": [
+        {
+          "path": "src/presentation/components/base/Button.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "src/presentation/components/base/joinClass.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "can",
+      "type": "registry:ui",
+      "title": "Can",
+      "description": "Renders children when the signed-in session has a permission, otherwise the fallback.",
+      "dependencies": ["react"],
+      "categories": ["auth"],
+      "docs": "Use for a button or a field, not for a route. Props: permission, children, fallback (default null). Route access uses RequirePermission. The permission check is hasPermission from domain/user.",
+      "files": [
+        {
+          "path": "src/presentation/components/Can.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "date-picker",
+      "type": "registry:ui",
+      "title": "DatePicker",
+      "description": "Native date-like input for date, datetime-local, month, week, and time.",
+      "dependencies": ["react"],
+      "categories": ["form"],
+      "docs": "Use instead of those input types outside components/base. Props: type (default date), invalid, className, and native input attrs. Import from src/presentation/components/base/DatePicker or the base barrel.",
+      "files": [
+        {
+          "path": "src/presentation/components/base/DatePicker.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "src/presentation/components/base/joinClass.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "form",
+      "type": "registry:ui",
+      "title": "Form",
+      "description": "The only form. Formik holds the draft, a Zod object schema parses one field, and onCommit receives the parsed value.",
+      "dependencies": ["formik", "zod"],
+      "categories": ["form"],
+      "docs": "Use for every form. Import Form from src/presentation/components/base/Form. Props: values (external draft), schema (Zod object), onCommit(path, parsedValue), onSubmit(), children(form). form.commit(path, raw) keeps the raw value locally and calls onCommit only when that field parses. form.error(path) is the message after the field is touched. form.submit() runs onSubmit. A later external snapshot updates keys that changed and leaves an invalid local value in place when that key did not change. The order page passes orchestrator.changeField as onCommit. Do not import formik or render <form> outside this file.",
+      "files": [
+        {
+          "path": "src/presentation/components/base/Form.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "src/presentation/components/base/parseFormField.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "src/presentation/components/base/mergeExternalValues.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "src/presentation/components/base/joinClass.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "input",
+      "type": "registry:ui",
+      "title": "Input",
+      "description": "Text-like input or textarea. number and radio stay native.",
+      "dependencies": ["react"],
+      "categories": ["form"],
+      "docs": "Use instead of text-like <input> or <textarea> outside components/base. Props: as (input | textarea), type for input (text email password search tel url), invalid, className, and native attrs. Import from src/presentation/components/base/Input or the base barrel.",
+      "files": [
+        {
+          "path": "src/presentation/components/base/Input.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "src/presentation/components/base/joinClass.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "require-auth",
+      "type": "registry:component",
+      "title": "RequireAuth",
+      "description": "Route layout that sends an anonymous session to /login and keeps the attempted location.",
+      "dependencies": ["react-router"],
+      "categories": ["auth"],
+      "docs": "Use as a parent route, not inside a page section. While auth status is booting, it shows the loading line. When status is anon, it redirects to /login with the current location in state. Otherwise it renders the child route through Outlet.",
+      "files": [
+        {
+          "path": "src/presentation/components/RequireAuth.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "require-permission",
+      "type": "registry:component",
+      "title": "RequirePermission",
+      "description": "Route layout that sends a session without the route permission to /forbidden.",
+      "dependencies": ["react-router"],
+      "categories": ["auth"],
+      "docs": "Use as a parent route under RequireAuth. Prop: permission (one permission or a list). While auth is booting, it shows the loading line. When canAccessRoute from domain/user rejects the session, it redirects to /forbidden. Otherwise it renders Outlet. A single control uses Can.",
+      "files": [
+        {
+          "path": "src/presentation/components/RequirePermission.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "section-error-boundary",
+      "type": "registry:ui",
+      "title": "SectionErrorBoundary",
+      "description": "Catches a crash in one page section and leaves the rest of the page up.",
+      "dependencies": ["react-error-boundary"],
+      "categories": ["layout"],
+      "docs": "Wrap one logical section. Props: label, children. The fallback is \"{label} 区域加载失败，请刷新重试。\" and the error is logged with that label. Do not wrap the whole page in a single boundary.",
+      "files": [
+        {
+          "path": "src/presentation/components/SectionErrorBoundary.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "select",
+      "type": "registry:ui",
+      "title": "Select",
+      "description": "Native select with an invalid state.",
+      "dependencies": ["react"],
+      "categories": ["form"],
+      "docs": "Use instead of <select> outside components/base. Props: invalid, className, children (options), and native select attrs. Import from src/presentation/components/base/Select or the base barrel.",
+      "files": [
+        {
+          "path": "src/presentation/components/base/Select.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "src/presentation/components/base/joinClass.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "text",
+      "type": "registry:ui",
+      "title": "Text",
+      "description": "Paragraph, span, or heading with muted and error tones.",
+      "dependencies": ["react"],
+      "categories": ["typography"],
+      "docs": "Use instead of <p>, <span>, or <h1>–<h6> outside components/base. Props: as (p span h1–h6), tone (default muted error), className, children. Import from src/presentation/components/base/Text or the base barrel.",
+      "files": [
+        {
+          "path": "src/presentation/components/base/Text.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "src/presentation/components/base/joinClass.ts",
+          "type": "registry:lib"
+        }
+      ]
+    }
+  ]
+}

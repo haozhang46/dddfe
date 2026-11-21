@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "button",
+  "type": "registry:ui",
+  "title": "Button",
+  "description": "Native button with primary, ghost, and danger variants.",
+  "dependencies": ["react"],
+  "categories": ["form"],
+  "docs": "Use instead of <button> outside components/base. Props: variant (primary | ghost | danger), type (default button), className, children, and native button attrs. Import from src/presentation/components/base/Button or the base barrel.",
+  "files": [
+    {
+      "path": "src/presentation/components/base/Button.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "src/presentation/components/base/joinClass.ts",
+      "type": "registry:lib"
+    }
+  ]
+}

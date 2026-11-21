@@ -8,7 +8,7 @@ pnpm dev                          # UI
 pnpm test                         # nx run-many -t test
 pnpm affected:test                # nx affected:test, since main
 pnpm affected:graph               # core-lib change also selects its dependents
-pnpm lint                         # oxlint + ddd-plugin + CSS BEM nesting check
+pnpm lint                         # oxlint + ddd-plugin + CSS BEM + component registry
 pnpm lint:css                     # CSS: nested children must use full BEM names
 pnpm fmt                          # oxfmt (write)
 pnpm fmt:check                    # oxfmt --check
@@ -19,7 +19,7 @@ pnpm storybook                    # Base 组件 Storybook（:6006）
 Agent entry: [`AGENT.md`](./AGENT.md) → [`.cursor/skills/ddd-development-workflow.md`](./.cursor/skills/ddd-development-workflow.md)  
 Layer / BEM rules: [`agent.md`](./agent.md)
 
-订单页用 `presentation/components/base/Form`（Formik）。每个字段先用页面上的 Zod schema 解析，通过后才进入 `changeField`。金额显隐仍由 Domain 决定。
+可用组件在 `registry.json`（索引）和 `r/<name>.json`（props 与用法）。订单页的表单是 `form`：每个字段先用页面上的 Zod schema 解析，通过后才进入 `changeField`。金额显隐仍由 Domain 决定。
 
 试玩：
 

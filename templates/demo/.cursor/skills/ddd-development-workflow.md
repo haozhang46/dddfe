@@ -110,6 +110,12 @@ Agent: "I understand you want to add a discount field. Let me clarify:
 
 **Output**: Write this analysis down, confirm with user if uncertain.
 
+### Component registry (UI work)
+
+Before writing a control, read `registry.json` at the app root. Each item is a component that already exists. Open `r/<name>.json` for its props, when to use it, and which file to import. This is the same split as a shadcn registry: the index lists items, the item file is the one you view.
+
+A section used by one page stays under `pages/<page>/components/` and is not a registry item. A new shared component gets `r/<name>.json` in the same change, then `pnpm registry:write` and `pnpm registry:check`.
+
 ---
 
 ## Step 3: Test-Driven Development (TDD)
