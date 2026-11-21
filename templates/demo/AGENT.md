@@ -33,7 +33,7 @@ pnpm storybook            # Base component catalog on :6006
 pnpm build-storybook      # Static Storybook build (also in pnpm verify)
 ```
 
-Pre-commit runs `pnpm lint` and `pnpm fmt:check` (via `.githooks`, set by `prepare` / `.cursor/install.sh`).
+Pre-commit (`.githooks/pre-commit`, set by `prepare` / `.cursor/install.sh`) runs `pnpm lint`, `pnpm fmt:check`, and `pnpm affected:graph`. Pull requests run `.github/workflows/affected-test.yml` (`affected:graph`, then `nx affected:test`).
 
 Cloud Agent: `.cursor/environment.json` defines `install` / `start` (`bash .cursor/install.sh` / `start.sh`).
 

@@ -1,10 +1,10 @@
 #!/bin/sh
-# oxlint (+ ddd-plugin + CSS BEM) and oxfmt --check before commit.
+# Lint, format, and the Nx affected graph before commit.
 set -eu
 
 root=$(git rev-parse --show-toplevel)
 
-if [ ! -f "$root/node_modules/oxlint/package.json" ] || [ ! -f "$root/node_modules/oxfmt/package.json" ]; then
+if [ ! -f "$root/node_modules/oxlint/package.json" ] || [ ! -f "$root/node_modules/oxfmt/package.json" ] || [ ! -f "$root/node_modules/nx/package.json" ]; then
   echo "pre-commit: dependencies missing. Run: pnpm install" >&2
   exit 1
 fi
@@ -14,3 +14,5 @@ echo "pre-commit: pnpm lint"
 pnpm lint
 echo "pre-commit: pnpm fmt:check"
 pnpm fmt:check
+echo "pre-commit: pnpm affected:graph"
+pnpm affected:graph

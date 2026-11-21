@@ -105,6 +105,7 @@ describe('createProject', () => {
       '.cursor/start.sh',
       '.cursor/environment.json',
       '.githooks/pre-commit',
+      '.github/workflows/affected-test.yml',
       'scripts/verify.sh',
       'scripts/check-nx-affected.mjs',
       'nx.json',
@@ -132,6 +133,17 @@ describe('createProject', () => {
     const gitignore = readFileSync(join(dest, '.gitignore'), 'utf8')
     expect(gitignore).toMatch(/^\.env$/m)
     expect(gitignore).toMatch(/!\.env\.example/)
+
+    const hook = readFileSync(join(dest, '.githooks/pre-commit'), 'utf8')
+    expect(hook).toMatch(/pnpm lint/)
+    expect(hook).toMatch(/pnpm fmt:check/)
+    expect(hook).toMatch(/pnpm affected:graph/)
+    expect(hook).not.toMatch(/templates\/demo/)
+
+    const workflow = readFileSync(join(dest, '.github/workflows/affected-test.yml'), 'utf8')
+    expect(workflow).toMatch(/pnpm affected:graph/)
+    expect(workflow).toMatch(/nx affected:test/)
+    expect(workflow).not.toMatch(/templates\/demo/)
 
     const pkg = JSON.parse(readFileSync(join(dest, 'package.json'), 'utf8')) as {
       name: string
