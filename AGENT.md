@@ -38,10 +38,16 @@ When the change touches React components or hooks under `presentation/` (or temp
 ## Environment bootstrap
 
 ```bash
-bash .cursor/install.sh          # workspace + templates/demo deps
+bash .cursor/install.sh          # workspace + templates/demo deps; restores each skills-lock.json
 bash .cursor/start.sh            # demo Vite on :5173 (optional)
 ./scripts/create-app.sh ../app   # new project from template
+pnpm skills:install              # .agents/skills from this repo's skills-lock.json (Cursor)
+pnpm skills:check                # fail when a locked skill has an upstream update
+pnpm skills:update               # move locked skills to the latest source commit
+pnpm exec skills add <owner/repo> --skill <name> -a cursor -y
 ```
+
+`skills` (the CLI) is a devDependency here and in `templates/demo`. Each tree has its own `skills-lock.json`. The CLI writes that lock and restores `.agents/skills/`. Cursor, Codex, and Copilot read that directory; they do not read the lock. Skills written under `.cursor/skills/` stay in git and are not part of the lock. The CLI needs Node `>=22.20`.
 
 Template: [`.cursor/environment.json`](./.cursor/environment.json). See [docs/environment-setup.md](./docs/environment-setup.md).
 

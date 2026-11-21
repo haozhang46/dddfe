@@ -16,7 +16,10 @@
     "lint": "pnpm --dir templates/demo lint",
     "fmt": "pnpm --dir templates/demo fmt",
     "fmt:check": "pnpm --dir templates/demo fmt:check",
-    "prepare": "git rev-parse --is-inside-work-tree >/dev/null 2>&1 && git config core.hooksPath .githooks || true"
+    "skills:install": "node scripts/install-skills.mjs",
+    "skills:check": "skills check",
+    "skills:update": "skills update -p -y",
+    "prepare": "git rev-parse --is-inside-work-tree >/dev/null 2>&1 && git config core.hooksPath .githooks || true; node scripts/install-skills.mjs"
   },
   "keywords": [
     "ddd",
@@ -35,6 +38,7 @@
     "chrome-launcher": "^1.1.2",
     "lighthouse": "^12.2.1",
     "nx": "^24.0.6",
+    "skills": "^1.9.0",
     "ts-morph": "^24.0.0",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",

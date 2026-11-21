@@ -1,3 +1,4 @@
+import { spawnSync } from 'node:child_process'
 import {
   existsSync,
   mkdirSync,
@@ -107,6 +108,7 @@ describe('createProject', () => {
       '.githooks/pre-commit',
       '.github/workflows/affected-test.yml',
       'scripts/verify.sh',
+      'scripts/install-skills.mjs',
       'scripts/check-nx-affected.mjs',
       'nx.json',
       'project.json',
@@ -134,6 +136,10 @@ describe('createProject', () => {
     expect(gitignore).toMatch(/^\.env$/m)
     expect(gitignore).toMatch(/!\.env\.example/)
 
+    const install = readFileSync(join(dest, '.cursor/install.sh'), 'utf8')
+    expect(install).toMatch(/pnpm skills:install/)
+    expect(install).not.toMatch(/templates\/demo/)
+
     const hook = readFileSync(join(dest, '.githooks/pre-commit'), 'utf8')
     expect(hook).toMatch(/pnpm lint/)
     expect(hook).toMatch(/pnpm fmt:check/)
@@ -148,12 +154,24 @@ describe('createProject', () => {
     const pkg = JSON.parse(readFileSync(join(dest, 'package.json'), 'utf8')) as {
       name: string
       scripts: Record<string, string>
+      devDependencies: Record<string, string>
     }
     expect(pkg.name).toBe('scaffold-app')
     expect(pkg.scripts.lint).toMatch(/oxlint/)
     expect(pkg.scripts['fmt:check']).toMatch(/oxfmt/)
     expect(pkg.scripts.verify).toBe('./scripts/verify.sh')
     expect(pkg.scripts.prepare).toMatch(/core\.hooksPath/)
+    expect(pkg.scripts.prepare).toMatch(/install-skills\.mjs/)
+    expect(pkg.scripts['skills:install']).toBe('node scripts/install-skills.mjs')
+    expect(pkg.scripts['skills:check']).toBe('skills check')
+    expect(pkg.scripts['skills:update']).toBe('skills update -p -y')
+    expect(pkg.devDependencies.skills).toBe('^1.9.0')
+
+    const restored = spawnSync(process.execPath, ['scripts/install-skills.mjs'], {
+      cwd: dest,
+      encoding: 'utf8',
+    })
+    expect(restored.status).toBe(0)
 
     expect(statSync(join(dest, '.githooks/pre-commit')).mode & 0o111).toBeTruthy()
     expect(statSync(join(dest, 'scripts/verify.sh')).mode & 0o111).toBeTruthy()

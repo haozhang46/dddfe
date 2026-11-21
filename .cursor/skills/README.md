@@ -39,6 +39,21 @@
 
 ---
 
+## External skills
+
+Skills in this folder are committed with the repo. They are not in `skills-lock.json`, and `skills remove --all` does not delete them.
+
+External skills are a separate list, managed by the `skills` CLI (`devDependency`):
+
+```bash
+pnpm exec skills add vercel-labs/agent-skills --skill vercel-react-best-practices -a cursor -y
+pnpm skills:install    # restore skills-lock.json into .agents/skills
+pnpm skills:check
+pnpm skills:update
+```
+
+`templates/demo` has the same scripts and its own lock. Cursor reads `.agents/skills/` and this `.cursor/skills/` directory. It does not read `skills-lock.json`. The CLI needs Node `>=22.20`.
+
 ## How Skills Work
 
 ### For AI Agents

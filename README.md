@@ -76,7 +76,9 @@ pnpm create dddfe my-app
 ## Develop
 
 ```bash
-bash .cursor/install.sh            # workspace + templates/demo + optional verify skill
+bash .cursor/install.sh            # workspace + templates/demo + optional verify skill + skills restore
+pnpm skills:install                # .agents/skills from skills-lock.json (Cursor)
+pnpm exec skills add <owner/repo> --skill <name> -a cursor -y
 pnpm lint                          # oxlint in templates/demo, including the ddd plugin
 pnpm fmt:check                     # oxfmt --check in templates/demo
 pnpm fmt                           # oxfmt (write)

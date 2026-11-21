@@ -5,7 +5,7 @@
 | File | Role |
 |------|------|
 | [`.cursor/environment.json`](../.cursor/environment.json) | Cloud Agent template (`install` / `start`) |
-| [`.cursor/install.sh`](../.cursor/install.sh) | Dependencies + seed `.env` / `templates/demo/.env` |
+| [`.cursor/install.sh`](../.cursor/install.sh) | Dependencies + seed `.env` / `templates/demo/.env` + restore each `skills-lock.json` |
 | [`.cursor/start.sh`](../.cursor/start.sh) | Boot demo Vite on `:5173` (tmux, re-runnable) |
 | [`.env.example`](../.env.example) | Monorepo env template (→ `.env`, gitignored) |
 | [`scripts/create-app.sh`](../scripts/create-app.sh) | Create a new app from template + run its install |
@@ -50,7 +50,7 @@ Copied from `templates/demo` into every new project:
 | File | Role |
 |------|------|
 | `.cursor/environment.json` | Cloud Agent `install` / `start` |
-| `.cursor/install.sh` | `pnpm install` + seed `.env` + githooks |
+| `.cursor/install.sh` | `pnpm install` + seed `.env` + githooks + `pnpm skills:install` |
 | `.cursor/start.sh` | Vite on `:5173` |
 | `.env.example` | Committed env template |
 | `.env` | Created from `.env.example` if missing (gitignored) |
@@ -58,6 +58,7 @@ Copied from `templates/demo` into every new project:
 | `.cursor/skills/` | Agent SOP |
 | `.githooks/` | pre-commit lint + fmt |
 | `scripts/verify.sh` | Full verify |
+| `scripts/install-skills.mjs` | Restore `skills-lock.json` into `.agents/skills` (`pnpm skills:install`) |
 | `AGENT.md` | Agent entry |
 
 ```bash

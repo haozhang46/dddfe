@@ -31,7 +31,12 @@ pnpm verify               # lint → fmt:check → tsc → test → build
 pnpm dev                  # Vite (foreground)
 pnpm storybook            # Base component catalog on :6006
 pnpm build-storybook      # Static Storybook build (also in pnpm verify)
+pnpm skills:install       # .agents/skills from skills-lock.json (Cursor)
+pnpm skills:check         # fail when a locked skill has an upstream update
+pnpm skills:update        # move locked skills to the latest source commit
 ```
+
+External skills are managed by the `skills` CLI (`pnpm exec skills add <owner/repo> --skill <name> -a cursor -y`). That writes `skills-lock.json` and, on `pnpm install` / `pnpm skills:install`, restores `.agents/skills/`. Agents read that directory, not the lock. Skills in `.cursor/skills/` ship with the template and are not in the lock. The CLI needs Node `>=22.20`.
 
 Pre-commit (`.githooks/pre-commit`, set by `prepare` / `.cursor/install.sh`) runs `pnpm lint`, `pnpm fmt:check`, and `pnpm affected:graph`. Pull requests run `.github/workflows/affected-test.yml` (`affected:graph`, then `nx affected:test`).
 
