@@ -374,8 +374,8 @@ Action: Keep all optimizations, commit
 
 ### 每次 PR 都运行
 
-In the dddfe monorepo the live workflow is `.github/workflows/performance.yml`:
-bundle budget → demo build → `vite preview` → `runtime-inspector --lighthouse` → upload `runtime-report.json` → PR comment.
+In the dddfe monorepo the live workflow is `.github/workflows/performance.yml` (`workflow_dispatch` only):
+bundle budget → demo build → `vite preview` → `runtime-inspector --lighthouse` → upload `runtime-report.json`.
 
 ---
 

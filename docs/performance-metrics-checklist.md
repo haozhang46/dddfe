@@ -364,11 +364,11 @@ Action: Keep all optimizations, commit
 
 ## 🔄 持续监控
 
-### 每次 PR 都运行
+### 手动运行
 
-Live workflow: [`.github/workflows/performance.yml`](../.github/workflows/performance.yml).
+Live workflow: [`.github/workflows/performance.yml`](../.github/workflows/performance.yml) (`workflow_dispatch` only).
 
-It builds the demo, checks the bundle budget (`pnpm verify:bundle`), serves `vite preview`, runs `runtime-inspector` with Lighthouse, uploads `runtime-report.json`, and updates a PR comment.
+Run it from Actions → **performance** → **Run workflow**. It builds the demo, checks the bundle budget (`pnpm verify:bundle`), serves `vite preview`, runs `runtime-inspector` with Lighthouse, and uploads `runtime-report.json` as an artifact.
 
 ---
 
