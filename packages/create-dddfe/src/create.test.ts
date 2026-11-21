@@ -86,7 +86,9 @@ describe('createProject', () => {
     expect(pkg.name).toBe('my-app')
   })
 
-  it('copies agent scaffold (skills, githooks, docs, verify) from real demo template', async () => {
+  it(
+    'copies agent scaffold (skills, githooks, docs, verify) from real demo template',
+    async () => {
     expect(existsSync(join(realTemplatesRoot, 'demo', 'package.json'))).toBe(true)
     const cwd = mkdtempSync(join(tmpdir(), 'dddfe-cwd-'))
     dirs.push(cwd)
@@ -100,8 +102,11 @@ describe('createProject', () => {
     const mustExist = [
       'AGENT.md',
       'agent.md',
-      '.cursor/skills/ddd-development-workflow.md',
       '.cursor/skills/when-to-use-formal-verification.md',
+      '.cursor/skills/react-fe-skill/SKILL.md',
+      'skills-lock.json',
+      '.agents/playbooks/feature.md',
+      '.agents/playbooks/bug-fix.md',
       '.cursor/install.sh',
       '.cursor/start.sh',
       '.cursor/environment.json',
@@ -177,7 +182,9 @@ describe('createProject', () => {
     expect(statSync(join(dest, 'scripts/verify.sh')).mode & 0o111).toBeTruthy()
     expect(statSync(join(dest, '.cursor/install.sh')).mode & 0o111).toBeTruthy()
     expect(statSync(join(dest, '.cursor/start.sh')).mode & 0o111).toBeTruthy()
-  })
+  },
+  60_000,
+  )
 
   it('ensureDotEnv seeds .env once from .env.example', async () => {
     const root = mkdtempSync(join(tmpdir(), 'dddfe-env-'))

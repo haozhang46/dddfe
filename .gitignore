@@ -10,3 +10,6 @@
 .idea/
 .vscode/
 *.tsbuildinfo
+
+# Restored from skills-lock.json via `pnpm skills:install` (keep playbooks + lock in git)
+.agents/skills/

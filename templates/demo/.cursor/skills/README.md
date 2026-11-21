@@ -1,12 +1,12 @@
-# Cursor Skills (generated project)
+# Cursor Skills (template)
 
-These skills ship with every app created by `create-dddfe`.
+Project-local skills ship with every app from `create-dddfe`.
 
-| Skill                                                                      | When                                     |
-| -------------------------------------------------------------------------- | ---------------------------------------- |
-| [ddd-development-workflow.md](./ddd-development-workflow.md)               | Every feature / bugfix / refactor        |
-| [when-to-use-formal-verification.md](./when-to-use-formal-verification.md) | Financial / concurrent / high-risk rules |
+| Skill                                                                      | Use                                             |
+| -------------------------------------------------------------------------- | ----------------------------------------------- |
+| [react-fe-skill](./react-fe-skill/SKILL.md)                                | Presentation / React conventions (when present) |
+| [when-to-use-formal-verification.md](./when-to-use-formal-verification.md) | Financial / concurrent / high-risk rules        |
 
-Start each task by reading **ddd-development-workflow.md**.
+**Entry SOP:** restore pstack via `pnpm skills:install`, then follow **`poteto-mode`** and [`.agents/playbooks/`](../../.agents/playbooks/).
 
-External skills (for example `vercel-react-best-practices`) are not copied here. Add one with `pnpm exec skills add <owner/repo> --skill <name> -a cursor -y`. That records `skills-lock.json`. `pnpm skills:install` restores it into `.agents/skills/`, which Cursor and the other agents read.
+External skills are locked in `skills-lock.json`. Agent reads `.agents/skills/`, not the lock. CLI needs Node `>=22.20`.

@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs'
 import { access, chmod, cp, readFile, writeFile } from 'node:fs/promises'
 import { constants } from 'node:fs'
-import { basename, join, resolve } from 'node:path'
+import { basename, dirname, join, resolve } from 'node:path'
 
 export type ParsedArgs = {
   projectName: string
@@ -88,6 +88,8 @@ export async function createProject(opts: CreateProjectOptions): Promise<string>
     recursive: true,
     filter: (src) => {
       const name = basename(src)
+      // Never copy restored skill trees; they come back via skills-lock.json
+      if (name === 'skills' && basename(dirname(src)) === '.agents') return false
       return !shouldExclude(name)
     },
   })

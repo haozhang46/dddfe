@@ -55,7 +55,8 @@ Copied from `templates/demo` into every new project:
 | `.env.example` | Committed env template |
 | `.env` | Created from `.env.example` if missing (gitignored) |
 | `.gitignore` | Ignores `.env` / `.env.*`, keeps `.env.example` |
-| `.cursor/skills/` | Agent SOP |
+| `.cursor/skills/` | Project-local skills (`verify`, react-fe, …) |
+| `skills-lock.json` / `.agents/playbooks/` | pstack poteto-mode + project playbooks |
 | `.githooks/` | pre-commit lint + fmt |
 | `scripts/verify.sh` | Full verify |
 | `scripts/install-skills.mjs` | Restore `skills-lock.json` into `.agents/skills` (`pnpm skills:install`) |

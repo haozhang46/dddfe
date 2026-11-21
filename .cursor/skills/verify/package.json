@@ -1,5 +1,5 @@
 {
-  "name": "verify-dddfe",
+  "name": "verify",
   "private": true,
   "type": "module",
   "dependencies": {

@@ -2,7 +2,7 @@
 
 > **你的问题**："AI 在接到需求的时候会根据这套 SOP 来执行吗？"
 >
-> **简短回答**：**会的，如果他们读取并遵循 `.cursor/skills/ddd-development-workflow.md`**
+> **简短回答**：**会的，如果他们读取并遵循 `poteto-mode`（`.agents/skills/poteto-mode/`，由 `skills-lock.json` 恢复）以及 `.agents/playbooks/`**
 
 ---
 
@@ -29,7 +29,7 @@ AI：*开始写代码*
 ```text
 人类：「添加折扣字段」
    ↓
-AI：读取 AGENT.md → 看到「必须先读 .cursor/skills/ddd-development-workflow.md」
+AI：读取 AGENT.md → 看到「必须先读 .agents/skills/poteto-mode/SKILL.md」
    ↓
 AI：打开 skill 文件，看到 7 步流程
    ↓
@@ -66,7 +66,7 @@ AI：Step 5 - 运行 ./scripts/verify.sh
 
 ### 1. Cursor Skills（关键机制）
 
-**位置**：`.cursor/skills/ddd-development-workflow.md`
+**位置**：`.agents/skills/poteto-mode/SKILL.md`
 
 **作用**：
 - Cursor AI 会**优先读取** `.cursor/skills/` 目录下的文件
@@ -83,7 +83,7 @@ AI：Step 5 - 运行 ./scripts/verify.sh
 
 **作用**：
 - AI 打开仓库时会自动读取 `AGENT.md`
-- 第一行就写：**「必须先读 .cursor/skills/ddd-development-workflow.md」**
+- 第一行就写：**「必须先读 .agents/skills/poteto-mode/SKILL.md」**
 - 这是「指向 SOP 的指针」
 
 **类比**：
@@ -134,9 +134,9 @@ AI（无指导）：
 AI（遵循 SOP）：
 
 📖 读取 AGENT.md
-   「在任何任务前，先读 .cursor/skills/ddd-development-workflow.md」
+   「在任何任务前，先读 .agents/skills/poteto-mode/SKILL.md」
 
-📖 打开 .cursor/skills/ddd-development-workflow.md
+📖 打开 .agents/skills/poteto-mode/SKILL.md
    看到 Step 1: 「理解需求 - 必须先问澄清问题」
 
 ❓ AI 问：
@@ -312,7 +312,7 @@ AI：「这个错误怎么办？」*问人类*
 如果 AI 没有遵循：
 
 ```
-你：「请先阅读 .cursor/skills/ddd-development-workflow.md 并遵循其步骤」
+你：「请先阅读 .agents/skills/poteto-mode/SKILL.md 并遵循其步骤」
 ```
 
 或者：
@@ -384,7 +384,7 @@ AI：自动遵循 SOP → 完成 100 个任务 → 某些类型自动 merge
 **A**: 提醒它：
 
 ```
-「请先按照 .cursor/skills/ddd-development-workflow.md 的 Step 1 
+「请先按照 .agents/skills/poteto-mode/SKILL.md 的 Step 1 
 澄清需求，再开始编码」
 ```
 
@@ -414,7 +414,7 @@ Lauren Tan 的 SpaceX 设置：>10 个 coordinator agents 并行工作。
 ## 检查清单：确认 SOP 生效
 
 ```
-✅ 已创建 .cursor/skills/ddd-development-workflow.md
+✅ 已创建 .agents/skills/poteto-mode/SKILL.md
 ✅ AGENT.md 第一段引用 skill
 ✅ Skill 使用命令式语气（「Do」而非「Consider」）
 ✅ Skill 包含完整错误处理指南
@@ -452,7 +452,7 @@ Lauren Tan 的 SpaceX 设置：>10 个 coordinator agents 并行工作。
    ↓
 AI：自动读取 AGENT.md
    ↓
-AI：看到「必须先读 .cursor/skills/ddd-development-workflow.md」
+AI：看到「必须先读 .agents/skills/poteto-mode/SKILL.md」
    ↓
 AI：打开 skill，看到 7 步 SOP
    ↓
@@ -490,7 +490,7 @@ AI：执行 Step 1-7
 
 3. **如果 AI 直接写代码**：
    ```
-   「请先遵循 .cursor/skills/ddd-development-workflow.md 的流程」
+   「请先遵循 .agents/skills/poteto-mode/SKILL.md 的流程」
    ```
 
 4. **观察 AI 是否自主纠错**：
@@ -507,7 +507,7 @@ AI：执行 Step 1-7
 
 检查：
 1. AGENT.md 是否在仓库根目录
-2. .cursor/skills/ddd-development-workflow.md 是否存在
+2. .agents/skills/poteto-mode/SKILL.md 是否存在
 3. AI 是否能访问这些文件
 
 ---

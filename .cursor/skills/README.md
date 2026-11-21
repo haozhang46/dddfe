@@ -1,195 +1,53 @@
 # Cursor Skills for DDD Frontend Development
 
-> **Purpose**: Guide AI agents through standardized workflows in this DDD codebase.
+> **Purpose**: Project-local skills that stay in git. External pstack skills live in `.agents/skills/` via `skills-lock.json`.
 
-## Available Skills
+## Entry SOP (pstack)
 
-### 🔄 [DDD Development Workflow](./ddd-development-workflow.md)
+**Every non-trivial task:** follow **`poteto-mode`** in `.agents/skills/poteto-mode/` (restore with `pnpm skills:install`), then apply [`.agents/playbooks/`](../../.agents/playbooks/).
 
-**Use when**: Implementing features, fixing bugs, or refactoring code.
-
-**What it does**:
-- 7-step SOP from requirements → verification → commit
-- TDD workflow (tests before implementation)
-- Self-correcting error resolution
-- Layer analysis (Domain/Application/Infrastructure/Presentation)
-
-**Quick start**:
 ```bash
-# Agent receives task → Opens this skill → Follows steps 1-7
+pnpm skills:install
+node .agents/skills/poteto-mode/scripts/check-playbooks.mjs
 ```
 
----
+## Project-local skills (this folder)
 
-### ⚛️ [React Frontend Conventions](./react-fe-skill/SKILL.md)
+### [verify](./verify/SKILL.md)
 
-**Use when**: Writing or refactoring React components / hooks in `presentation/`.
+Drive `templates/demo` the way a user does. Feature map under `verify/features/`. Generated shape matches pstack `create-verification-skill`; keep it honest with `maintain-verification-skill`.
 
-**What it does**:
-- Component breakdown before coding (props, responsibility, scope, data flow)
-- Named hook callbacks (`useEffect(function syncX() { … })`)
-- Page vs global component placement; hook vs util split
-- ErrorBoundary + Suspense patterns; avoid `forwardRef` / `cloneElement` for custom APIs
-- State guidance (`useState` → context → Zustand) with immutability / immer notes
+### [react-fe-skill](./react-fe-skill/SKILL.md)
 
-**Quick start**:
-```bash
-# Presentation UI change → read react-fe-skill → then follow DDD workflow SOP
-```
+Team React conventions for `presentation/` (named hooks, ErrorBoundary, registry). Complements upstream TypeScript / React skills from the lock.
 
----
+### [when-to-use-formal-verification](./when-to-use-formal-verification.md)
 
-## External skills
+When TLA+ / Lean / property tests are worth the cost.
 
-Skills in this folder are committed with the repo. They are not in `skills-lock.json`, and `skills remove --all` does not delete them.
+## External skills (pstack)
 
-External skills are a separate list, managed by the `skills` CLI (`devDependency`):
+Locked in root `skills-lock.json` (and `templates/demo/skills-lock.json`). Restored into `.agents/skills/` (gitignored). Source: `haozhang46/pstack-claude` → `plugins/pstack/skills`.
 
 ```bash
-pnpm exec skills add vercel-labs/agent-skills --skill vercel-react-best-practices -a cursor -y
-pnpm skills:install    # restore skills-lock.json into .agents/skills
+pnpm exec skills add https://github.com/haozhang46/pstack-claude/tree/main/plugins/pstack/skills --skill '*' -a cursor -y --full-depth
+pnpm skills:install
 pnpm skills:check
 pnpm skills:update
 ```
 
-`templates/demo` has the same scripts and its own lock. Cursor reads `.agents/skills/` and this `.cursor/skills/` directory. It does not read `skills-lock.json`. The CLI needs Node `>=22.20`.
-
-## How Skills Work
-
-### For AI Agents
-
-When you receive a task:
-
-1. **Read the appropriate skill** (usually `ddd-development-workflow.md`)
-2. **Follow the steps sequentially**
-3. **Do NOT skip steps** (especially verification)
-4. **Self-correct** when verification fails (don't ask human)
-
-### For Humans
-
-Skills are:
-- ✅ Executable SOPs (not vague guidelines)
-- ✅ Decision trees (what to do in each situation)
-- ✅ Error recovery procedures (how to fix common failures)
-- ❌ NOT just documentation (they're runnable workflows)
-
----
+Cursor reads `.agents/skills/` and this `.cursor/skills/` directory. It does not read `skills-lock.json`. The CLI needs Node `>=22.20`.
 
 ## Skill Principles (Lauren Tan's Approach)
 
 ### 1. Reference Tools, Don't Repeat Logic
 
-❌ **Bad**: "Run TypeScript compiler with `tsc --noEmit`"
+Skills point at `./scripts/verify.sh`, oxlint, and `.cursor/skills/verify/` instead of re-stating their rules.
 
-✅ **Good**: "Run `./scripts/verify.sh` (starts with `pnpm lint` / oxlint + ddd-plugin)"
+### 2. Executable Over Aspirational
 
-**Why**: Tools are deterministic. Skills guide when/why to use them.
+Prefer commands and feature-map recipes over vague guidance.
 
-### 2. Workflows, Not Instructions
+### 3. Fail Loud, Fix Forward
 
-❌ **Bad**: "Make sure to test your code"
-
-✅ **Good**: "Step 5: Run `./scripts/verify.sh`. If it fails, go to Step 6 (Fix Errors)."
-
-**Why**: Clear flow, no ambiguity.
-
-### 3. Self-Correcting Loops
-
-❌ **Bad**: "If tests fail, ask the user what to do"
-
-✅ **Good**: "If tests fail, read error → understand → fix code → re-verify"
-
-**Why**: Agent autonomy. Human only needed for requirements clarification.
-
----
-
-## Adding New Skills
-
-### When to Add
-
-Add a skill when:
-- You find yourself repeatedly explaining the same workflow to agents
-- A process has >3 steps
-- Errors are common and need standardized recovery
-
-### Template Structure
-
-```markdown
-# Skill Name
-
-> **When to use**: [Trigger condition]
-
-## Overview
-[Visual workflow diagram]
-
-## Step-by-Step
-### Step 1: [Name]
-[What to do]
-[Example]
-[Common errors]
-
-### Step 2: [Name]
-...
-
-## Success Criteria
-[How to know you're done]
-
-## Quick Reference
-[Cheat sheet]
-```
-
-### File Naming
-
-- `<action>-<object>-<context>.md`
-- Examples:
-  - `ddd-development-workflow.md`
-  - `debug-xstate-machine.md`
-  - `add-new-repository.md`
-
----
-
-## Skill Maintenance
-
-### Update When
-
-- Agent repeatedly makes the same mistake → Add to "Common Mistakes"
-- Verification catches new pattern → Add to checklist
-- Workflow changes → Update steps
-
-### Don't Update For
-
-- Individual cases (skills are patterns, not case-by-case fixes)
-- Personal preferences (skills enforce team standards)
-
----
-
-## Integration with Verification
-
-Skills + Verification = Closed Loop
-
-```text
-Skill (WORKFLOW)          Verification (TRUTH)
-       ↓                          ↓
-  Follow steps      →      Run ./scripts/verify.sh
-       ↓                          ↓
-  Implementation           All checks pass?
-       ↓                          ↓
-       ← ← ← ← ← ← ← ← ← ←  No: Fix & retry
-                                  ↓
-                             Yes: Commit
-```
-
-**Key**: Verification is objective truth. Skills teach how to satisfy it.
-
----
-
-## Quick Links
-
-- [DDD Development Workflow](./ddd-development-workflow.md) - Main SOP
-- [React Frontend Conventions](./react-fe-skill/SKILL.md) - Presentation React rules
-- [Main AGENT.md](../../AGENT.md) - High-level agent guidelines
-- [Verification Tools](../../docs/verification-tools-setup.md) - Tool documentation
-
----
-
-**Start every task by reading [ddd-development-workflow.md](./ddd-development-workflow.md).** 🚀
+When verify fails, fix the code (or update the map via `maintain-verification-skill`), never weaken the gate quietly.

@@ -40,7 +40,8 @@ Key principle: **Make the easy thing the right thing.**
 Generated apps include the **agent scaffold** from the template:
 
 - `AGENT.md` + `agent.md`
-- `.cursor/skills/` (DDD workflow SOP)
+- `.cursor/skills/` (project-local: verify / react-fe / formal-verification)
+- `skills-lock.json` + `.agents/playbooks/` (pstack **poteto-mode** SOP)
 - `.cursor/environment.json` (Cloud Agent `install` / `start`)
 - `.cursor/install.sh` + `.cursor/start.sh` (env bootstrap)
 - `.env.example` → `.env` on create/install (`.env` gitignored)
@@ -77,8 +78,8 @@ pnpm create dddfe my-app
 
 ```bash
 bash .cursor/install.sh            # workspace + templates/demo + optional verify skill + skills restore
-pnpm skills:install                # .agents/skills from skills-lock.json (Cursor)
-pnpm exec skills add <owner/repo> --skill <name> -a cursor -y
+pnpm skills:install                # restore pstack into .agents/skills (Cursor)
+pnpm exec skills add https://github.com/haozhang46/pstack-claude/tree/main/plugins/pstack/skills --skill '*' -a cursor -y --full-depth
 pnpm lint                          # oxlint in templates/demo, including the ddd plugin
 pnpm fmt:check                     # oxfmt --check in templates/demo
 pnpm fmt                           # oxfmt (write)
