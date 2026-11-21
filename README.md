@@ -85,6 +85,7 @@ pnpm affected:test                 # nx affected:test, since main
 pnpm affected:graph                # assert core-lib pulls in its dependents
 pnpm --filter create-dddfe build   # compile CLI
 bash .cursor/start.sh              # demo Vite on :5173 (or: pnpm --dir templates/demo dev)
+pnpm --dir templates/demo storybook # base component Storybook on :6006
 ```
 
 `bash .cursor/install.sh` (or root `pnpm install`) sets `core.hooksPath` to `.githooks`. The pre-commit hook runs `pnpm lint` (oxlint) and `pnpm fmt:check` (oxfmt).

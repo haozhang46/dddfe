@@ -1,4 +1,5 @@
 import type { Option } from "../../../../domain/order";
+import { Select } from "../../../components/base";
 import { PROVINCES } from "../constants";
 
 type Props = {
@@ -15,25 +16,25 @@ export function AddressSection({ province, city, cityOptions, onProvince, onCity
       <legend>地址</legend>
       <label>
         省
-        <select value={province} onChange={(e) => onProvince(e.target.value)}>
+        <Select value={province} onChange={(e) => onProvince(e.target.value)}>
           <option value="">请选择</option>
           {PROVINCES.map((p) => (
             <option key={p.value} value={p.value}>
               {p.label}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
       <label>
         市
-        <select value={city} onChange={(e) => onCity(e.target.value)} disabled={!province}>
+        <Select value={city} onChange={(e) => onCity(e.target.value)} disabled={!province}>
           <option value="">请选择</option>
           {cityOptions.map((c) => (
             <option key={c.value} value={c.value}>
               {c.label}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
     </fieldset>
   );

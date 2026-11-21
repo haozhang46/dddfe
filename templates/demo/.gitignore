@@ -12,6 +12,7 @@ dist
 .nx/cache
 .nx/workspace-data
 dist-ssr
+storybook-static
 *.local
 
 # Env (committed: .env.example only)

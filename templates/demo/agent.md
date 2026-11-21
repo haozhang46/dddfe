@@ -187,6 +187,8 @@ Put a shared widget at `src/presentation/components/base/<Name>.tsx` (or `<Name>
 
 `<input type="radio">` and `<input type="number">` stay legal. They are not one of these widgets.
 
+Stories for these widgets live next to the implementation (`Button.stories.tsx` and the rest). `pnpm storybook` opens the catalog. `pnpm build-storybook` is part of `pnpm verify`.
+
 ## Reference demo behavior (order form)
 
 - Offline: `amount` hidden and `null`; qty changes must not write `amount`.

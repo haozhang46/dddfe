@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { useAuth } from "../../auth/AuthContext";
+import { Button, Text } from "../../components/base";
 
 export function AdminPage() {
   const { session, logout } = useAuth();
@@ -7,16 +8,14 @@ export function AdminPage() {
   return (
     <div className="page">
       <header>
-        <h1>Admin panel</h1>
-        <p className="muted">需要权限 admin:panel · 当前用户 {session?.displayName}</p>
+        <Text as="h1">Admin panel</Text>
+        <Text className="muted">需要权限 admin:panel · 当前用户 {session?.displayName}</Text>
       </header>
-      <p>
+      <Text>
         <Link to="/orders/order-1">订单表单</Link>
         {" · "}
-        <button type="button" onClick={logout}>
-          退出登录
-        </button>
-      </p>
+        <Button onClick={logout}>退出登录</Button>
+      </Text>
     </div>
   );
 }

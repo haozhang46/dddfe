@@ -12,7 +12,8 @@ pnpm lint                         # oxlint + ddd-plugin + CSS BEM nesting check
 pnpm lint:css                     # CSS: nested children must use full BEM names
 pnpm fmt                          # oxfmt (write)
 pnpm fmt:check                    # oxfmt --check
-pnpm verify                       # lint → fmt:check → tsc → test → build
+pnpm verify                       # lint → fmt:check → tsc → test → build → storybook
+pnpm storybook                    # Base 组件 Storybook（:6006）
 ```
 
 Agent entry: [`AGENT.md`](./AGENT.md) → [`.cursor/skills/ddd-development-workflow.md`](./.cursor/skills/ddd-development-workflow.md)  
