@@ -14,13 +14,12 @@ const demoSchema = z.object({
 
 const meta = {
   title: "Base/Form",
-  component: Form,
   tags: ["autodocs"],
-} satisfies Meta<typeof Form>;
+} satisfies Meta;
 
 export default meta;
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Fields: Story = {
   render: function OrderFields() {
