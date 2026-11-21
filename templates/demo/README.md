@@ -1,6 +1,8 @@
 # Order Form DDD Demo (create-dddfe template)
 
-Scaffolded apps include this tree plus **AGENT.md**, `.cursor/skills/`, `.githooks/`, `docs/`, and `scripts/verify.sh`.
+Scaffolded apps include this tree plus **AGENT.md**, `.cursor/skills/`, `.githooks/pre-commit`, `.github/workflows/affected-test.yml`, `docs/`, and `scripts/verify.sh`.
+
+提交前 `.githooks/pre-commit` 跑 `pnpm lint`、`pnpm fmt:check`、`pnpm affected:graph`。Pull request 上 `.github/workflows/affected-test.yml` 再跑 `nx affected:test`。
 
 ```bash
 pnpm install                      # also sets git hooksPath → .githooks (prepare)
