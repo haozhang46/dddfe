@@ -57,8 +57,9 @@ interface LighthouseResult {
   accessibility: number;
   bestPractices: number;
   seo: number;
-  pwa: number;
-  
+  /** Present only when the Lighthouse build still exposes a PWA category. */
+  pwa?: number;
+
   // Detailed metrics
   metrics: {
     firstContentfulPaint: number;
@@ -67,7 +68,7 @@ interface LighthouseResult {
     cumulativeLayoutShift: number;
     speedIndex: number;
   };
-  
+
   // Opportunities (what to improve)
   opportunities: Array<{
     title: string;
@@ -318,34 +319,37 @@ export class RuntimeInspector {
   }
   
   private async runLighthouse(url: string): Promise<LighthouseResult> {
-    // Launch Chrome for Lighthouse
+    // Launch Chrome for Lighthouse (CHROME_PATH lets CI point at Playwright's Chromium)
     const chrome = await chromeLauncher.launch({
-      chromeFlags: ['--headless', '--no-sandbox'],
+      chromePath: process.env.CHROME_PATH || undefined,
+      chromeFlags: ['--headless', '--no-sandbox', '--disable-dev-shm-usage'],
     });
-    
+
     try {
       const options = {
         logLevel: 'error' as const,
         output: 'json' as const,
-        onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo', 'pwa'],
+        // Lighthouse 12+ no longer ships a PWA category
+        onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo'],
         port: chrome.port,
       };
-      
+
       const runnerResult = await lighthouse(url, options);
-      
+
       if (!runnerResult) {
         throw new Error('Lighthouse returned no results');
       }
-      
+
       const report = runnerResult.lhr;
-      
+      const score = (id: string) => (report.categories[id]?.score ?? 0) * 100;
+
       const result: LighthouseResult = {
-        performance: report.categories.performance.score! * 100,
-        accessibility: report.categories.accessibility.score! * 100,
-        bestPractices: report.categories['best-practices'].score! * 100,
-        seo: report.categories.seo.score! * 100,
-        pwa: report.categories.pwa.score! * 100,
-        
+        performance: score('performance'),
+        accessibility: score('accessibility'),
+        bestPractices: score('best-practices'),
+        seo: score('seo'),
+        pwa: report.categories.pwa ? score('pwa') : undefined,
+
         metrics: {
           firstContentfulPaint: report.audits['first-contentful-paint'].numericValue!,
           largestContentfulPaint: report.audits['largest-contentful-paint'].numericValue!,
@@ -353,15 +357,15 @@ export class RuntimeInspector {
           cumulativeLayoutShift: report.audits['cumulative-layout-shift'].numericValue!,
           speedIndex: report.audits['speed-index'].numericValue!,
         },
-        
+
         opportunities: [],
       };
-      
+
       // Extract opportunities
       const opportunityAudits = Object.values(report.audits).filter(
         audit => audit.details && audit.details.type === 'opportunity'
       );
-      
+
       for (const audit of opportunityAudits) {
         if (audit.numericValue && audit.numericValue > 100) {
           result.opportunities.push({
@@ -371,19 +375,21 @@ export class RuntimeInspector {
           });
         }
       }
-      
+
       // Sort by savings
       result.opportunities.sort((a, b) => b.savings - a.savings);
-      
+
       // Print Lighthouse results
       console.log('🏠 Lighthouse Scores:');
       console.log(`  Performance:    ${result.performance.toFixed(0)}/100`);
       console.log(`  Accessibility:  ${result.accessibility.toFixed(0)}/100`);
       console.log(`  Best Practices: ${result.bestPractices.toFixed(0)}/100`);
       console.log(`  SEO:            ${result.seo.toFixed(0)}/100`);
-      console.log(`  PWA:            ${result.pwa.toFixed(0)}/100`);
+      if (result.pwa != null) {
+        console.log(`  PWA:            ${result.pwa.toFixed(0)}/100`);
+      }
       console.log();
-      
+
       if (result.opportunities.length > 0) {
         console.log('💡 Top Opportunities:');
         for (const opp of result.opportunities.slice(0, 3)) {
@@ -391,9 +397,9 @@ export class RuntimeInspector {
         }
         console.log();
       }
-      
+
       return result;
-      
+
     } finally {
       await chrome.kill();
     }
@@ -501,30 +507,35 @@ export class RuntimeInspector {
 
 // CLI entry point
 async function main() {
-  const url = process.argv[2] || 'http://localhost:5173';
-  const runLighthouse = process.argv.includes('--lighthouse');
-  
+  const args = process.argv.slice(2);
+  const runLighthouse = args.includes('--lighthouse');
+  const url = args.find((a) => !a.startsWith('-')) || 'http://127.0.0.1:4173';
+
   const inspector = new RuntimeInspector();
-  
+
   try {
     await inspector.start();
-    
+
     const result = await inspector.inspect(url, {
       runLighthouse,
       screenshot: true,
     });
     
     inspector.printSummary(result);
-    
-    // Save detailed report
-    const reportPath = `./runtime-report-${Date.now()}.json`;
-    await fs.writeFile(reportPath, JSON.stringify(result, null, 2));
-    console.log(`📄 Detailed report saved: ${reportPath}\n`);
-    
+
+    // Save detailed report (stable path for CI + timestamped copy for local runs)
+    const stampedPath = `./runtime-report-${Date.now()}.json`;
+    const stablePath = process.env.RUNTIME_REPORT_PATH || './runtime-report.json';
+    const payload = JSON.stringify(result, null, 2);
+    await fs.writeFile(stampedPath, payload);
+    await fs.writeFile(stablePath, payload);
+    console.log(`📄 Detailed report saved: ${stampedPath}`);
+    console.log(`📄 Stable report saved:   ${stablePath}\n`);
+
     // Exit code based on results
     const hasErrors = result.errors.length > 0;
     const poorPerformance = result.lighthouse && result.lighthouse.performance < 50;
-    
+
     if (hasErrors || poorPerformance) {
       process.exit(1);
     }

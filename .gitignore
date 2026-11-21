@@ -13,3 +13,8 @@
 
 # Restored from skills-lock.json via `pnpm skills:install` (keep playbooks + lock in git)
 .agents/skills/
+
+# Runtime / performance reports (CI uploads as artifacts)
+runtime-report.json
+runtime-report-*.json
+**/screenshot-*.png

@@ -374,49 +374,8 @@ Action: Keep all optimizations, commit
 
 ### 每次 PR 都运行
 
-```yaml
-# .github/workflows/performance.yml
-name: Performance Check
-
-on: [pull_request]
-
-jobs:
-  performance:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Install
-        run: pnpm install
-
-      - name: Build
-        run: pnpm build
-
-      - name: Performance Check
-        run: pnpm run verify:runtime:lighthouse
-
-      - name: Comment PR
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const report = require('./runtime-report.json');
-            const comment = `
-            ## 🏠 Performance Report
-
-            | Metric | Score | Status |
-            |--------|-------|--------|
-            | Performance | ${report.lighthouse.performance}/100 | ${report.lighthouse.performance >= 90 ? '✅' : '❌'} |
-            | LCP | ${report.performance.LCP}ms | ${report.performance.LCP < 2500 ? '✅' : '❌'} |
-            | CLS | ${report.performance.CLS} | ${report.performance.CLS < 0.1 ? '✅' : '❌'} |
-            `;
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            });
-```
+In the dddfe monorepo the live workflow is `.github/workflows/performance.yml`:
+bundle budget → demo build → `vite preview` → `runtime-inspector --lighthouse` → upload `runtime-report.json` → PR comment.
 
 ---
 
