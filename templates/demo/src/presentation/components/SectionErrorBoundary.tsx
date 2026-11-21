@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import { Text } from "./base";
 
 type Props = {
   children: ReactNode;
@@ -8,7 +9,7 @@ type Props = {
 };
 
 function SectionFallback({ label }: { label: string }) {
-  return <p className="error">{label} 区域加载失败，请刷新重试。</p>;
+  return <Text className="error">{label} 区域加载失败，请刷新重试。</Text>;
 }
 
 /** Isolates a logical page section so one crash does not take down the whole page. */

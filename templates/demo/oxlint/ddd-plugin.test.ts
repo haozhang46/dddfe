@@ -303,12 +303,16 @@ writeFileSync(
   "export function DatePicker() { return null }\n",
 );
 
+const emptyBaseRoot = mkdtempSync(join(tmpdir(), "ddd-base-empty-"));
+mkdirSync(join(emptyBaseRoot, "src/presentation"), { recursive: true });
+
 const on = (components: string[]) => ({ options: [{ components }] });
 
 tester.run("base-component", rules["base-component"], {
   valid: [
     {
       name: "native date input while no base file exists",
+      cwd: emptyBaseRoot,
       filename: "src/presentation/pages/order/index.tsx",
       code: 'export const x = <input type="date" />\n',
     },

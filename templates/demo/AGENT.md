@@ -16,6 +16,8 @@
 
 DDD layer rules and BEM: see [`agent.md`](./agent.md).
 
+Before adding UI, read [`registry.json`](./registry.json), then `r/<name>.json` for the component you will use. `pnpm registry:check` fails when a shared component is missing from that index.
+
 ## Commands
 
 ```bash
@@ -27,6 +29,8 @@ pnpm fmt:check            # oxfmt --check
 pnpm test                 # vitest
 pnpm verify               # lint → fmt:check → tsc → test → build
 pnpm dev                  # Vite (foreground)
+pnpm storybook            # Base component catalog on :6006
+pnpm build-storybook      # Static Storybook build (also in pnpm verify)
 ```
 
 Pre-commit runs `pnpm lint` and `pnpm fmt:check` (via `.githooks`, set by `prepare` / `.cursor/install.sh`).

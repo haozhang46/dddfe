@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { useAuth } from "../../auth/AuthContext";
+import { Button, Text } from "../../components/base";
 
 export function ForbiddenPage() {
   const { session, logout } = useAuth();
@@ -7,18 +8,16 @@ export function ForbiddenPage() {
   return (
     <div className="page">
       <header>
-        <h1>无权限</h1>
-        <p className="muted">
+        <Text as="h1">无权限</Text>
+        <Text className="muted">
           {session ? `${session.displayName} 没有访问该页面的权限` : "需要登录后访问"}
-        </p>
+        </Text>
       </header>
-      <p>
+      <Text>
         <Link to="/orders/order-1">返回订单</Link>
         {" · "}
-        <button type="button" onClick={logout}>
-          退出登录
-        </button>
-      </p>
+        <Button onClick={logout}>退出登录</Button>
+      </Text>
     </div>
   );
 }

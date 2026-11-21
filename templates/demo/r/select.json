@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "select",
+  "type": "registry:ui",
+  "title": "Select",
+  "description": "Native select with an invalid state.",
+  "dependencies": ["react"],
+  "categories": ["form"],
+  "docs": "Use instead of <select> outside components/base. Props: invalid, className, children (options), and native select attrs. Import from src/presentation/components/base/Select or the base barrel.",
+  "files": [
+    {
+      "path": "src/presentation/components/base/Select.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "src/presentation/components/base/joinClass.ts",
+      "type": "registry:lib"
+    }
+  ]
+}

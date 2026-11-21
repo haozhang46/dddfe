@@ -96,6 +96,7 @@ src/presentation/
 - `buildViewModel` projects Domain draft + orchestrator meta (`phase`, `dirty`, options, errors).
 - Keep React components free of business convergence (no `if (payType === 'offline') setAmount(null)` in `onChange`).
 - Put reusable UI in `presentation/components/`; keep page-specific UI under `pages/<page>/components/`.
+- Before adding UI, read [`registry.json`](./registry.json). That index is the list of components that exist. Open [`r/<name>.json`](./r/form.json) for props, when to use it, and the files to import. A new shared component ships with an `r/<name>.json` in the same change; `pnpm registry:check` fails until `registry.json` matches.
 - React UI conventions (named hook callbacks, ErrorBoundary per section, hook vs util, no `forwardRef`/`cloneElement` for custom APIs): see monorepo [`.cursor/skills/react-fe-skill/SKILL.md`](../../.cursor/skills/react-fe-skill/SKILL.md).
 
 ## Auth + permissions
@@ -176,16 +177,18 @@ When nesting CSS, **write the child class in full**. Do not use `&__` / `&--` sh
 
 Put a shared widget at `src/presentation/components/base/<Name>.tsx` (or `<Name>/index.tsx`). `ddd/base-component` stays quiet until that file exists. The implementation inside `base/` may use the native element. Every other file under `src/` must use the base component. The error names that component.
 
-| When this file exists | Do not write this outside `base/`                                                                                                        |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `DatePicker.tsx`      | `<input type="date">`, `datetime-local`, `month`, `week`, `time`; another `DatePicker` import; `react-datepicker`; `@mui/x-date-pickers` |
-| `Form.tsx`            | `<form>`; another `Form` import; `formik`                                                                                                |
-| `Text.tsx`            | `<p>`, `<span>`, `<h1>`–`<h6>`; another `Text` import                                                                                    |
-| `Input.tsx`           | `<textarea>`; `<input>` of type text, email, password, search, tel, url, or with no type                                                 |
-| `Select.tsx`          | `<select>`                                                                                                                               |
-| `Button.tsx`          | `<button>`                                                                                                                               |
+| When this file exists | Do not write this outside `base/`                                                                                                          |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `DatePicker.tsx`      | `<input type="date">`, `datetime-local`, `month`, `week`, `time`; another `DatePicker` import; `react-datepicker`; `@mui/x-date-pickers`   |
+| `Form.tsx`            | `<form>`; another `Form` import; `formik`. Zod stays on the page schema; `Form` parses one field and calls `onCommit` only when it matches |
+| `Text.tsx`            | `<p>`, `<span>`, `<h1>`–`<h6>`; another `Text` import                                                                                      |
+| `Input.tsx`           | `<textarea>`; `<input>` of type text, email, password, search, tel, url, or with no type                                                   |
+| `Select.tsx`          | `<select>`                                                                                                                                 |
+| `Button.tsx`          | `<button>`                                                                                                                                 |
 
 `<input type="radio">` and `<input type="number">` stay legal. They are not one of these widgets.
+
+Stories for these widgets live next to the implementation (`Button.stories.tsx` and the rest). `pnpm storybook` opens the catalog. `pnpm build-storybook` is part of `pnpm verify`.
 
 ## Reference demo behavior (order form)
 

@@ -6,12 +6,16 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "oxlint && node oxlint/check-css-bem.js",
+    "lint": "oxlint && node oxlint/check-css-bem.js && node scripts/registry.mjs",
+    "registry:check": "node scripts/registry.mjs",
+    "registry:write": "node scripts/registry.mjs --write",
     "lint:css": "node oxlint/check-css-bem.js",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "verify": "./scripts/verify.sh",
     "preview": "vite preview",
+    "storybook": "STORYBOOK_DISABLE_TELEMETRY=1 storybook dev -p 6006",
+    "build-storybook": "STORYBOOK_DISABLE_TELEMETRY=1 storybook build",
     "test": "NX_DAEMON=false nx run-many -t test",
     "test:watch": "vitest",
     "affected:test": "NX_DAEMON=false nx affected:test",
@@ -19,14 +23,17 @@
     "prepare": "git rev-parse --is-inside-work-tree >/dev/null 2>&1 && git config core.hooksPath .githooks || true"
   },
   "dependencies": {
+    "formik": "^2.4.9",
     "immer": "^11.1.21",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-error-boundary": "^6.1.6",
     "react-router": "^8.4.0",
-    "rxjs": "^7.8.2"
+    "rxjs": "^7.8.2",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@storybook/react-vite": "^10.6.5",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
@@ -34,6 +41,7 @@
     "nx": "^24.0.6",
     "oxfmt": "^0.79.0",
     "oxlint": "^1.81.0",
+    "storybook": "^10.6.5",
     "typescript": "~6.0.2",
     "vite": "^8.3.0",
     "vitest": "^5.0.3"

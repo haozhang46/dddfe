@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "text",
+  "type": "registry:ui",
+  "title": "Text",
+  "description": "Paragraph, span, or heading with muted and error tones.",
+  "dependencies": ["react"],
+  "categories": ["typography"],
+  "docs": "Use instead of <p>, <span>, or <h1>–<h6> outside components/base. Props: as (p span h1–h6), tone (default muted error), className, children. Import from src/presentation/components/base/Text or the base barrel.",
+  "files": [
+    {
+      "path": "src/presentation/components/base/Text.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "src/presentation/components/base/joinClass.ts",
+      "type": "registry:lib"
+    }
+  ]
+}

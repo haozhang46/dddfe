@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router";
 import { listMockUsernames } from "../../../infrastructure/auth/mockUsers";
 import { useAuth } from "../../auth/AuthContext";
+import { Button, Text } from "../../components/base";
 
 type LocationState = { from?: { pathname?: string } };
 
@@ -34,22 +35,17 @@ export function LoginPage() {
   return (
     <div className="page">
       <header>
-        <h1>登录</h1>
-        <p className="muted">选择 mock 用户，login 后写入 sessionStorage（authJson）</p>
+        <Text as="h1">登录</Text>
+        <Text className="muted">选择 mock 用户，login 后写入 sessionStorage（authJson）</Text>
       </header>
 
-      {error && <p className="error">{error}</p>}
+      {error && <Text className="error">{error}</Text>}
 
       <div className="section" style={{ gap: "0.75rem" }}>
         {listMockUsernames().map((username) => (
-          <button
-            key={username}
-            type="button"
-            disabled={busy}
-            onClick={() => void handleLogin(username)}
-          >
+          <Button key={username} disabled={busy} onClick={() => void handleLogin(username)}>
             以 {username} 登录
-          </button>
+          </Button>
         ))}
       </div>
     </div>

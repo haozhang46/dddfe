@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Button, Text } from "../../../components/base";
 
 type Props = {
   dirty: boolean;
@@ -12,17 +13,19 @@ type Props = {
 export function SaveBar({ dirty, saving, version, lastSavedAt, onSave, submitButton }: Props) {
   return (
     <div className="save-bar">
-      <span>
+      <Text as="span">
         version: <strong>{version}</strong>
         {dirty ? " · dirty" : " · clean"}
         {saving ? " · saving…" : ""}
-      </span>
+      </Text>
       {lastSavedAt && (
-        <span className="muted">上次保存 {new Date(lastSavedAt).toLocaleTimeString()}</span>
+        <Text as="span" className="muted">
+          上次保存 {new Date(lastSavedAt).toLocaleTimeString()}
+        </Text>
       )}
-      <button type="button" onClick={onSave} disabled={saving || !dirty}>
+      <Button onClick={onSave} disabled={saving || !dirty}>
         手动保存
-      </button>
+      </Button>
       {submitButton}
     </div>
   );
