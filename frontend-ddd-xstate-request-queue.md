@@ -1,6 +1,8 @@
 # 前端 DDD + XState + 请求队列 完整骨架
 
 > 分层：`Domain` → `Application` → `Infrastructure` → `Presentation`（Headless XState）
+>
+> 可运行 demo 的词表、防腐层和结构图见 [templates/demo/docs/glossary-acl.md](./templates/demo/docs/glossary-acl.md)。下文的 `CartDto` 是同一翻译职责的另一则示例。
 
 ## 核心要点
 

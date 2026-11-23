@@ -23,7 +23,8 @@ pnpm exec skills add https://github.com/haozhang46/pstack-claude/tree/main/plugi
 外部 skill（pstack / poteto-mode）由 `skills` CLI 管理，锁文件是 `skills-lock.json`。Agent 读 `.agents/skills/`，不读这把锁。`.cursor/skills/` 与 `.agents/playbooks/` 随模板提交。CLI 需要 Node `>=22.20`。
 
 Agent entry: [`AGENT.md`](./AGENT.md) → poteto-mode (`.agents/skills/poteto-mode/`) → [`.agents/playbooks/`](./.agents/playbooks/)  
-Layer / BEM rules: [`agent.md`](./agent.md)
+Layer / BEM rules: [`agent.md`](./agent.md)  
+词表、防腐层、结构图: [`docs/glossary-acl.md`](./docs/glossary-acl.md)
 
 可用组件在 `registry.json`（索引）和 `r/<name>.json`（props 与用法）。订单页的表单是 `form`：每个字段先用页面上的 Zod schema 解析，通过后才进入 `changeField`。金额显隐仍由 Domain 决定。
 

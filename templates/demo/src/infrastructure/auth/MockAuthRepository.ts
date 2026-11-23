@@ -1,7 +1,8 @@
 import type { AuthRepository } from "../../application/ports/AuthRepository";
+import { idpPrincipalToAuthJson } from "../acl/authAcl";
 import { delay } from "../mock/delay";
 import type { RequestQueue } from "../queue/RequestQueue";
-import { authJsonForUsername } from "./mockUsers";
+import { idpPrincipalForUsername } from "./mockUsers";
 
 export function createMockAuthRepository(queue: RequestQueue): AuthRepository {
   return {
@@ -9,11 +10,11 @@ export function createMockAuthRepository(queue: RequestQueue): AuthRepository {
       return queue.enqueue(
         async (qSignal) => {
           await delay(200, qSignal);
-          const authJson = authJsonForUsername(username);
-          if (!authJson) {
+          const principal = idpPrincipalForUsername(username);
+          if (!principal) {
             throw new Error(`Unknown user: ${username}`);
           }
-          return authJson;
+          return idpPrincipalToAuthJson(principal);
         },
         { key: `auth:login:${username}`, signal },
       );

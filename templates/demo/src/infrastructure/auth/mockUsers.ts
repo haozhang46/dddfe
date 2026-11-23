@@ -1,44 +1,55 @@
-import type { AuthSession } from "../../domain/user";
+import type { IdpPrincipal } from "../acl/authAcl";
 
-type MockUser = AuthSession & { username: string };
+type MockUser = {
+  username: string;
+  principal: IdpPrincipal;
+};
 
 const users: MockUser[] = [
   {
     username: "viewer",
-    userId: "u-viewer",
-    displayName: "Viewer",
-    roles: ["viewer"],
-    permissions: ["order:view"],
-    issuedAt: 1,
+    principal: {
+      sub: "u-viewer",
+      preferred_name: "Viewer",
+      realm_access: ["ROLE_VIEWER"],
+      granted: ["ORD_VIEW"],
+      auth_time: 1,
+    },
   },
   {
     username: "editor",
-    userId: "u-editor",
-    displayName: "Editor",
-    roles: ["editor"],
-    permissions: ["order:view", "order:edit", "order:submit"],
-    issuedAt: 1,
+    principal: {
+      sub: "u-editor",
+      preferred_name: "Editor",
+      realm_access: ["ROLE_EDITOR"],
+      granted: ["ORD_VIEW", "ORD_EDIT", "ORD_SUBMIT"],
+      auth_time: 1,
+    },
   },
   {
     username: "admin",
-    userId: "u-admin",
-    displayName: "Admin",
-    roles: ["admin"],
-    permissions: ["order:view", "order:edit", "order:submit", "order:field:payType", "admin:panel"],
-    issuedAt: 1,
+    principal: {
+      sub: "u-admin",
+      preferred_name: "Admin",
+      realm_access: ["ROLE_ADMIN"],
+      granted: ["ORD_VIEW", "ORD_EDIT", "ORD_SUBMIT", "ORD_PAY", "ADM_PANEL"],
+      auth_time: 1,
+    },
   },
 ];
 
 export function listMockUsernames(): string[] {
-  return users.map((u) => u.username);
+  return users.map((user) => user.username);
 }
 
-export function authJsonForUsername(username: string): string | null {
-  const user = users.find((u) => u.username === username);
+/** What the mock identity provider returns before the anti-corruption layer runs. */
+export function idpPrincipalForUsername(username: string): IdpPrincipal | null {
+  const user = users.find((candidate) => candidate.username === username);
   if (!user) return null;
-  const { username: _username, ...session } = user;
-  return JSON.stringify({
-    ...session,
-    issuedAt: Date.now(),
-  });
+  return {
+    ...user.principal,
+    realm_access: [...user.principal.realm_access],
+    granted: [...user.principal.granted],
+    auth_time: Date.now(),
+  };
 }

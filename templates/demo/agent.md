@@ -75,6 +75,7 @@ Rules:
 
 - Implement ports; put latency, abort, and queue keys here.
 - Request coalescing / latest-wins belongs in `RequestQueue` (or equivalent), not Domain.
+- Translate upstream payloads in `src/infrastructure/acl/` (`orderAcl`, `authAcl`). Ports keep speaking `OrderDraft` and `authJson`. Word list, translation table, and diagrams: [`docs/glossary-acl.md`](./docs/glossary-acl.md).
 
 ## Presentation
 
@@ -101,7 +102,7 @@ src/presentation/
 
 ## Auth + permissions
 
-- Login (before app shell) calls Application `login` → mock `AuthRepository` returns `authJson` → `AuthSessionStore` saves to `sessionStorage` key `dddfe.authJson`.
+- Login (before app shell) calls Application `login` → mock `AuthRepository` translates an IdP principal through `authAcl` into `authJson` → `AuthSessionStore` saves to `sessionStorage` key `dddfe.authJson`.
 - Domain `user` BC: `parseAuthJson`, `hasPermission`, `canAccessRoute` (pure). Outsiders import from `domain/user` barrel only.
 - **Route permissions are enforced** via `RequireAuth` + `RequirePermission` in `router.tsx`.
 - **Button / field permissions** use the `Can` / `hasPermission` scaffold (demo: Submit gated by `order:submit`). Do not invent ad-hoc permission checks in section `onChange`.
