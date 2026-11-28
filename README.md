@@ -138,3 +138,4 @@ scripts/
 | [AGENT.md](./AGENT.md) | Agent guidelines (references tools, not prose) |
 | [demo agent.md](./templates/demo/agent.md) | Template layering + oxlint rule table |
 | [Frontend DDD](./frontend-ddd-xstate-request-queue.md) | Architecture deep-dive (Chinese) |
+| [词表 / 防腐层 / 图](./templates/demo/docs/glossary-acl.md) | Demo ubiquitous language, ACL, diagrams |
