@@ -1,0 +1,16 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "require-permission",
+  "type": "registry:component",
+  "title": "RequirePermission",
+  "description": "Route layout that sends a session without the route permission to /forbidden.",
+  "dependencies": ["react-router"],
+  "categories": ["auth"],
+  "docs": "Use as a parent route under RequireAuth. Prop: permission (one permission or a list). While auth is booting, it shows the loading line. When canAccessRoute from domain/user rejects the session, it redirects to /forbidden. Otherwise it renders Outlet. A single control uses Can.",
+  "files": [
+    {
+      "path": "src/presentation/components/RequirePermission.tsx",
+      "type": "registry:component"
+    }
+  ]
+}

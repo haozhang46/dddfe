@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "oxlint && node oxlint/check-css-bem.js",
+    "lint": "oxlint && node oxlint/check-css-bem.js && node scripts/registry.mjs",
+    "registry:check": "node scripts/registry.mjs",
+    "registry:write": "node scripts/registry.mjs --write",
     "lint:css": "node oxlint/check-css-bem.js",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",

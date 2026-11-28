@@ -1,0 +1,16 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "require-auth",
+  "type": "registry:component",
+  "title": "RequireAuth",
+  "description": "Route layout that sends an anonymous session to /login and keeps the attempted location.",
+  "dependencies": ["react-router"],
+  "categories": ["auth"],
+  "docs": "Use as a parent route, not inside a page section. While auth status is booting, it shows the loading line. When status is anon, it redirects to /login with the current location in state. Otherwise it renders the child route through Outlet.",
+  "files": [
+    {
+      "path": "src/presentation/components/RequireAuth.tsx",
+      "type": "registry:component"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "can",
+  "type": "registry:ui",
+  "title": "Can",
+  "description": "Renders children when the signed-in session has a permission, otherwise the fallback.",
+  "dependencies": ["react"],
+  "categories": ["auth"],
+  "docs": "Use for a button or a field, not for a route. Props: permission, children, fallback (default null). Route access uses RequirePermission. The permission check is hasPermission from domain/user.",
+  "files": [
+    {
+      "path": "src/presentation/components/Can.tsx",
+      "type": "registry:ui"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "section-error-boundary",
+  "type": "registry:ui",
+  "title": "SectionErrorBoundary",
+  "description": "Catches a crash in one page section and leaves the rest of the page up.",
+  "dependencies": ["react-error-boundary"],
+  "categories": ["layout"],
+  "docs": "Wrap one logical section. Props: label, children. The fallback is \"{label} 区域加载失败，请刷新重试。\" and the error is logged with that label. Do not wrap the whole page in a single boundary.",
+  "files": [
+    {
+      "path": "src/presentation/components/SectionErrorBoundary.tsx",
+      "type": "registry:ui"
+    }
+  ]
+}
